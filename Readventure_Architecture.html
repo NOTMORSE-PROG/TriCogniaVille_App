@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Readventure — Architecture Document</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a2e; background: #fff; font-size: 13px; line-height: 1.6; }
+
+    /* Cover Page */
+    .cover { page-break-after: always; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 60px 40px; }
+    .cover .logo { font-size: 72px; margin-bottom: 20px; }
+    .cover h1 { font-size: 52px; font-weight: 900; letter-spacing: -1px; color: #e94560; margin-bottom: 10px; }
+    .cover .subtitle { font-size: 22px; color: #a8dadc; margin-bottom: 40px; }
+    .cover .meta { background: rgba(255,255,255,0.08); border-radius: 12px; padding: 24px 40px; display: inline-block; }
+    .cover .meta p { font-size: 15px; color: #ccc; margin: 4px 0; }
+    .cover .tag { display: inline-block; background: #e94560; color: #fff; border-radius: 20px; padding: 4px 16px; font-size: 12px; font-weight: 700; margin: 4px; }
+
+    /* Content */
+    .page { max-width: 900px; margin: 0 auto; padding: 40px 40px 20px; }
+    @media print {
+      .page { padding: 20px; }
+      .section { page-break-inside: avoid; }
+    }
+
+    h2 { font-size: 26px; font-weight: 800; color: #0f3460; border-left: 5px solid #e94560; padding-left: 14px; margin: 40px 0 16px; }
+    h3 { font-size: 17px; font-weight: 700; color: #16213e; margin: 24px 0 10px; }
+    h4 { font-size: 14px; font-weight: 700; color: #e94560; margin: 16px 0 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    p { margin-bottom: 10px; color: #333; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; font-size: 12.5px; }
+    th { background: #0f3460; color: #fff; padding: 10px 12px; text-align: left; font-weight: 700; }
+    td { padding: 8px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+    tr:nth-child(even) td { background: #f8f9ff; }
+    tr:hover td { background: #eef2ff; }
+
+    /* Code blocks */
+    pre { background: #1a1a2e; color: #a8dadc; border-radius: 8px; padding: 16px 18px; font-family: 'Consolas', 'Courier New', monospace; font-size: 11.5px; overflow-x: auto; margin: 12px 0 18px; line-height: 1.5; }
+    code { background: #f0f4ff; color: #e94560; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 11.5px; }
+
+    /* Cards */
+    .card { background: #f8f9ff; border: 1px solid #dde3ff; border-radius: 10px; padding: 18px 20px; margin: 14px 0; }
+    .card-row { display: flex; gap: 16px; margin: 14px 0; flex-wrap: wrap; }
+    .card-sm { flex: 1; min-width: 200px; background: #f8f9ff; border: 1px solid #dde3ff; border-radius: 10px; padding: 16px; }
+    .card-sm h4 { margin-top: 0; }
+
+    /* Badges */
+    .badge { display: inline-block; border-radius: 14px; padding: 3px 12px; font-size: 11px; font-weight: 700; margin: 2px; }
+    .badge-free { background: #d4edda; color: #155724; }
+    .badge-android { background: #d1ecf1; color: #0c5460; }
+    .badge-offline { background: #fff3cd; color: #856404; }
+    .badge-cloud { background: #cfe2ff; color: #084298; }
+
+    /* Architecture diagram */
+    .arch { background: #1a1a2e; border-radius: 12px; padding: 24px; margin: 16px 0; color: #a8dadc; font-family: 'Consolas', monospace; font-size: 12px; line-height: 1.8; }
+    .arch .node { color: #e94560; font-weight: 700; }
+    .arch .arrow { color: #e2b96f; }
+    .arch .label { color: #88d9b8; }
+
+    /* Phase timeline */
+    .phase { border-left: 3px solid #e94560; padding: 10px 0 10px 20px; margin: 12px 0; position: relative; }
+    .phase::before { content: ''; position: absolute; left: -8px; top: 14px; width: 14px; height: 14px; background: #e94560; border-radius: 50%; border: 2px solid #fff; }
+    .phase h3 { margin-top: 0; }
+    .phase ul { padding-left: 20px; }
+    .phase li { margin: 4px 0; }
+
+    /* Checklist */
+    ul.checklist { list-style: none; padding-left: 0; }
+    ul.checklist li { padding: 4px 0 4px 26px; position: relative; }
+    ul.checklist li::before { content: '□'; position: absolute; left: 0; color: #0f3460; font-size: 16px; line-height: 1; }
+
+    /* Footer */
+    .footer { margin-top: 60px; padding-top: 20px; border-top: 2px solid #eee; text-align: center; color: #888; font-size: 11px; }
+
+    /* Print: page breaks */
+    .break-before { page-break-before: always; }
+  </style>
+</head>
+<body>
+
+<!-- ===== COVER PAGE ===== -->
+<div class="cover">
+  <div class="logo">🏘️</div>
+  <h1>READVENTURE</h1>
+  <div class="subtitle">Android Educational Game — Architecture Document</div>
+  <div class="meta">
+    <p><strong>Project:</strong> Story-Based Gamified Reading App for Grade 7 Learners</p>
+    <p><strong>Platform:</strong> Android (Landscape Only)</p>
+    <p><strong>Target:</strong> Grade 7 Students &nbsp;|&nbsp; Classroom Scale: 30–50 students</p>
+    <p style="margin-top:12px;">
+      <span class="tag">Free Stack</span>
+      <span class="tag">Godot 4</span>
+      <span class="tag">Neon PostgreSQL</span>
+      <span class="tag">Cloudflare Workers</span>
+    </p>
+  </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="page">
+
+  <!-- 1. Overview -->
+  <h2>1. Project Overview</h2>
+  <p>
+    <strong>Readventure</strong> is a village-restoration reading game where Grade 7 students take the role of a "Readventurer." The village starts mostly silent — buildings appear <em>grayscale and locked</em>. By completing reading missions (decoding, fluency, comprehension), students unlock buildings, which animate from gray to vibrant color, restoring the village.
+  </p>
+  <div class="card-row">
+    <div class="card-sm">
+      <h4>Core Mechanic</h4>
+      <p>Locked items = <strong>grayscale</strong>. Complete quest → building <strong>animates to full color</strong>. Visual reward tied to learning.</p>
+    </div>
+    <div class="card-sm">
+      <h4>Reading Skills</h4>
+      <p><strong>Decoding</strong> (word recognition) → <strong>Fluency</strong> (smooth reading) → <strong>Comprehension</strong> (meaning)</p>
+    </div>
+    <div class="card-sm">
+      <h4>Adaptive Engine</h4>
+      <p>4 reading levels (non-reader → independent). Same village, different difficulty per student.</p>
+    </div>
+  </div>
+
+  <!-- 2. Tech Stack -->
+  <h2>2. Technology Stack</h2>
+  <table>
+    <tr><th>Layer</th><th>Tool</th><th>License / Cost</th><th>Purpose</th></tr>
+    <tr><td><strong>Game Engine</strong></td><td>Godot 4.4+</td><td><span class="badge badge-free">MIT — Free</span></td><td>2D rendering, Android export, GDScript, per-sprite shaders</td></tr>
+    <tr><td><strong>IDE</strong></td><td>Android Studio + VS Code + Godot Editor</td><td><span class="badge badge-free">Free</span></td><td>Android SDK/JDK toolchain + scripting</td></tr>
+    <tr><td><strong>Art Assets</strong></td><td>Kenney.nl (Tiny Town, RPG Urban, UI Pack)</td><td><span class="badge badge-free">CC0 — Free</span></td><td>Village buildings, tiles, UI panels, icons</td></tr>
+    <tr><td><strong>Characters</strong></td><td>Cainos Pixel Art Village (itch.io)</td><td><span class="badge badge-free">Free</span></td><td>32×32 top-down character sprites</td></tr>
+    <tr><td><strong>Audio</strong></td><td>OpenGameArt Town Theme + Kenney Interface Sounds</td><td><span class="badge badge-free">CC0 — Free</span></td><td>Background music + UI/unlock SFX</td></tr>
+    <tr><td><strong>TTS Read-Aloud</strong></td><td>Godot built-in <code>DisplayServer.tts_speak()</code></td><td><span class="badge badge-free">Built-in</span></td><td>Read passages aloud using device TTS engine</td></tr>
+    <tr><td><strong>Fonts</strong></td><td>OpenDyslexic</td><td><span class="badge badge-free">CC — Free</span></td><td>Dyslexia-friendly, educator-approved</td></tr>
+    <tr><td><strong>Local DB</strong></td><td>godot-sqlite (AssetLib #1686)</td><td><span class="badge badge-free">MIT — Free</span></td><td>Offline-first progress storage on device</td></tr>
+    <tr><td><strong>Cloud DB</strong></td><td>Neon PostgreSQL</td><td><span class="badge badge-free">Free: 0.5 GB, 100 CU-hrs/mo</span></td><td>Persistent student progress, cross-device sync</td></tr>
+    <tr><td><strong>API Middleware</strong></td><td>Cloudflare Workers</td><td><span class="badge badge-free">Free: 100K req/day</span></td><td>REST layer between Godot and Neon (keeps DB creds off device)</td></tr>
+    <tr><td><strong>Teacher Dashboard</strong></td><td>Cloudflare Pages (HTML/JS)</td><td><span class="badge badge-free">Free</span></td><td>Static web app reading Neon via Worker</td></tr>
+    <tr><td><strong>CI/CD</strong></td><td>GitHub Actions + dulvui/godot-android-export</td><td><span class="badge badge-free">Free</span></td><td>Auto-builds APK on push to main branch</td></tr>
+    <tr><td><strong>Version Control</strong></td><td>GitHub private repo</td><td><span class="badge badge-free">Free</span></td><td>Source control, team collaboration</td></tr>
+  </table>
+
+  <!-- 3. System Architecture -->
+  <h2 class="break-before">3. System Architecture</h2>
+
+  <h3>3.1 Overall Data Flow</h3>
+  <div class="arch">
+<span class="node">[ Android Device — Godot 4 App ]</span>
+    │
+    ├─ <span class="label">godot-sqlite</span>  ← <span class="arrow">offline source of truth (always writes here first)</span>
+    │
+    └─ <span class="label">HTTPRequest node</span>  → POST /sync (JSON)
+                                  │
+                          <span class="node">[ Cloudflare Worker ]</span>  <span class="arrow">← free, 100K req/day</span>
+                                  │  DB credentials stored as Worker secrets
+                                  │  Uses @neondatabase/serverless HTTP driver
+                                  │
+                          <span class="node">[ Neon PostgreSQL ]</span>  <span class="arrow">← free, 0.5 GB, auto-suspend 5 min</span>
+                                  │
+                          <span class="node">[ Cloudflare Pages — Teacher Dashboard ]</span>
+                                       HTML/JS → Cloudflare Worker → Neon
+  </div>
+
+  <h3>3.2 Offline-First Strategy</h3>
+  <div class="card">
+    <p>The app works <strong>100% offline</strong>. SQLite on-device handles all quest saves. When WiFi is detected, Godot posts a batch of pending quest results to the Cloudflare Worker. The Worker upserts data into Neon (idempotent — safe to retry). The app then marks local records as <code>synced = 1</code>. This handles spotty school WiFi gracefully.</p>
+  </div>
+
+  <h3>3.3 Scene Tree (Godot 4)</h3>
+  <pre>Main (Node)
+├── GameManager (AutoLoad)          ← progress state, adaptive difficulty, sync manager
+└── VillageMapScene (Node2D)
+    ├── Background (Sprite2D)       ← colorful village panorama
+    ├── Buildings (Node2D)          ← container for all building instances
+    │   ├── SchoolBuilding          ← Building.tscn instance (reusable scene)
+    │   ├── LibraryBuilding         ← Building.tscn instance
+    │   └── ... (8–12 buildings)
+    ├── QuestOverlay (CanvasLayer, layer=10)
+    │   ├── DimBackground (ColorRect #000000AA)
+    │   ├── QuestPanel (Panel)
+    │   │   ├── PassageText (RichTextLabel)
+    │   │   ├── TaskContainer (VBoxContainer)  ← quest UI injected here
+    │   │   └── ReadAloudButton + SubmitButton
+    │   └── FeedbackPanel
+    └── HUD (CanvasLayer, layer=5)
+        ├── XPBar + LevelLabel + StreakCounter
+        └── SettingsButton</pre>
+
+  <h3>3.4 Building Scene (Reusable)</h3>
+  <pre>Building (Node2D)
+├── Sprite2D                        ← artwork (grayscale shader here)
+├── Area2D + CollisionShape2D       ← touch/tap detection
+├── LockIcon (Sprite2D)             ← padlock, hidden on unlock
+├── CPUParticles2D                  ← sparkle burst on unlock
+└── BuildingController.gd</pre>
+
+  <!-- 4. Grayscale Mechanic -->
+  <h2>4. Grayscale → Color Unlock Mechanic</h2>
+
+  <h3>4.1 Shader (canvas_item, per-sprite)</h3>
+  <pre>// res://shaders/building_unlock.gdshader
+shader_type canvas_item;
+uniform float color_amount : hint_range(0.0, 1.0) = 0.0; // 0=gray, 1=full color
+
+void fragment() {
+    vec4 tex = texture(TEXTURE, UV);
+    float luma = dot(tex.rgb, vec3(0.299, 0.587, 0.114)); // perceptual luminance
+    COLOR.rgb = mix(vec3(luma), tex.rgb, color_amount);   // blend gray ↔ color
+    COLOR.a = tex.a;
+}</pre>
+
+  <h3>4.2 Unlock Animation (GDScript)</h3>
+  <pre>func unlock_building() -> void:
+    is_unlocked = true
+    $LockIcon.visible = false
+    # Smooth 1.5s tween: gray (0.0) → full color (1.0)
+    var tween = create_tween().set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CUBIC)
+    tween.tween_method(
+        func(v): $Sprite2D.material.set_shader_parameter("color_amount", v),
+        0.0, 1.0, 1.5
+    )
+    tween.tween_callback(func(): $CPUParticles2D.emitting = true)
+    GameManager.record_unlock(building_id)</pre>
+
+  <div class="card" style="background:#fff8e6; border-color:#f0c040;">
+    ⚠️ <strong>Critical:</strong> Each building must call <code>ShaderMaterial.new()</code> in <code>_ready()</code> to get its own material instance. Sharing one material resource causes all buildings to go gray or color together.
+  </div>
+
+  <!-- 5. Responsive Design -->
+  <h2 class="break-before">5. Responsive Design</h2>
+
+  <table>
+    <tr><th>Device</th><th>Landscape Resolution</th><th>Handling Strategy</th></tr>
+    <tr><td>Budget Android phone</td><td>1280×720</td><td><code>expand</code> mode — shows more world horizontally</td></tr>
+    <tr><td>Mid-range phone</td><td>1920×1080</td><td>Matches base viewport exactly</td></tr>
+    <tr><td>Tablet 4:3 (Lenovo/Samsung)</td><td>2048×1536</td><td>Camera2D zoom out to show full village</td></tr>
+    <tr><td>Tablet 16:9</td><td>2560×1600</td><td><code>expand</code> — wider view, more village visible</td></tr>
+  </table>
+
+  <h3>Responsive Rules</h3>
+  <ul style="padding-left:20px; margin-bottom:12px;">
+    <li>All HUD elements use Control node <strong>anchors</strong> (top-left, bottom-right etc.) — pin to screen edges</li>
+    <li>Quest panel is a centered <code>Panel</code> with max-width 1200px — works on phones and tablets</li>
+    <li>Building positions stored as <strong>viewport-relative ratios</strong>, not fixed pixels</li>
+    <li>Font sizes scale at runtime: <code>base_size × (viewport_width / 1920.0)</code></li>
+    <li>Safe area padding via <code>DisplayServer.get_display_safe_area()</code> for notched phones</li>
+  </ul>
+
+  <!-- 6. Quest System -->
+  <h2>6. Quest System</h2>
+
+  <div class="card-row">
+    <div class="card-sm">
+      <h4>Type 1 — Multiple Choice</h4>
+      <p>4 options. Tests <strong>Comprehension</strong>. Correct answer highlights green. Used for inference and main idea questions.</p>
+    </div>
+    <div class="card-sm">
+      <h4>Type 2 — Fill-in-the-Blank</h4>
+      <p>LineEdit triggers soft keyboard. Tests <strong>Decoding</strong>. Answer input placed in upper screen to avoid keyboard overlap.</p>
+    </div>
+    <div class="card-sm">
+      <h4>Type 3 — Drag-and-Drop</h4>
+      <p>Word chip rearrangement. Tests <strong>Fluency</strong> / sentence structure. Uses Godot's built-in drag-and-drop API.</p>
+    </div>
+  </div>
+
+  <h3>Quest Content Format (JSON)</h3>
+  <pre>{
+  "building_id": "library",
+  "quests_by_level": {
+    "1": { "task_type": "multiple_choice", "passage": "...", "question": "...", "options": ["A","B","C","D"], "correct": 0 },
+    "2": { "task_type": "fill_blank",      "passage": "...", "sentence": "The ___ sat by the well.", "answer": "cat" },
+    "4": { "task_type": "drag_drop",       "passage": "...", "words": ["The","cat","sat","by","the","well"] }
+  }
+}</pre>
+
+  <h3>Adaptive Difficulty</h3>
+  <p>Moving window of last 5 quests: <strong>≥80% pass rate</strong> → level up. <strong>≤40%</strong> → level down. Same building, different JSON level key.</p>
+
+  <!-- 7. Data Layer -->
+  <h2 class="break-before">7. Data Layer</h2>
+
+  <h3>7.1 Local SQLite (Phase 1 — MVP)</h3>
+  <table>
+    <tr><th>Table</th><th>Columns</th><th>Purpose</th></tr>
+    <tr><td><code>students</code></td><td>id, name, reading_level, xp, streak_days</td><td>Student profile</td></tr>
+    <tr><td><code>quest_attempts</code></td><td>id, student_id, quest_id, building_id, passed, attempts, completed_at, synced</td><td>All quest history + sync flag</td></tr>
+    <tr><td><code>building_states</code></td><td>student_id, building_id, unlocked, unlocked_at</td><td>Which buildings are unlocked</td></tr>
+  </table>
+
+  <h3>7.2 Neon PostgreSQL Schema (Phase 2)</h3>
+  <pre>CREATE TABLE students (
+  id TEXT PRIMARY KEY, name TEXT, reading_level INT DEFAULT 1, xp INT DEFAULT 0
+);
+CREATE TABLE quest_attempts (
+  id SERIAL PRIMARY KEY, student_id TEXT REFERENCES students(id),
+  quest_id TEXT, building_id TEXT, passed BOOLEAN, attempts INT, completed_at TIMESTAMPTZ
+);
+CREATE TABLE building_states (
+  student_id TEXT REFERENCES students(id), building_id TEXT,
+  unlocked BOOLEAN DEFAULT FALSE, unlocked_at TIMESTAMPTZ,
+  PRIMARY KEY (student_id, building_id)
+);</pre>
+
+  <h3>7.3 Cloudflare Worker (API Middleware)</h3>
+  <pre>// worker.js — Cloudflare Worker (free: 100K req/day)
+import { neon } from '@neondatabase/serverless';
+
+export default {
+  async fetch(request, env) {
+    const sql = neon(env.DATABASE_URL);  // secret — never in APK
+    const { student_id, quest_results } = await request.json();
+    for (const q of quest_results) {
+      await sql`INSERT INTO quest_attempts
+        (student_id, quest_id, building_id, passed, attempts, completed_at)
+        VALUES (${student_id}, ${q.quest_id}, ${q.building_id},
+                ${q.passed}, ${q.attempts}, NOW())`;
+    }
+    return Response.json({ ok: true });
+  }
+};</pre>
+
+  <!-- 8. Free Assets -->
+  <h2>8. Free Asset Sources</h2>
+  <table>
+    <tr><th>Asset</th><th>Source</th><th>License</th></tr>
+    <tr><td>Village buildings + terrain tiles</td><td>kenney.nl/assets/tiny-town</td><td>CC0</td></tr>
+    <tr><td>RPG sprites + items</td><td>kenney.nl/assets/roguelike-rpg-pack</td><td>CC0</td></tr>
+    <tr><td>UI panels, buttons, frames</td><td>kenney.nl/assets/ui-pack-rpg-expansion</td><td>CC0</td></tr>
+    <tr><td>Game icons (lock, star, XP)</td><td>kenney.nl/assets/game-icons</td><td>CC0</td></tr>
+    <tr><td>UI sound effects</td><td>kenney.nl/assets/interface-sounds</td><td>CC0</td></tr>
+    <tr><td>Background music (town theme)</td><td>opengameart.org/content/town-theme-rpg</td><td>CC0</td></tr>
+    <tr><td>Character sprites (top-down)</td><td>Cainos Pixel Art Village — itch.io</td><td>Free</td></tr>
+    <tr><td>Reading font</td><td>opendyslexic.org</td><td>CC</td></tr>
+  </table>
+
+  <!-- 9. Implementation Phases -->
+  <h2 class="break-before">9. Implementation Phases</h2>
+
+  <div class="phase">
+    <h3>Phase 0 — Visual Design <span style="color:#888; font-weight:400; font-size:13px;">(1–2 weeks) ← START HERE</span></h3>
+    <ul>
+      <li>Import Kenney.nl assets, set up village map layout</li>
+      <li>Full-color vibrant background — sky, terrain, decorations</li>
+      <li>Apply grayscale shader to locked buildings, padlock icons</li>
+      <li>Tune color palette for maximum gray-vs-color contrast</li>
+      <li>Animate one sample unlock (gray → color + sparkles) for approval</li>
+      <li>Test responsive layout on phone + tablet emulator</li>
+      <li><strong>Get visual sign-off before coding game logic</strong></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <h3>Phase 1 — Core Game Loop <span style="color:#888; font-weight:400; font-size:13px;">(4–6 weeks)</span></h3>
+    <ul>
+      <li>Android export configured, landscape locked</li>
+      <li>Responsive design system (anchors, font scaling, Camera2D zoom)</li>
+      <li>Touch input → quest dialog overlay</li>
+      <li>Placement quiz (assigns reading level 1–4)</li>
+      <li>3 quest types: multiple choice, fill-in-blank, drag-and-drop</li>
+      <li>6 building quest JSON files (3 difficulty levels each)</li>
+      <li>godot-sqlite local persistence, TTS read-aloud</li>
+      <li>XP bar, streak counter, HUD, unlock particles</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <h3>Phase 2 — Cloud Sync + Teacher Dashboard <span style="color:#888; font-weight:400; font-size:13px;">(3–4 weeks)</span></h3>
+    <ul>
+      <li>Neon PostgreSQL schema + Cloudflare Worker REST API</li>
+      <li>Offline-first SQLite → Neon sync on WiFi</li>
+      <li>Teacher web dashboard (Cloudflare Pages)</li>
+      <li>Student login (name/PIN → Neon students table)</li>
+      <li>12 buildings / full village map expansion</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <h3>Phase 3 — Multiplayer + Store <span style="color:#888; font-weight:400; font-size:13px;">(4–6 weeks)</span></h3>
+    <ul>
+      <li>Reading Race (competitive real-time) + Squad Restore (cooperative)</li>
+      <li>Student Dashboard (Overview, Skill Detail, Multiplayer Stats)</li>
+      <li>Collaborative Room mode</li>
+      <li>Google Play Store submission (AAB, Target SDK 35)</li>
+    </ul>
+  </div>
+
+  <!-- 10. Gotchas -->
+  <h2>10. Key Technical Gotchas</h2>
+  <table>
+    <tr><th>#</th><th>Issue</th><th>Fix</th></tr>
+    <tr><td>1</td><td>Shared ShaderMaterial — changing one building affects all</td><td>Call <code>ShaderMaterial.new()</code> per building in <code>_ready()</code></td></tr>
+    <tr><td>2</td><td>Soft keyboard covers quest input</td><td>Place LineEdit in upper half of quest panel</td></tr>
+    <tr><td>3</td><td><code>landscape</code> vs <code>userLandscape</code></td><td>Use <code>userLandscape</code> — respects left/right landscape hold</td></tr>
+    <tr><td>4</td><td>Back button exits app mid-quest</td><td>Handle <code>NOTIFICATION_WM_GO_BACK_REQUEST</code> to close overlay instead</td></tr>
+    <tr><td>5</td><td>TTS quality on cheap tablets</td><td>Test on actual hardware; prepare OGG fallback for critical passages</td></tr>
+    <tr><td>6</td><td>Neon cold start after 5 min idle (~300–500ms delay)</td><td>Acceptable — sync is background async, student never waits</td></tr>
+    <tr><td>7</td><td>DATABASE_URL exposed in APK</td><td><strong>Never</strong> put Neon creds in the app. Only in Cloudflare Worker secrets.</td></tr>
+    <tr><td>8</td><td>Portrait flash on app resume (some Samsung tablets)</td><td>Call <code>DisplayServer.screen_set_orientation(SCREEN_LANDSCAPE)</code> on <code>NOTIFICATION_APP_RESUMED</code></td></tr>
+  </table>
+
+  <!-- 11. APK Targets -->
+  <h2>11. Build Configuration</h2>
+  <div class="card-row">
+    <div class="card-sm">
+      <h4>Renderer</h4>
+      <p>Compatibility (OpenGL ES 3.0) — broadest classroom tablet support, avoids Vulkan driver issues</p>
+    </div>
+    <div class="card-sm">
+      <h4>Architecture</h4>
+      <p>arm64-v8a only — halves native lib size. Covers all Android tablets from 2017+</p>
+    </div>
+    <div class="card-sm">
+      <h4>SDK Versions</h4>
+      <p>Min SDK: 24 (Android 7.0)<br>Target SDK: 35 (required for Play Store 2025+)</p>
+    </div>
+    <div class="card-sm">
+      <h4>APK Size Target</h4>
+      <p>~30–40 MB (WebP textures, OGG audio, disable_3d export template)</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Readventure Architecture Document &nbsp;|&nbsp; Generated March 2026</p>
+    <p>All tools in this stack are free and open-source. No licensing fees required.</p>
+  </div>
+
+</div><!-- /page -->
+</body>
+</html>

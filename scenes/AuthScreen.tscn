@@ -1,0 +1,453 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/AuthScreen.gd" id="1_auth"]
+[ext_resource type="Shader" path="res://assets/shaders/animated_background.gdshader" id="2_bg_shader"]
+[ext_resource type="Shader" path="res://assets/shaders/bokeh_particles.gdshader" id="3_bokeh"]
+
+[sub_resource type="ShaderMaterial" id="bg_mat"]
+shader = ExtResource("2_bg_shader")
+shader_parameter/color_top = Color(0.039, 0.067, 0.122, 1)
+shader_parameter/color_mid = Color(0.059, 0.114, 0.22, 1)
+shader_parameter/color_bottom = Color(0.039, 0.086, 0.157, 1)
+shader_parameter/wave_speed = 0.04
+shader_parameter/wave_amplitude = 0.08
+
+[sub_resource type="ShaderMaterial" id="bokeh_mat"]
+shader = ExtResource("3_bokeh")
+shader_parameter/particle_count = 12.0
+shader_parameter/particle_size = 0.015
+shader_parameter/speed = 0.03
+shader_parameter/particle_color = Color(0.392, 0.769, 0.91, 0.06)
+
+[node name="AuthScreen" type="Control"]
+layout_mode = 3
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_auth")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+material = SubResource("bg_mat")
+color = Color(1, 1, 1, 1)
+
+[node name="BokehLayer" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+material = SubResource("bokeh_mat")
+color = Color(0, 0, 0, 0)
+
+[node name="BrandingLayer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchor_left = 0.1
+anchor_top = 0.04
+anchor_right = 0.9
+offset_left = 0.0
+offset_right = 0.0
+offset_bottom = 200.0
+mouse_filter = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="BrandingLayer"]
+layout_mode = 2
+text = "READVENTURE"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 68
+theme_override_colors/font_color = Color(0.914, 0.388, 0.431, 1)
+
+[node name="SubtitleLabel" type="Label" parent="BrandingLayer"]
+layout_mode = 2
+text = "Story-Based Reading Adventure"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.392, 0.769, 0.91, 1)
+
+[node name="TaglineLabel" type="Label" parent="BrandingLayer"]
+layout_mode = 2
+text = "For Grade 7 Learners"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.659, 0.722, 0.816, 1)
+
+[node name="ContentCard" type="PanelContainer" parent="."]
+layout_mode = 1
+anchor_left = 0.08
+anchor_top = 0.28
+anchor_right = 0.92
+anchor_bottom = 0.92
+offset_left = 0.0
+offset_right = 0.0
+
+[node name="CardMargin" type="MarginContainer" parent="ContentCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="LandingView" type="VBoxContainer" parent="ContentCard/CardMargin"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 24
+
+[node name="WelcomeLabel" type="Label" parent="ContentCard/CardMargin/LandingView"]
+layout_mode = 2
+text = "Welcome!"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 36
+theme_override_colors/font_color = Color(0.392, 0.769, 0.91, 1)
+
+[node name="WelcomeDesc" type="Label" parent="ContentCard/CardMargin/LandingView"]
+layout_mode = 2
+text = "Choose how you'd like to continue"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.659, 0.722, 0.816, 1)
+
+[node name="Spacer1" type="Control" parent="ContentCard/CardMargin/LandingView"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 20)
+
+[node name="SignInButton" type="Button" parent="ContentCard/CardMargin/LandingView"]
+layout_mode = 2
+custom_minimum_size = Vector2(320, 72)
+size_flags_horizontal = 4
+text = "Sign In"
+theme_override_font_sizes/font_size = 30
+
+[node name="SignUpButton" type="Button" parent="ContentCard/CardMargin/LandingView"]
+layout_mode = 2
+custom_minimum_size = Vector2(320, 72)
+size_flags_horizontal = 4
+text = "Create Account"
+theme_override_font_sizes/font_size = 28
+
+[node name="SignInView" type="VBoxContainer" parent="ContentCard/CardMargin"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="ViewTitle" type="Label" parent="ContentCard/CardMargin/SignInView"]
+layout_mode = 2
+text = "Choose Your Name"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.392, 0.769, 0.91, 1)
+
+[node name="StudentListScroll" type="ScrollContainer" parent="ContentCard/CardMargin/SignInView"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="StudentListVBox" type="VBoxContainer" parent="ContentCard/CardMargin/SignInView/StudentListScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="BackFromSignIn" type="Button" parent="ContentCard/CardMargin/SignInView"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 48)
+size_flags_horizontal = 4
+text = "Back"
+theme_override_font_sizes/font_size = 22
+
+[node name="PinView" type="VBoxContainer" parent="ContentCard/CardMargin"]
+visible = false
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="WelcomeBackLabel" type="Label" parent="ContentCard/CardMargin/PinView"]
+layout_mode = 2
+text = "Enter Your PIN"
+horizontal_alignment = 1
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(0.914, 0.388, 0.431, 1)
+
+[node name="PinDots" type="HBoxContainer" parent="ContentCard/CardMargin/PinView"]
+layout_mode = 2
+size_flags_horizontal = 4
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="Dot1" type="Panel" parent="ContentCard/CardMargin/PinView/PinDots"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+
+[node name="Dot2" type="Panel" parent="ContentCard/CardMargin/PinView/PinDots"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+
+[node name="Dot3" type="Panel" parent="ContentCard/CardMargin/PinView/PinDots"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+
+[node name="Dot4" type="Panel" parent="ContentCard/CardMargin/PinView/PinDots"]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 40)
+
+[node name="PinError" type="Label" parent="ContentCard/CardMargin/PinView"]
+visible = false
+layout_mode = 2
+text = "Incorrect PIN. Try again."
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 0.42, 0.42, 1)
+
+[node name="NumpadGrid" type="GridContainer" parent="ContentCard/CardMargin/PinView"]
+layout_mode = 2
+size_flags_horizontal = 4
+columns = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+
+[node name="Btn1" type="Button" parent="ContentCard/CardMargin/PinView/NumpadGrid"]
+custom_minimum_size = Vector2(88, 68)
+text = "1"
+theme_override_font_sizes/font_size = 30
+
+[node name="Btn2" type="Button" parent="ContentCard/CardMargin/PinView/NumpadGrid"]
+custom_minimum_size = Vector2(88, 68)
+text = "2"
+theme_override_font_sizes/font_size = 30
+
+[node name="Btn3" type="Button" parent="ContentCard/CardMargin/PinView/NumpadGrid"]
+custom_minimum_size = Vector2(88, 68)
+text = "3"
+theme_override_font_sizes/font_size = 30
+
+[node name="Btn4" type="Button" parent="ContentCard/CardMargin/PinView/NumpadGrid"]
+custom_minimum_size = Vector2(88, 68)
+text = "4"
+theme_override_font_sizes/font_size = 30
+
+[node name="Btn5" type="Button" parent="ContentCard/CardMargin/PinView/NumpadGrid"]
+custom_minimum_size = Vector2(88, 68)
+text = "5"
+theme_override_font_sizes/font_size = 30
+
+[node name="Btn6" type="Button" parent="ContentCard/CardMargin/PinView/NumpadGrid"]
+custom_minimum_size = Vector2(88, 68)
+text = "6"
+theme_override_font_sizes/font_size = 30
+
+[node name="Btn7" type="Button" parent="ContentCard/CardMargin/PinView/NumpadGrid"]
+custom_minimum_size = Vector2(88, 68)
+text = "7"
+theme_override_font_sizes/font_size = 30
+
+[node name="Btn8" type="Button" parent="ContentCard/CardMargin/PinView/NumpadGrid"]
+custom_minimum_size = Vector2(88, 68)
+text = "8"
+theme_override_font_sizes/font_size = 30
+
+[node name="Btn9" type="Button" parent="ContentCard/CardMargin/PinView/NumpadGrid"]
+custom_minimum_size = Vector2(88, 68)
+text = "9"
+theme_override_font_sizes/font_size = 30
+
+[node name="BtnBack" type="Button" parent="ContentCard/CardMargin/PinView/NumpadGrid"]
+custom_minimum_size = Vector2(88, 68)
+text = "←"
+theme_override_font_sizes/font_size = 30
+
+[node name="Btn0" type="Button" parent="ContentCard/CardMargin/PinView/NumpadGrid"]
+custom_minimum_size = Vector2(88, 68)
+text = "0"
+theme_override_font_sizes/font_size = 30
+
+[node name="BtnEmpty" type="Control" parent="ContentCard/CardMargin/PinView/NumpadGrid"]
+custom_minimum_size = Vector2(88, 68)
+
+[node name="ForgotPinHint" type="Label" parent="ContentCard/CardMargin/PinView"]
+layout_mode = 2
+text = "Forgot PIN? Ask your teacher."
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.42, 0.478, 0.553, 1)
+
+[node name="BackFromPin" type="Button" parent="ContentCard/CardMargin/PinView"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 48)
+size_flags_horizontal = 4
+text = "Back"
+theme_override_font_sizes/font_size = 22
+
+[node name="SignUpView" type="VBoxContainer" parent="ContentCard/CardMargin"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ViewTitle" type="Label" parent="ContentCard/CardMargin/SignUpView"]
+layout_mode = 2
+text = "Join TriCognia Ville!"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.357, 0.851, 0.635, 1)
+
+[node name="NameLabel" type="Label" parent="ContentCard/CardMargin/SignUpView"]
+layout_mode = 2
+text = "Your Name"
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.659, 0.722, 0.816, 1)
+
+[node name="NameInput" type="LineEdit" parent="ContentCard/CardMargin/SignUpView"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 52)
+placeholder_text = "Enter your name"
+max_length = 32
+theme_override_font_sizes/font_size = 26
+
+[node name="PinLabel" type="Label" parent="ContentCard/CardMargin/SignUpView"]
+layout_mode = 2
+text = "Create a 4-digit PIN"
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.659, 0.722, 0.816, 1)
+
+[node name="SignUpPinDots" type="HBoxContainer" parent="ContentCard/CardMargin/SignUpView"]
+layout_mode = 2
+size_flags_horizontal = 4
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="Dot1" type="Panel" parent="ContentCard/CardMargin/SignUpView/SignUpPinDots"]
+layout_mode = 2
+custom_minimum_size = Vector2(36, 36)
+
+[node name="Dot2" type="Panel" parent="ContentCard/CardMargin/SignUpView/SignUpPinDots"]
+layout_mode = 2
+custom_minimum_size = Vector2(36, 36)
+
+[node name="Dot3" type="Panel" parent="ContentCard/CardMargin/SignUpView/SignUpPinDots"]
+layout_mode = 2
+custom_minimum_size = Vector2(36, 36)
+
+[node name="Dot4" type="Panel" parent="ContentCard/CardMargin/SignUpView/SignUpPinDots"]
+layout_mode = 2
+custom_minimum_size = Vector2(36, 36)
+
+[node name="ConfirmLabel" type="Label" parent="ContentCard/CardMargin/SignUpView"]
+layout_mode = 2
+text = "Confirm PIN"
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.659, 0.722, 0.816, 1)
+
+[node name="ConfirmDots" type="HBoxContainer" parent="ContentCard/CardMargin/SignUpView"]
+layout_mode = 2
+size_flags_horizontal = 4
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="Dot1" type="Panel" parent="ContentCard/CardMargin/SignUpView/ConfirmDots"]
+layout_mode = 2
+custom_minimum_size = Vector2(36, 36)
+
+[node name="Dot2" type="Panel" parent="ContentCard/CardMargin/SignUpView/ConfirmDots"]
+layout_mode = 2
+custom_minimum_size = Vector2(36, 36)
+
+[node name="Dot3" type="Panel" parent="ContentCard/CardMargin/SignUpView/ConfirmDots"]
+layout_mode = 2
+custom_minimum_size = Vector2(36, 36)
+
+[node name="Dot4" type="Panel" parent="ContentCard/CardMargin/SignUpView/ConfirmDots"]
+layout_mode = 2
+custom_minimum_size = Vector2(36, 36)
+
+[node name="SignUpError" type="Label" parent="ContentCard/CardMargin/SignUpView"]
+visible = false
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 0.42, 0.42, 1)
+
+[node name="SignUpNumpad" type="GridContainer" parent="ContentCard/CardMargin/SignUpView"]
+layout_mode = 2
+size_flags_horizontal = 4
+columns = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="Btn1" type="Button" parent="ContentCard/CardMargin/SignUpView/SignUpNumpad"]
+custom_minimum_size = Vector2(84, 62)
+text = "1"
+theme_override_font_sizes/font_size = 28
+
+[node name="Btn2" type="Button" parent="ContentCard/CardMargin/SignUpView/SignUpNumpad"]
+custom_minimum_size = Vector2(84, 62)
+text = "2"
+theme_override_font_sizes/font_size = 28
+
+[node name="Btn3" type="Button" parent="ContentCard/CardMargin/SignUpView/SignUpNumpad"]
+custom_minimum_size = Vector2(84, 62)
+text = "3"
+theme_override_font_sizes/font_size = 28
+
+[node name="Btn4" type="Button" parent="ContentCard/CardMargin/SignUpView/SignUpNumpad"]
+custom_minimum_size = Vector2(84, 62)
+text = "4"
+theme_override_font_sizes/font_size = 28
+
+[node name="Btn5" type="Button" parent="ContentCard/CardMargin/SignUpView/SignUpNumpad"]
+custom_minimum_size = Vector2(84, 62)
+text = "5"
+theme_override_font_sizes/font_size = 28
+
+[node name="Btn6" type="Button" parent="ContentCard/CardMargin/SignUpView/SignUpNumpad"]
+custom_minimum_size = Vector2(84, 62)
+text = "6"
+theme_override_font_sizes/font_size = 28
+
+[node name="Btn7" type="Button" parent="ContentCard/CardMargin/SignUpView/SignUpNumpad"]
+custom_minimum_size = Vector2(84, 62)
+text = "7"
+theme_override_font_sizes/font_size = 28
+
+[node name="Btn8" type="Button" parent="ContentCard/CardMargin/SignUpView/SignUpNumpad"]
+custom_minimum_size = Vector2(84, 62)
+text = "8"
+theme_override_font_sizes/font_size = 28
+
+[node name="Btn9" type="Button" parent="ContentCard/CardMargin/SignUpView/SignUpNumpad"]
+custom_minimum_size = Vector2(84, 62)
+text = "9"
+theme_override_font_sizes/font_size = 28
+
+[node name="BtnBack" type="Button" parent="ContentCard/CardMargin/SignUpView/SignUpNumpad"]
+custom_minimum_size = Vector2(84, 62)
+text = "←"
+theme_override_font_sizes/font_size = 28
+
+[node name="Btn0" type="Button" parent="ContentCard/CardMargin/SignUpView/SignUpNumpad"]
+custom_minimum_size = Vector2(84, 62)
+text = "0"
+theme_override_font_sizes/font_size = 28
+
+[node name="BtnOK" type="Button" parent="ContentCard/CardMargin/SignUpView/SignUpNumpad"]
+custom_minimum_size = Vector2(84, 62)
+text = "OK"
+theme_override_font_sizes/font_size = 24
+
+[node name="CreateButton" type="Button" parent="ContentCard/CardMargin/SignUpView"]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 58)
+size_flags_horizontal = 4
+disabled = true
+text = "Create Account"
+theme_override_font_sizes/font_size = 26
+
+[node name="BackFromSignUp" type="Button" parent="ContentCard/CardMargin/SignUpView"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 42)
+size_flags_horizontal = 4
+text = "Back"
+theme_override_font_sizes/font_size = 20

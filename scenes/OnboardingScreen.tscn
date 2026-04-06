@@ -1,0 +1,687 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/OnboardingScreen.gd" id="1_onboard"]
+[ext_resource type="Shader" path="res://assets/shaders/animated_background.gdshader" id="2_bg_shader"]
+[ext_resource type="Shader" path="res://assets/shaders/bokeh_particles.gdshader" id="3_bokeh"]
+
+[sub_resource type="ShaderMaterial" id="bg_mat"]
+shader = ExtResource("2_bg_shader")
+shader_parameter/color_top = Color(0.039, 0.067, 0.122, 1)
+shader_parameter/color_mid = Color(0.059, 0.114, 0.22, 1)
+shader_parameter/color_bottom = Color(0.039, 0.086, 0.157, 1)
+shader_parameter/wave_speed = 0.04
+shader_parameter/wave_amplitude = 0.08
+
+[sub_resource type="ShaderMaterial" id="bokeh_mat"]
+shader = ExtResource("3_bokeh")
+shader_parameter/particle_count = 10.0
+shader_parameter/particle_size = 0.012
+shader_parameter/speed = 0.025
+shader_parameter/particle_color = Color(0.392, 0.769, 0.91, 0.05)
+
+[node name="OnboardingScreen" type="Control"]
+layout_mode = 3
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_onboard")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+material = SubResource("bg_mat")
+color = Color(1, 1, 1, 1)
+
+[node name="BokehLayer" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+material = SubResource("bokeh_mat")
+color = Color(0, 0, 0, 0)
+
+[node name="SlideContainer" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.08
+anchor_right = 0.92
+anchor_bottom = 0.85
+offset_left = 0.0
+offset_right = 0.0
+mouse_filter = 2
+
+[node name="Slide1" type="VBoxContainer" parent="SlideContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+theme_override_constants/separation = 28
+
+[node name="IllustrationPanel" type="PanelContainer" parent="SlideContainer/Slide1"]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 180)
+size_flags_horizontal = 4
+
+[node name="IllustrationContent" type="VBoxContainer" parent="SlideContainer/Slide1/IllustrationPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="Label" parent="SlideContainer/Slide1/IllustrationPanel/IllustrationContent"]
+layout_mode = 2
+text = "📖"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 72
+
+[node name="Decor" type="Label" parent="SlideContainer/Slide1/IllustrationPanel/IllustrationContent"]
+layout_mode = 2
+text = "🏘️"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 48
+
+[node name="SlideTitle" type="Label" parent="SlideContainer/Slide1"]
+layout_mode = 2
+text = "Welcome to TriCognia Ville!"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 46
+theme_override_colors/font_color = Color(0.914, 0.388, 0.431, 1)
+
+[node name="SlideBody" type="RichTextLabel" parent="SlideContainer/Slide1"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 100)
+size_flags_horizontal = 3
+bbcode_enabled = true
+fit_content = true
+text = "[center]A village is waiting to be restored. Buildings are grey and silent — locked away. Only a true explorer can bring color back by completing reading quests.[/center]"
+theme_override_font_sizes/normal_font_size = 26
+
+[node name="Slide2" type="VBoxContainer" parent="SlideContainer"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+theme_override_constants/separation = 28
+
+[node name="IllustrationPanel" type="PanelContainer" parent="SlideContainer/Slide2"]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 180)
+size_flags_horizontal = 4
+
+[node name="IllustrationContent" type="VBoxContainer" parent="SlideContainer/Slide2/IllustrationPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="Label" parent="SlideContainer/Slide2/IllustrationPanel/IllustrationContent"]
+layout_mode = 2
+text = "🏗️ → 🏰"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 56
+
+[node name="SlideTitle" type="Label" parent="SlideContainer/Slide2"]
+layout_mode = 2
+text = "Read to Unlock Buildings"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 46
+theme_override_colors/font_color = Color(0.357, 0.851, 0.635, 1)
+
+[node name="SlideBody" type="RichTextLabel" parent="SlideContainer/Slide2"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 100)
+size_flags_horizontal = 3
+bbcode_enabled = true
+fit_content = true
+text = "[center]Answer reading quests to watch buildings transform from grey to full color. The harder you work, the more the village comes alive![/center]"
+theme_override_font_sizes/normal_font_size = 26
+
+[node name="Slide3" type="VBoxContainer" parent="SlideContainer"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+theme_override_constants/separation = 28
+
+[node name="IllustrationPanel" type="PanelContainer" parent="SlideContainer/Slide3"]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 180)
+size_flags_horizontal = 4
+
+[node name="IllustrationContent" type="VBoxContainer" parent="SlideContainer/Slide3/IllustrationPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" type="Label" parent="SlideContainer/Slide3/IllustrationPanel/IllustrationContent"]
+layout_mode = 2
+text = "⭐ 📚 ⭐"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 56
+
+[node name="SlideTitle" type="Label" parent="SlideContainer/Slide3"]
+layout_mode = 2
+text = "Your Village, Your Story"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 46
+theme_override_colors/font_color = Color(0.886, 0.725, 0.29, 1)
+
+[node name="SlideBody" type="RichTextLabel" parent="SlideContainer/Slide3"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 100)
+size_flags_horizontal = 3
+bbcode_enabled = true
+fit_content = true
+text = "[center]Every word you read, every question you answer builds your village. Let us find your reading level with a short quiz — it only takes 2 minutes![/center]"
+theme_override_font_sizes/normal_font_size = 26
+
+[node name="SlideControls" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchor_left = 0.08
+anchor_top = 0.86
+anchor_right = 0.92
+anchor_bottom = 0.94
+offset_left = 0.0
+offset_right = 0.0
+alignment = 1
+theme_override_constants/separation = 24
+
+[node name="PrevButton" type="Button" parent="SlideControls"]
+visible = false
+custom_minimum_size = Vector2(130, 56)
+text = "←  Back"
+theme_override_font_sizes/font_size = 24
+
+[node name="DotRow" type="HBoxContainer" parent="SlideControls"]
+layout_mode = 2
+size_flags_horizontal = 4
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="SlideDot1" type="Panel" parent="SlideControls/DotRow"]
+custom_minimum_size = Vector2(36, 14)
+
+[node name="SlideDot2" type="Panel" parent="SlideControls/DotRow"]
+custom_minimum_size = Vector2(16, 14)
+
+[node name="SlideDot3" type="Panel" parent="SlideControls/DotRow"]
+custom_minimum_size = Vector2(16, 14)
+
+[node name="NextButton" type="Button" parent="SlideControls"]
+custom_minimum_size = Vector2(180, 56)
+text = "Next  →"
+theme_override_font_sizes/font_size = 24
+
+[node name="SkipButton" type="Button" parent="SlideControls"]
+custom_minimum_size = Vector2(130, 56)
+text = "Skip Quiz"
+theme_override_font_sizes/font_size = 20
+
+[node name="UsernameContainer" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchor_left = 0.1
+anchor_right = 0.9
+anchor_top = 0.15
+anchor_bottom = 0.85
+offset_left = 0.0
+offset_right = 0.0
+
+[node name="UsernameCard" type="PanelContainer" parent="UsernameContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="CardContent" type="VBoxContainer" parent="UsernameContainer/UsernameCard"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="UsernameContainer/UsernameCard/CardContent"]
+layout_mode = 2
+text = "Choose Your Username"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 36
+theme_override_colors/font_color = Color(0.392, 0.769, 0.91, 1)
+
+[node name="Subtitle" type="Label" parent="UsernameContainer/UsernameCard/CardContent"]
+layout_mode = 2
+text = "This is how others will see you in the village"
+horizontal_alignment = 1
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.659, 0.722, 0.816, 1)
+
+[node name="Spacer1" type="Control" parent="UsernameContainer/UsernameCard/CardContent"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 10)
+
+[node name="UsernameInput" type="LineEdit" parent="UsernameContainer/UsernameCard/CardContent"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+placeholder_text = "Enter a username"
+max_length = 20
+theme_override_font_sizes/font_size = 26
+
+[node name="UsernameError" type="Label" parent="UsernameContainer/UsernameCard/CardContent"]
+visible = false
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 0.42, 0.42, 1)
+
+[node name="UsernameContinue" type="Button" parent="UsernameContainer/UsernameCard/CardContent"]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 58)
+size_flags_horizontal = 4
+disabled = true
+text = "Continue  →"
+theme_override_font_sizes/font_size = 26
+
+[node name="CharacterContainer" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchor_left = 0.08
+anchor_right = 0.92
+anchor_top = 0.08
+anchor_bottom = 0.92
+offset_left = 0.0
+offset_right = 0.0
+
+[node name="CharacterCard" type="PanelContainer" parent="CharacterContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="CardContent" type="VBoxContainer" parent="CharacterContainer/CharacterCard"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="CharacterContainer/CharacterCard/CardContent"]
+layout_mode = 2
+text = "Choose Your Character"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 36
+theme_override_colors/font_color = Color(0.392, 0.769, 0.91, 1)
+
+[node name="Subtitle" type="Label" parent="CharacterContainer/CharacterCard/CardContent"]
+layout_mode = 2
+text = "Pick your village explorer"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.659, 0.722, 0.816, 1)
+
+[node name="Spacer1" type="Control" parent="CharacterContainer/CharacterCard/CardContent"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 10)
+
+[node name="CharacterRow" type="HBoxContainer" parent="CharacterContainer/CharacterCard/CardContent"]
+layout_mode = 2
+size_flags_horizontal = 4
+alignment = 1
+theme_override_constants/separation = 60
+
+[node name="MaleOption" type="VBoxContainer" parent="CharacterContainer/CharacterCard/CardContent/CharacterRow"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="MaleFrame" type="PanelContainer" parent="CharacterContainer/CharacterCard/CardContent/CharacterRow/MaleOption"]
+layout_mode = 2
+custom_minimum_size = Vector2(140, 180)
+
+[node name="MalePreview" type="TextureRect" parent="CharacterContainer/CharacterCard/CardContent/CharacterRow/MaleOption/MaleFrame"]
+layout_mode = 2
+texture_filter = 0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MaleLabel" type="Label" parent="CharacterContainer/CharacterCard/CardContent/CharacterRow/MaleOption"]
+layout_mode = 2
+text = "Boy"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
+
+[node name="MaleSelectBtn" type="Button" parent="CharacterContainer/CharacterCard/CardContent/CharacterRow/MaleOption"]
+layout_mode = 2
+custom_minimum_size = Vector2(140, 48)
+text = "Select"
+theme_override_font_sizes/font_size = 22
+
+[node name="FemaleOption" type="VBoxContainer" parent="CharacterContainer/CharacterCard/CardContent/CharacterRow"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="FemaleFrame" type="PanelContainer" parent="CharacterContainer/CharacterCard/CardContent/CharacterRow/FemaleOption"]
+layout_mode = 2
+custom_minimum_size = Vector2(140, 180)
+
+[node name="FemalePreview" type="TextureRect" parent="CharacterContainer/CharacterCard/CardContent/CharacterRow/FemaleOption/FemaleFrame"]
+layout_mode = 2
+texture_filter = 0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FemaleLabel" type="Label" parent="CharacterContainer/CharacterCard/CardContent/CharacterRow/FemaleOption"]
+layout_mode = 2
+text = "Girl"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
+
+[node name="FemaleSelectBtn" type="Button" parent="CharacterContainer/CharacterCard/CardContent/CharacterRow/FemaleOption"]
+layout_mode = 2
+custom_minimum_size = Vector2(140, 48)
+text = "Select"
+theme_override_font_sizes/font_size = 22
+
+[node name="SelectedLabel" type="Label" parent="CharacterContainer/CharacterCard/CardContent"]
+visible = false
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.357, 0.851, 0.635, 1)
+
+[node name="CharacterContinue" type="Button" parent="CharacterContainer/CharacterCard/CardContent"]
+layout_mode = 2
+custom_minimum_size = Vector2(280, 58)
+size_flags_horizontal = 4
+disabled = true
+text = "Continue  →"
+theme_override_font_sizes/font_size = 26
+
+[node name="QuizContainer" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchor_left = 0.06
+anchor_right = 0.94
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_right = 0.0
+
+[node name="QuizHeader" type="HBoxContainer" parent="QuizContainer"]
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 60.0
+offset_right = -60.0
+offset_top = 24.0
+offset_bottom = 70.0
+
+[node name="QuizTitle" type="Label" parent="QuizContainer/QuizHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Question 1 / 5"
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.392, 0.769, 0.91, 1)
+
+[node name="QuizProgressBar" type="ProgressBar" parent="QuizContainer/QuizHeader"]
+layout_mode = 2
+custom_minimum_size = Vector2(220, 24)
+value = 0.0
+show_percentage = false
+
+[node name="PassageCard" type="PanelContainer" parent="QuizContainer"]
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 60.0
+offset_right = -60.0
+offset_top = 80.0
+offset_bottom = 300.0
+
+[node name="PassageMargin" type="MarginContainer" parent="QuizContainer/PassageCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="PassageLabel" type="RichTextLabel" parent="QuizContainer/PassageCard/PassageMargin"]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+theme_override_font_sizes/normal_font_size = 24
+theme_override_colors/default_color = Color(0.659, 0.722, 0.816, 1)
+
+[node name="QuestionLabel" type="Label" parent="QuizContainer"]
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 60.0
+offset_right = -60.0
+offset_top = 270.0
+offset_bottom = 318.0
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.914, 0.388, 0.431, 1)
+
+[node name="MCContainer" type="VBoxContainer" parent="QuizContainer"]
+visible = false
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 60.0
+offset_right = -60.0
+offset_top = 328.0
+offset_bottom = 720.0
+theme_override_constants/separation = 12
+
+[node name="MCOptionA" type="Button" parent="QuizContainer/MCContainer"]
+custom_minimum_size = Vector2(0, 66)
+theme_override_font_sizes/font_size = 24
+
+[node name="MCOptionB" type="Button" parent="QuizContainer/MCContainer"]
+custom_minimum_size = Vector2(0, 66)
+theme_override_font_sizes/font_size = 24
+
+[node name="MCOptionC" type="Button" parent="QuizContainer/MCContainer"]
+custom_minimum_size = Vector2(0, 66)
+theme_override_font_sizes/font_size = 24
+
+[node name="MCOptionD" type="Button" parent="QuizContainer/MCContainer"]
+custom_minimum_size = Vector2(0, 66)
+theme_override_font_sizes/font_size = 24
+
+[node name="FillBlankContainer" type="VBoxContainer" parent="QuizContainer"]
+visible = false
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 60.0
+offset_right = -60.0
+offset_top = 328.0
+offset_bottom = 560.0
+theme_override_constants/separation = 18
+
+[node name="SentenceLabel" type="Label" parent="QuizContainer/FillBlankContainer"]
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.886, 0.725, 0.29, 1)
+
+[node name="BlankInput" type="LineEdit" parent="QuizContainer/FillBlankContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 58)
+placeholder_text = "Type your answer here"
+theme_override_font_sizes/font_size = 26
+
+[node name="SubmitFillButton" type="Button" parent="QuizContainer/FillBlankContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(220, 58)
+size_flags_horizontal = 4
+text = "Submit Answer"
+theme_override_font_sizes/font_size = 26
+
+[node name="DragDropContainer" type="Control" parent="QuizContainer"]
+visible = false
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 60.0
+offset_right = -60.0
+offset_top = 328.0
+offset_bottom = 640.0
+
+[node name="BankLabel" type="Label" parent="QuizContainer/DragDropContainer"]
+layout_mode = 1
+anchor_right = 1.0
+offset_bottom = 34.0
+text = "Word bank — tap a word to place it:"
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.392, 0.769, 0.91, 1)
+
+[node name="WordBank" type="HBoxContainer" parent="QuizContainer/DragDropContainer"]
+layout_mode = 1
+anchor_right = 1.0
+offset_top = 38.0
+offset_bottom = 104.0
+theme_override_constants/separation = 10
+
+[node name="ZoneLabel" type="Label" parent="QuizContainer/DragDropContainer"]
+layout_mode = 1
+anchor_right = 1.0
+offset_top = 114.0
+offset_bottom = 148.0
+text = "Your sentence — tap to remove:"
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.392, 0.769, 0.91, 1)
+
+[node name="DropZone" type="HBoxContainer" parent="QuizContainer/DragDropContainer"]
+layout_mode = 1
+anchor_right = 1.0
+offset_top = 152.0
+offset_bottom = 218.0
+theme_override_constants/separation = 10
+
+[node name="SubmitDragButton" type="Button" parent="QuizContainer/DragDropContainer"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.0
+offset_top = 230.0
+offset_right = 120.0
+offset_bottom = 290.0
+text = "Check Order"
+theme_override_font_sizes/font_size = 26
+
+[node name="FeedbackPanel" type="Panel" parent="QuizContainer"]
+visible = false
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -130.0
+offset_right = 300.0
+offset_bottom = 130.0
+
+[node name="FeedbackIcon" type="Label" parent="QuizContainer/FeedbackPanel"]
+layout_mode = 1
+anchor_right = 1.0
+offset_top = 20.0
+offset_bottom = 64.0
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 34
+
+[node name="FeedbackText" type="Label" parent="QuizContainer/FeedbackPanel"]
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 20.0
+offset_right = -20.0
+offset_top = 68.0
+offset_bottom = 160.0
+horizontal_alignment = 1
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+
+[node name="NextQuestionButton" type="Button" parent="QuizContainer/FeedbackPanel"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -140.0
+offset_top = -58.0
+offset_right = 140.0
+offset_bottom = -12.0
+text = "Next Question  →"
+theme_override_font_sizes/font_size = 22
+
+[node name="ResultPanel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchor_left = 0.1
+anchor_top = 0.1
+anchor_right = 0.9
+anchor_bottom = 0.9
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+
+[node name="ResultTitle" type="Label" parent="ResultPanel"]
+layout_mode = 1
+anchor_right = 1.0
+offset_top = 24.0
+offset_bottom = 72.0
+text = "Your Reading Level"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 36
+theme_override_colors/font_color = Color(0.392, 0.769, 0.91, 1)
+
+[node name="LevelBadge" type="Panel" parent="ResultPanel"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -80.0
+offset_top = 84.0
+offset_right = 80.0
+offset_bottom = 184.0
+
+[node name="BadgeLabel" type="Label" parent="ResultPanel/LevelBadge"]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "Level 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 38
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+
+[node name="LevelName" type="Label" parent="ResultPanel"]
+layout_mode = 1
+anchor_right = 1.0
+offset_top = 196.0
+offset_bottom = 244.0
+text = "Non-Reader"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 34
+theme_override_colors/font_color = Color(0.914, 0.388, 0.431, 1)
+
+[node name="LevelDesc" type="Label" parent="ResultPanel"]
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 30.0
+offset_right = -30.0
+offset_top = 252.0
+offset_bottom = 360.0
+horizontal_alignment = 1
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.659, 0.722, 0.816, 1)
+
+[node name="StartAdventureButton" type="Button" parent="ResultPanel"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -70.0
+offset_right = 200.0
+offset_bottom = -14.0
+text = "Start Your Adventure!"
+theme_override_font_sizes/font_size = 28

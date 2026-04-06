@@ -1,0 +1,37 @@
+# Godot 4 .gitignore
+
+# Godot-generated files and folders
+.godot/
+*.import
+
+# Android build output
+android/build/
+*.apk
+*.aab
+
+# Export presets — contains keystore passwords, NEVER commit
+export_presets.cfg
+
+# Godot keystore credentials (Godot 4.3+)
+.godot/export_credentials.cfg
+
+# Claude Code Game Studios (AI framework — not game source)
+.claude/
+
+# Backend (separate repo)
+backend/
+
+# Secrets
+client_secret_*.json
+*.pem
+.env*
+
+# Dependencies
+node_modules/
+
+# Production logs
+production/session-logs/
+
+# OS-generated
+.DS_Store
+Thumbs.db
