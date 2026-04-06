@@ -7,9 +7,11 @@ extends Control
 const QUIZ_QUESTIONS: Array[Dictionary] = [
 	{
 		"type": "multiple_choice",
-		"passage": "Maria opened the old book carefully. The pages were yellow and smelled like rain. She smiled because her grandmother used to read this same book to her.",
+		"passage":
+		"Maria opened the old book carefully. The pages were yellow and smelled like rain. She smiled because her grandmother used to read this same book to her.",
 		"question": "Why did Maria smile when she opened the book?",
-		"options": [
+		"options":
+		[
 			"She found money inside.",
 			"It reminded her of her grandmother.",
 			"The book was new and colorful.",
@@ -17,21 +19,18 @@ const QUIZ_QUESTIONS: Array[Dictionary] = [
 		],
 		"correct_index": 1,
 		"feedback_correct": "That's right! The old book reminded Maria of her grandmother.",
-		"feedback_wrong": "The passage says she smiled because her grandmother used to read it to her."
+		"feedback_wrong":
+		"The passage says she smiled because her grandmother used to read it to her."
 	},
 	{
 		"type": "multiple_choice",
-		"passage": "The school library was the quietest place in the village. Students whispered to each other between the tall shelves. Sunlight came through one narrow window and made a long stripe across the dusty floor.",
-		"question": "What does the word \"narrow\" most likely mean in this passage?",
-		"options": [
-			"Very wide",
-			"Very old",
-			"Not wide",
-			"Very bright"
-		],
+		"passage":
+		"The school library was the quietest place in the village. Students whispered to each other between the tall shelves. Sunlight came through one narrow window and made a long stripe across the dusty floor.",
+		"question": 'What does the word "narrow" most likely mean in this passage?',
+		"options": ["Very wide", "Very old", "Not wide", "Very bright"],
 		"correct_index": 2,
 		"feedback_correct": "Excellent! A narrow window lets in only a thin stripe of light.",
-		"feedback_wrong": "\"Narrow\" means not wide. The single stripe of light is a clue."
+		"feedback_wrong": '"Narrow" means not wide. The single stripe of light is a clue.'
 	},
 	{
 		"type": "fill_blank",
@@ -43,7 +42,8 @@ const QUIZ_QUESTIONS: Array[Dictionary] = [
 	},
 	{
 		"type": "fill_blank",
-		"passage": "The brave knight crossed the bridge. He carried a shining sword and a round shield.",
+		"passage":
+		"The brave knight crossed the bridge. He carried a shining sword and a round shield.",
 		"sentence": "The knight carried a shining ___ and a round shield.",
 		"answer": "sword",
 		"feedback_correct": "Correct! The knight carried a shining sword.",
@@ -55,16 +55,13 @@ const QUIZ_QUESTIONS: Array[Dictionary] = [
 		"question": "Arrange these words into a correct sentence:",
 		"words": ["the", "village", "beautiful", "was", "very"],
 		"correct_order": ["the", "village", "was", "very", "beautiful"],
-		"feedback_correct": "Perfect! \"The village was very beautiful.\"",
+		"feedback_correct": 'Perfect! "The village was very beautiful."',
 		"feedback_wrong": "The correct order is: the village was very beautiful."
 	}
 ]
 
 const LEVEL_NAMES: Dictionary = {
-	1: "Non-Reader",
-	2: "Emerging Reader",
-	3: "Developing Reader",
-	4: "Independent Reader"
+	1: "Non-Reader", 2: "Emerging Reader", 3: "Developing Reader", 4: "Independent Reader"
 }
 
 const LEVEL_DESCRIPTIONS: Dictionary = {
@@ -97,15 +94,11 @@ var _word_bank_words: Array[String] = []
 var _transitioning: bool = false
 var _username: String = ""
 var _character_gender: String = ""  # "male" or "female"
-var _skip_quiz: bool = false
 
 # ── Node refs ──────────────────────────────────────────────────────────────────
 @onready var _slide_container: Control = $SlideContainer
-@onready var _slides: Array = [
-	$SlideContainer/Slide1,
-	$SlideContainer/Slide2,
-	$SlideContainer/Slide3
-]
+@onready
+var _slides: Array = [$SlideContainer/Slide1, $SlideContainer/Slide2, $SlideContainer/Slide3]
 @onready var _slide_dots: Array = [
 	$SlideControls/DotRow/SlideDot1,
 	$SlideControls/DotRow/SlideDot2,
@@ -139,17 +132,25 @@ var _skip_quiz: bool = false
 @onready var _username_container: Control = $UsernameContainer
 @onready var _username_input: LineEdit = $UsernameContainer/UsernameCard/CardContent/UsernameInput
 @onready var _username_error: Label = $UsernameContainer/UsernameCard/CardContent/UsernameError
-@onready var _username_continue: Button = $UsernameContainer/UsernameCard/CardContent/UsernameContinue
+@onready
+var _username_continue: Button = $UsernameContainer/UsernameCard/CardContent/UsernameContinue
 
 @onready var _character_container: Control = $CharacterContainer
-@onready var _male_frame: PanelContainer = $CharacterContainer/CharacterCard/CardContent/CharacterRow/MaleOption/MaleFrame
-@onready var _female_frame: PanelContainer = $CharacterContainer/CharacterCard/CardContent/CharacterRow/FemaleOption/FemaleFrame
-@onready var _male_preview: TextureRect = $CharacterContainer/CharacterCard/CardContent/CharacterRow/MaleOption/MaleFrame/MalePreview
-@onready var _female_preview: TextureRect = $CharacterContainer/CharacterCard/CardContent/CharacterRow/FemaleOption/FemaleFrame/FemalePreview
-@onready var _male_select_btn: Button = $CharacterContainer/CharacterCard/CardContent/CharacterRow/MaleOption/MaleSelectBtn
-@onready var _female_select_btn: Button = $CharacterContainer/CharacterCard/CardContent/CharacterRow/FemaleOption/FemaleSelectBtn
+@onready
+var _male_frame: PanelContainer = $CharacterContainer/CharacterCard/CardContent/CharacterRow/MaleOption/MaleFrame
+@onready
+var _female_frame: PanelContainer = $CharacterContainer/CharacterCard/CardContent/CharacterRow/FemaleOption/FemaleFrame
+@onready
+var _male_preview: TextureRect = $CharacterContainer/CharacterCard/CardContent/CharacterRow/MaleOption/MaleFrame/MalePreview
+@onready
+var _female_preview: TextureRect = $CharacterContainer/CharacterCard/CardContent/CharacterRow/FemaleOption/FemaleFrame/FemalePreview
+@onready
+var _male_select_btn: Button = $CharacterContainer/CharacterCard/CardContent/CharacterRow/MaleOption/MaleSelectBtn
+@onready
+var _female_select_btn: Button = $CharacterContainer/CharacterCard/CardContent/CharacterRow/FemaleOption/FemaleSelectBtn
 @onready var _selected_label: Label = $CharacterContainer/CharacterCard/CardContent/SelectedLabel
-@onready var _character_continue: Button = $CharacterContainer/CharacterCard/CardContent/CharacterContinue
+@onready
+var _character_continue: Button = $CharacterContainer/CharacterCard/CardContent/CharacterContinue
 
 @onready var _result_panel: Panel = $ResultPanel
 @onready var _result_title: Label = $ResultPanel/ResultTitle
@@ -159,8 +160,8 @@ var _skip_quiz: bool = false
 @onready var _result_badge_label: Label = $ResultPanel/LevelBadge/BadgeLabel
 @onready var _start_btn: Button = $ResultPanel/StartAdventureButton
 
-
 # ── Lifecycle ─��───────────────────────────���────────────────────────────────────
+
 
 func _ready() -> void:
 	theme = ThemeBuilder.build()
@@ -182,8 +183,9 @@ func _ready() -> void:
 	_style_quiz_buttons()
 
 	# Style passage card
-	_passage_card.add_theme_stylebox_override("panel",
-		StyleFactory.make_elevated_card(StyleFactory.BG_CARD, 14, 1))
+	_passage_card.add_theme_stylebox_override(
+		"panel", StyleFactory.make_elevated_card(StyleFactory.BG_CARD, 14, 1)
+	)
 
 	# Style result panel
 	_result_panel.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(20))
@@ -224,7 +226,6 @@ func _style_illustrations() -> void:
 func _style_slide_buttons() -> void:
 	_style_primary(_next_btn)
 	_style_secondary(_prev_btn)
-	_style_secondary($SlideControls/SkipButton)
 
 
 func _style_quiz_buttons() -> void:
@@ -267,15 +268,18 @@ func _animate_entrance() -> void:
 	var slide: Control = _slides[0]
 	slide.modulate.a = 0.0
 	var tw := create_tween()
-	tw.tween_property(slide, "modulate:a", 1.0, 0.5) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT) \
-		.set_delay(0.15)
+	(
+		tw
+		. tween_property(slide, "modulate:a", 1.0, 0.5)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_OUT)
+		. set_delay(0.15)
+	)
 
 
 func _connect_controls() -> void:
 	$SlideControls/PrevButton.pressed.connect(func(): _navigate_slide(-1))
 	$SlideControls/NextButton.pressed.connect(_on_next_pressed)
-	$SlideControls/SkipButton.pressed.connect(_on_skip_pressed)
 
 	_connect_mc_buttons()
 	$QuizContainer/FillBlankContainer/SubmitFillButton.pressed.connect(_on_fill_submitted)
@@ -285,6 +289,7 @@ func _connect_controls() -> void:
 
 
 # ── Slides ──────────────────────────────────────��──────────────────────────────
+
 
 func _show_slide_instant(index: int) -> void:
 	_current_slide = clampi(index, 0, 2)
@@ -325,9 +330,12 @@ func _on_next_pressed() -> void:
 
 # ── Username Step ──────────────────────────────────────────────────────────────
 
+
 func _setup_username_step() -> void:
 	# Style card
-	$UsernameContainer/UsernameCard.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(20))
+	$UsernameContainer/UsernameCard.add_theme_stylebox_override(
+		"panel", StyleFactory.make_glass_card(20)
+	)
 	_style_primary(_username_continue)
 	_username_input.text_changed.connect(_on_username_text_changed)
 	_username_continue.pressed.connect(_on_username_continue)
@@ -357,8 +365,12 @@ func _show_username_step() -> void:
 	_username_container.modulate.a = 0.0
 
 	var tw2 := create_tween()
-	tw2.tween_property(_username_container, "modulate:a", 1.0, 0.35) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	(
+		tw2
+		. tween_property(_username_container, "modulate:a", 1.0, 0.35)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_OUT)
+	)
 	await tw2.finished
 	_transitioning = false
 	_username_input.grab_focus()
@@ -376,9 +388,12 @@ func _on_username_continue() -> void:
 
 # ── Character Selection Step ───────────────────────────────────────────────────
 
+
 func _setup_character_step() -> void:
 	# Style card
-	$CharacterContainer/CharacterCard.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(20))
+	$CharacterContainer/CharacterCard.add_theme_stylebox_override(
+		"panel", StyleFactory.make_glass_card(20)
+	)
 
 	# Load sprite previews with nearest-neighbor filtering (crisp pixel art)
 	var male_tex := load("res://assets/sprites/character/player.png")
@@ -413,8 +428,12 @@ func _show_character_select() -> void:
 	_character_container.visible = true
 	_character_container.modulate.a = 0.0
 	var tw2 := create_tween()
-	tw2.tween_property(_character_container, "modulate:a", 1.0, 0.35) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	(
+		tw2
+		. tween_property(_character_container, "modulate:a", 1.0, 0.35)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_OUT)
+	)
 	await tw2.finished
 	_transitioning = false
 
@@ -453,20 +472,6 @@ func _on_character_continue() -> void:
 		GameManager.current_student["username"] = _username
 		GameManager.current_student["character_gender"] = _character_gender
 
-	if _skip_quiz:
-		# Skip quiz — set level 1 and go to village
-		if not student.is_empty():
-			DatabaseManager.update_student_level(student.id, 1)
-			DatabaseManager.mark_onboarding_done(student.id)
-			GameManager.current_student["reading_level"] = 1
-			GameManager.current_student["onboarding_done"] = 1
-		var skip_tw := create_tween()
-		skip_tw.tween_property(self, "modulate:a", 0.0, 0.35) \
-			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		await skip_tw.finished
-		get_tree().change_scene_to_file("res://scenes/Main.tscn")
-		return
-
 	# Transition to quiz
 	_transitioning = true
 	var tw := create_tween()
@@ -480,17 +485,15 @@ func _on_character_continue() -> void:
 	_current_q = 0
 
 	var tw2 := create_tween()
-	tw2.tween_property(_quiz_container, "modulate:a", 1.0, 0.35) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	(
+		tw2
+		. tween_property(_quiz_container, "modulate:a", 1.0, 0.35)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_OUT)
+	)
 	await tw2.finished
 	_transitioning = false
 	_load_question(0)
-
-
-func _on_skip_pressed() -> void:
-	# Skip quiz but still collect username + character
-	_skip_quiz = true
-	_show_username_step()
 
 
 # ── Quiz ────────────��─────────────────────────��────────────────────────────────
@@ -508,8 +511,12 @@ func _load_question(index: int) -> void:
 	# Animate progress bar
 	var target_val := float(index) / float(QUIZ_QUESTIONS.size()) * 100.0
 	var tw := create_tween()
-	tw.tween_property(_quiz_progress, "value", target_val, 0.4) \
-		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	(
+		tw
+		. tween_property(_quiz_progress, "value", target_val, 0.4)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_IN_OUT)
+	)
 
 	_passage_label.text = q.get("passage", "")
 
@@ -554,8 +561,9 @@ func _on_mc_pressed(index: int) -> void:
 	var correct: bool = index == (q.correct_index as int)
 	if correct:
 		_score += 1
-	_show_feedback(correct,
-		q.get("feedback_correct", "") if correct else q.get("feedback_wrong", ""))
+	_show_feedback(
+		correct, q.get("feedback_correct", "") if correct else q.get("feedback_wrong", "")
+	)
 
 
 func _populate_mc(q: Dictionary) -> void:
@@ -577,9 +585,13 @@ func _populate_mc(q: Dictionary) -> void:
 	for btn in option_buttons:
 		btn.modulate.a = 0.0
 		var tw := create_tween()
-		tw.tween_property(btn, "modulate:a", 1.0, 0.25) \
-			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT) \
-			.set_delay(idx * 0.07)
+		(
+			tw
+			. tween_property(btn, "modulate:a", 1.0, 0.25)
+			. set_trans(Tween.TRANS_QUAD)
+			. set_ease(Tween.EASE_OUT)
+			. set_delay(idx * 0.07)
+		)
 		idx += 1
 
 
@@ -668,13 +680,16 @@ func _add_chip_to_zone(word: String) -> void:
 
 # ── Answer Handlers ──────���─────────────────────��───────────────────────────────
 
+
 func _on_fill_submitted() -> void:
 	var q := QUIZ_QUESTIONS[_current_q]
 	var answer := _fill_input.text.strip_edges().to_lower()
 	var correct: bool = answer == q.answer.to_lower()
 	if correct:
 		_score += 1
-	_show_feedback(correct, q.get("feedback_correct", "") if correct else q.get("feedback_wrong", ""))
+	_show_feedback(
+		correct, q.get("feedback_correct", "") if correct else q.get("feedback_wrong", "")
+	)
 
 
 func _on_word_chip_pressed(word: String, btn: Button) -> void:
@@ -707,10 +722,13 @@ func _on_drag_submitted() -> void:
 				break
 	if correct:
 		_score += 1
-	_show_feedback(correct, q.get("feedback_correct", "") if correct else q.get("feedback_wrong", ""))
+	_show_feedback(
+		correct, q.get("feedback_correct", "") if correct else q.get("feedback_wrong", "")
+	)
 
 
 # ── Feedback ──────────��────────────────────────���───────────────────────────────
+
 
 func _show_feedback(correct: bool, explanation: String) -> void:
 	_mc_container.visible = false
@@ -725,8 +743,9 @@ func _show_feedback(correct: bool, explanation: String) -> void:
 
 	# Animate feedback panel in
 	var tw := create_tween()
-	tw.tween_property(_feedback_panel, "modulate:a", 1.0, 0.3) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_feedback_panel, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(
+		Tween.EASE_OUT
+	)
 
 	# Icon with animation
 	if correct:
@@ -757,6 +776,7 @@ func _on_next_question_pressed() -> void:
 
 
 # ── Results ───────��────────────────────────────────────────────────────────────
+
 
 func _show_results() -> void:
 	# Fade out quiz
@@ -791,15 +811,20 @@ func _show_results() -> void:
 
 	# Animate progress bar to 100%
 	var tw_prog := create_tween()
-	tw_prog.tween_property(_quiz_progress, "value", 100.0, 0.5) \
-		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	(
+		tw_prog
+		. tween_property(_quiz_progress, "value", 100.0, 0.5)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_OUT)
+	)
 
 	# Show result panel with dramatic reveal
 	_result_panel.visible = true
 	_result_panel.modulate.a = 0.0
 	var tw := create_tween()
-	tw.tween_property(_result_panel, "modulate:a", 1.0, 0.3) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_result_panel, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(
+		Tween.EASE_OUT
+	)
 	await tw.finished
 
 	# Elastic badge reveal
@@ -814,18 +839,22 @@ func _show_results() -> void:
 	# Celebration flash
 	UIAnimations.flash_screen(self, Color(level_color.r, level_color.g, level_color.b, 0.1))
 
-	print("[OnboardingScreen] Placement complete. Score: %d/5 -> Level %d (%s)" % [_score, level, level_name])
+	print(
+		(
+			"[OnboardingScreen] Placement complete. Score: %d/5 -> Level %d (%s)"
+			% [_score, level, level_name]
+		)
+	)
 
 
 func _score_to_level(s: int) -> int:
 	if s <= 1:
 		return 1
-	elif s == 2:
+	if s == 2:
 		return 2
-	elif s <= 4:
+	if s <= 4:
 		return 3
-	else:
-		return 4
+	return 4
 
 
 func _on_start_adventure_pressed() -> void:
@@ -841,8 +870,9 @@ func _on_start_adventure_pressed() -> void:
 
 	# Fade out before transition
 	var tw := create_tween()
-	tw.tween_property(self, "modulate:a", 0.0, 0.4) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tw.tween_property(self, "modulate:a", 0.0, 0.4).set_trans(Tween.TRANS_QUAD).set_ease(
+		Tween.EASE_IN
+	)
 	await tw.finished
 
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")

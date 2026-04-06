@@ -2,29 +2,28 @@ class_name StyleFactory
 ## StyleFactory — Static factory for production-quality StyleBoxFlat instances.
 ## Centralized card, button, and UI element styles for TriCognia Ville.
 
-
 # ── Color Constants ───────────────────────────────────────────────────────────
 
-const BG_DEEP := Color(0.039, 0.086, 0.157)        # #0A1628
-const BG_CARD := Color(0.086, 0.125, 0.251)         # #162040
-const BG_SURFACE := Color(0.102, 0.165, 0.290)      # #1A2A4A
+const BG_DEEP := Color(0.039, 0.086, 0.157)  # #0A1628
+const BG_CARD := Color(0.086, 0.125, 0.251)  # #162040
+const BG_SURFACE := Color(0.102, 0.165, 0.290)  # #1A2A4A
 
-const ACCENT_CORAL := Color(0.914, 0.388, 0.431)    # #E9636E
-const ACCENT_CORAL_HOVER := Color(1.0, 0.482, 0.522) # #FF7B85
-const ACCENT_CORAL_PRESSED := Color(0.780, 0.290, 0.340) # #C74A57
-const SUCCESS_GREEN := Color(0.357, 0.851, 0.635)   # #5BD9A2
-const GOLD := Color(0.886, 0.725, 0.290)            # #E2B94A
-const SKY_BLUE := Color(0.392, 0.769, 0.910)        # #64C4E8
+const ACCENT_CORAL := Color(0.914, 0.388, 0.431)  # #E9636E
+const ACCENT_CORAL_HOVER := Color(1.0, 0.482, 0.522)  # #FF7B85
+const ACCENT_CORAL_PRESSED := Color(0.780, 0.290, 0.340)  # #C74A57
+const SUCCESS_GREEN := Color(0.357, 0.851, 0.635)  # #5BD9A2
+const GOLD := Color(0.886, 0.725, 0.290)  # #E2B94A
+const SKY_BLUE := Color(0.392, 0.769, 0.910)  # #64C4E8
 
 const TEXT_PRIMARY := Color.WHITE
 const TEXT_SECONDARY := Color(0.659, 0.722, 0.816)  # #A8B8D0
-const TEXT_MUTED := Color(0.420, 0.478, 0.553)      # #6B7A8D
-const TEXT_ERROR := Color(1.0, 0.420, 0.420)         # #FF6B6B
+const TEXT_MUTED := Color(0.420, 0.478, 0.553)  # #6B7A8D
+const TEXT_ERROR := Color(1.0, 0.420, 0.420)  # #FF6B6B
 
-const PIN_EMPTY := Color(0.227, 0.290, 0.369)       # #3A4A5E
-const DISABLED := Color(0.165, 0.204, 0.282)        # #2A3448
+const PIN_EMPTY := Color(0.227, 0.290, 0.369)  # #3A4A5E
+const DISABLED := Color(0.165, 0.204, 0.282)  # #2A3448
 
-# ── Initial Avatar Colors ─────────────────────────────────────────────────────
+# ── Avatar & Frame Colors ─────────────────────────────────────────────────────
 const AVATAR_COLORS: Array[Color] = [
 	Color(0.914, 0.388, 0.431),  # coral
 	Color(0.357, 0.851, 0.635),  # seafoam
@@ -33,15 +32,59 @@ const AVATAR_COLORS: Array[Color] = [
 	Color(0.698, 0.533, 0.886),  # lavender
 	Color(0.961, 0.588, 0.392),  # peach
 ]
+const FRAME_BRONZE := Color(0.72, 0.53, 0.33)
+const FRAME_SILVER := Color(0.75, 0.75, 0.80)
+
+# ── Stage Theme Colors ────────────────────────────────────────────────────────
+const STAGE_TUTORIAL_BG := Color(0.06, 0.12, 0.28)  # Deep blue tint
+const STAGE_TUTORIAL_ACCENT := Color(0.392, 0.769, 0.910)  # SKY_BLUE
+const STAGE_PRACTICE_BG := Color(0.16, 0.14, 0.06)  # Warm amber tint
+const STAGE_PRACTICE_ACCENT := Color(0.886, 0.725, 0.290)  # GOLD
+const STAGE_MISSION_BG := Color(0.22, 0.06, 0.08)  # Deep red tint
+const STAGE_MISSION_ACCENT := Color(0.914, 0.388, 0.431)  # ACCENT_CORAL
+
+
+static func get_stage_theme(stage: String) -> Dictionary:
+	match stage:
+		"tutorial":
+			return {
+				"bg": STAGE_TUTORIAL_BG,
+				"accent": STAGE_TUTORIAL_ACCENT,
+				"label": "TUTORIAL MODE",
+				"icon": "LEARN",
+				"desc": "Guided learning — no score",
+			}
+		"practice":
+			return {
+				"bg": STAGE_PRACTICE_BG,
+				"accent": STAGE_PRACTICE_ACCENT,
+				"label": "PRACTICE MODE",
+				"icon": "PRACTICE",
+				"desc": "Practice with hints — no score",
+			}
+		"mission":
+			return {
+				"bg": STAGE_MISSION_BG,
+				"accent": STAGE_MISSION_ACCENT,
+				"label": "MISSION MODE",
+				"icon": "GRADED",
+				"desc": "Scored assessment — 7/10 to pass",
+			}
+	return {
+		"bg": BG_DEEP,
+		"accent": TEXT_MUTED,
+		"label": "",
+		"icon": "",
+		"desc": "",
+	}
 
 
 # ── Card Styles ───────────────────────────────────────────────────────────────
 
+
 ## Elevated card with shadow. elevation: 1=subtle, 2=medium, 3=high
 static func make_elevated_card(
-	bg: Color = BG_CARD,
-	radius: int = 16,
-	elevation: int = 2
+	bg: Color = BG_CARD, radius: int = 16, elevation: int = 2
 ) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = bg
@@ -98,6 +141,7 @@ static func make_glass_card(radius: int = 20) -> StyleBoxFlat:
 
 
 # ── Button Styles ─────────────────────────────────────────────────────────────
+
 
 ## Primary CTA button (coral accent)
 static func make_primary_button_normal() -> StyleBoxFlat:
@@ -216,6 +260,7 @@ static func make_disabled_button() -> StyleBoxFlat:
 
 # ── Student List Card ─────────────────────────────────────────────────────────
 
+
 static func make_student_card_normal() -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = BG_CARD
@@ -253,6 +298,7 @@ static func make_student_card_pressed() -> StyleBoxFlat:
 
 # ── Input Styles ──────────────────────────────────────────────────────────────
 
+
 static func make_line_edit_normal() -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color(0.055, 0.082, 0.165)
@@ -282,6 +328,7 @@ static func make_line_edit_focus() -> StyleBoxFlat:
 
 # ── PIN Dot ───────────────────────────────────────────────────────────────────
 
+
 static func make_pin_dot(filled: bool) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = ACCENT_CORAL if filled else PIN_EMPTY
@@ -294,6 +341,7 @@ static func make_pin_dot(filled: bool) -> StyleBoxFlat:
 
 
 # ── Progress Bar ──────────────────────────────────────────────────────────────
+
 
 static func make_progress_bg() -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
@@ -317,8 +365,29 @@ static func make_progress_fill() -> StyleBoxFlat:
 
 # ── Feedback Panel ────────────────────────────────────────────────────────────
 
+
 static func make_feedback_panel(correct: bool) -> StyleBoxFlat:
 	var sb := make_elevated_card(BG_CARD, 16, 2)
 	sb.border_width_top = 3
 	sb.border_color = SUCCESS_GREEN if correct else TEXT_ERROR
 	return sb
+
+
+# ── Profile Hex Helpers ──────────────────────────────────────────────────────
+
+## Returns frame color based on player level tier.
+static func get_level_frame_color(level: int) -> Color:
+	if level >= 5:
+		return GOLD
+	if level >= 3:
+		return FRAME_SILVER
+	return FRAME_BRONZE
+
+
+## Returns PackedVector2Array of 6 hexagon vertices (flat-top orientation).
+static func hex_points(center: Vector2, radius: float) -> PackedVector2Array:
+	var pts := PackedVector2Array()
+	for i in 6:
+		var angle := deg_to_rad(60.0 * i - 30.0)
+		pts.append(center + Vector2(cos(angle), sin(angle)) * radius)
+	return pts

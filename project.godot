@@ -16,8 +16,15 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="TriCognia Ville"
 config/description="Story-Based Gamified Reading App for Grade 7 Learners"
-run/main_scene="res://scenes/AuthScreen.tscn"
+run/main_scene="res://scenes/SplashScreen.tscn"
 config/features=PackedStringArray("4.6", "GL Compatibility")
+boot_splash/bg_color=Color(0.039, 0.086, 0.157, 1)
+boot_splash/image="res://logo.png"
+config/icon="res://logo.png"
+
+[audio]
+
+driver/enable_input=true
 
 [autoload]
 
@@ -26,6 +33,8 @@ DatabaseManager="*res://scripts/DatabaseManager.gd"
 ApiClient="*res://scripts/ApiClient.gd"
 SyncManager="*res://scripts/SyncManager.gd"
 QuestManager="*res://scripts/quest/QuestManager.gd"
+AudioManager="*res://scripts/AudioManager.gd"
+StoryManager="*res://scripts/story/StoryManager.gd"
 
 [display]
 
@@ -37,7 +46,7 @@ window/handheld/orientation=4
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot-sqlite/plugin.cfg")
+enabled=PackedStringArray("res://addons/SpeechPlugin/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg")
 
 [input_devices]
 

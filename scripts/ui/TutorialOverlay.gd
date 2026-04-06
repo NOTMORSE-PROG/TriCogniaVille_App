@@ -35,14 +35,20 @@ var _quest_tracker_ref: Control
 # Step tracking
 var _movement_start_pos: Vector2 = Vector2.ZERO
 var _tap_hint_panel: PanelContainer = null  # fades out when player nears Town Hall
-var _tap_dim: ColorRect = null              # dim overlay for TAP_BUILDING step
+var _tap_dim: ColorRect = null  # dim overlay for TAP_BUILDING step
 
 # Step UI nodes (cleared between steps)
 var _step_nodes: Array[Node] = []
 
 
-func setup(sx: float, sy: float, player: CharacterBody2D,
-		   town_hall: Node2D, joystick: Control, quest_tracker: Control) -> void:
+func setup(
+	sx: float,
+	sy: float,
+	player: CharacterBody2D,
+	town_hall: Node2D,
+	joystick: Control,
+	quest_tracker: Control
+) -> void:
 	_sx = sx
 	_sy = sy
 	_player_ref = player
@@ -75,11 +81,19 @@ func _process(_delta: float) -> void:
 			if is_instance_valid(_player_ref) and is_instance_valid(_tap_hint_panel):
 				if _player_ref.position.distance_to(_town_hall_pos) < 150.0 * _sx:
 					var tw := create_tween().set_parallel(true)
-					tw.tween_property(_tap_hint_panel, "modulate:a", 0.0, 0.4) \
-						.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+					(
+						tw
+						. tween_property(_tap_hint_panel, "modulate:a", 0.0, 0.4)
+						. set_trans(Tween.TRANS_QUAD)
+						. set_ease(Tween.EASE_IN)
+					)
 					if is_instance_valid(_tap_dim):
-						tw.tween_property(_tap_dim, "modulate:a", 0.0, 0.4) \
-							.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+						(
+							tw
+							. tween_property(_tap_dim, "modulate:a", 0.0, 0.4)
+							. set_trans(Tween.TRANS_QUAD)
+							. set_ease(Tween.EASE_IN)
+						)
 					_tap_hint_panel = null
 					_tap_dim = null
 
@@ -87,6 +101,7 @@ func _process(_delta: float) -> void:
 # ═════════════════════════════════════════════════════════════════════════════
 # STEP MANAGEMENT
 # ═════════════════════════════════════════════════════════════════════════════
+
 
 func _advance_step() -> void:
 	if _transitioning:
@@ -104,12 +119,18 @@ func _advance_step() -> void:
 
 func _show_step() -> void:
 	match _current_step:
-		Step.WELCOME:           _show_welcome()
-		Step.MOVE_AROUND:       _show_move_around()
-		Step.WALK_TO_TOWN_HALL: _show_walk_to_town_hall()
-		Step.TAP_BUILDING:      _show_tap_building()
-		Step.COMPLETE_QUEST:    _show_complete_quest()
-		Step.POST_QUEST:        _show_post_quest()
+		Step.WELCOME:
+			_show_welcome()
+		Step.MOVE_AROUND:
+			_show_move_around()
+		Step.WALK_TO_TOWN_HALL:
+			_show_walk_to_town_hall()
+		Step.TAP_BUILDING:
+			_show_tap_building()
+		Step.COMPLETE_QUEST:
+			_show_complete_quest()
+		Step.POST_QUEST:
+			_show_post_quest()
 
 
 func _clear_step_ui() -> void:
@@ -141,8 +162,9 @@ func _finish_tutorial() -> void:
 # STEP BUILDERS
 # ═════════════════════════════════════════════════════════════════════════════
 
+
 func _show_welcome() -> void:
-	var _dim := _make_dim_overlay(true)
+	var dim := _make_dim_overlay(true)
 
 	# VBox+spacers: reliable vertical centering (avoids CenterContainer bug #97549)
 	# Anchors set AFTER add_child so parent size is known
@@ -205,12 +227,12 @@ func _show_welcome() -> void:
 
 
 func _show_move_around() -> void:
-	var _dim := _make_dim_overlay(false, 0.25)
+	var dim := _make_dim_overlay(false, 0.25)
 
 	if is_instance_valid(_player_ref):
 		_movement_start_pos = _player_ref.position
 
-	var _msg := _make_message_panel(
+	var msg := _make_message_panel(
 		"Move your character! 🕹️",
 		"Use the joystick (bottom-left) to walk around the village.\nOr press Next to continue.",
 		true,
@@ -225,7 +247,9 @@ func _show_move_around() -> void:
 	glow.size = Vector2(100 * _sx, 100 * _sy)
 	glow.position = Vector2(60 * _sx, vp_size.y * 0.75 - 50 * _sy)
 	var glow_style := StyleBoxFlat.new()
-	glow_style.bg_color = Color(StyleFactory.SKY_BLUE.r, StyleFactory.SKY_BLUE.g, StyleFactory.SKY_BLUE.b, 0.15)
+	glow_style.bg_color = Color(
+		StyleFactory.SKY_BLUE.r, StyleFactory.SKY_BLUE.g, StyleFactory.SKY_BLUE.b, 0.15
+	)
 	glow_style.corner_radius_top_left = 50
 	glow_style.corner_radius_top_right = 50
 	glow_style.corner_radius_bottom_left = 50
@@ -246,9 +270,9 @@ func _show_move_around() -> void:
 
 
 func _show_walk_to_town_hall() -> void:
-	var _dim := _make_dim_overlay(false, 0.25)
+	var dim := _make_dim_overlay(false, 0.25)
 
-	var _msg := _make_message_panel(
+	var msg := _make_message_panel(
 		"Walk to the Town Hall! 🏛️",
 		"Head toward the Town Hall in the center of the village.\nOr press Next to continue.",
 		true,
@@ -266,9 +290,7 @@ func _show_tap_building() -> void:
 	_tap_dim = _make_dim_overlay(false, 0.25)
 
 	_tap_hint_panel = _make_message_panel(
-		"Tap the Town Hall! 👆",
-		"Tap the glowing building to start your first reading quest!",
-		true
+		"Tap the Town Hall! 👆", "Tap the glowing building to start your first reading quest!", true
 	)
 
 	# Spotlight on town hall building
@@ -321,22 +343,28 @@ func _show_complete_quest() -> void:
 	)
 
 	var tw := create_tween()
-	tw.tween_property(msg, "modulate:a", 0.0, 0.5).set_delay(2.0) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	(
+		tw
+		. tween_property(msg, "modulate:a", 0.0, 0.5)
+		. set_delay(2.0)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_IN)
+	)
 
 	if not QuestManager.quest_completed.is_connected(_on_quest_completed_for_tutorial):
 		QuestManager.quest_completed.connect(_on_quest_completed_for_tutorial, CONNECT_ONE_SHOT)
 
 
 func _on_quest_completed_for_tutorial(_building_id: String, _passed: bool, _score: int) -> void:
-	get_tree().create_timer(2.5).timeout.connect(func() -> void:
-		if is_instance_valid(self):
-			_advance_step()
+	get_tree().create_timer(2.5).timeout.connect(
+		func() -> void:
+			if is_instance_valid(self):
+				_advance_step()
 	)
 
 
 func _show_post_quest() -> void:
-	var _dim := _make_dim_overlay(true)
+	var dim := _make_dim_overlay(true)
 
 	# VBox+spacers centering (same pattern as welcome)
 	var vbox_wrap := VBoxContainer.new()
@@ -396,6 +424,7 @@ func _show_post_quest() -> void:
 # UI HELPERS
 # ═════════════════════════════════════════════════════════════════════════════
 
+
 func _make_dim_overlay(blocks_input: bool, alpha: float = 0.45) -> ColorRect:
 	var dim := ColorRect.new()
 	dim.color = Color(0, 0, 0, alpha)
@@ -406,13 +435,20 @@ func _make_dim_overlay(blocks_input: bool, alpha: float = 0.45) -> ColorRect:
 	_step_nodes.append(dim)
 	dim.modulate.a = 0.0
 	var tw := create_tween()
-	tw.tween_property(dim, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(dim, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(
+		Tween.EASE_OUT
+	)
 	return dim
 
 
-func _make_message_panel(title_text: String, desc_text: String, show_skip: bool,
-		next_callback: Callable = Callable(), at_bottom: bool = false,
-		at_center: bool = false) -> PanelContainer:
+func _make_message_panel(
+	title_text: String,
+	desc_text: String,
+	show_skip: bool,
+	next_callback: Callable = Callable(),
+	at_bottom: bool = false,
+	at_center: bool = false
+) -> PanelContainer:
 	## Returns a compact floating card — positioned at top, center, or bottom.
 	## Uses VBox+spacers so panel shrinks to content (no full-height stretch).
 	## Anchors set AFTER add_child per Godot 4 requirement.

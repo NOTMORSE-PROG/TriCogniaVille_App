@@ -3,6 +3,15 @@ extends Control
 ## Shows current building objective + checklist of steps.
 ## Anchored top-right, below the progress bar. Uses StyleFactory + UIAnimations.
 
+const CHECKLIST_TEMPLATES: Array[String] = [
+	"Walk to %s",
+	"Start the quest",
+	"Complete Tutorial stage",
+	"Complete Practice stage",
+	"Complete Mission (7/10)",
+	"Building unlocked!",
+]
+
 var _sx: float = 1.0
 var _sy: float = 1.0
 var _collapsed: bool = false
@@ -16,6 +25,7 @@ var _proximity_checked: bool = false
 var _panel: PanelContainer
 var _panel_vbox: VBoxContainer
 var _toggle_btn: Button
+var _collapsible_content: VBoxContainer
 var _building_header: Label
 var _topic_header: Label
 var _checklist_vbox: VBoxContainer
@@ -24,15 +34,6 @@ var _completion_container: VBoxContainer
 # Checklist state
 var _items: Array[Dictionary] = []
 # Each: { "text": String, "completed": bool, "checkbox": Panel, "label": Label, "row": HBoxContainer }
-
-const CHECKLIST_TEMPLATES: Array[String] = [
-	"Walk to %s",
-	"Start the quest",
-	"Complete Tutorial stage",
-	"Complete Practice stage",
-	"Complete Mission (7/10)",
-	"Building unlocked!",
-]
 
 
 func setup(sx: float, sy: float, player: Node2D = null) -> void:
@@ -53,6 +54,7 @@ func set_player_ref(player: Node2D) -> void:
 # LAYOUT
 # ═════════════════════════════════════════════════════════════════════════════
 
+
 func _build_layout() -> void:
 	# Outer positioning — top-right
 	anchor_left = 1.0
@@ -63,20 +65,6 @@ func _build_layout() -> void:
 	offset_right = 0.0
 	offset_top = 60.0 * _sy  # below progress bar
 	offset_bottom = 460.0 * _sy  # prevent growing off-screen
-
-	# Toggle button (always visible)
-	_toggle_btn = Button.new()
-	_toggle_btn.text = ">"
-	_toggle_btn.custom_minimum_size = Vector2(28 * _sx, 28 * _sy)
-	_toggle_btn.add_theme_font_size_override("font_size", int(14 * _sy))
-	_toggle_btn.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
-	_toggle_btn.add_theme_stylebox_override("normal", StyleFactory.make_secondary_button_normal())
-	_toggle_btn.add_theme_stylebox_override("hover", StyleFactory.make_secondary_button_hover())
-	_toggle_btn.add_theme_stylebox_override("pressed", StyleFactory.make_secondary_button_pressed())
-	_toggle_btn.position = Vector2(-34 * _sx, 8 * _sy)
-	_toggle_btn.pressed.connect(_toggle_collapsed)
-	_toggle_btn.mouse_filter = Control.MOUSE_FILTER_STOP
-	add_child(_toggle_btn)
 
 	# Main panel
 	_panel = PanelContainer.new()
@@ -89,7 +77,7 @@ func _build_layout() -> void:
 	style.content_margin_bottom = 10.0 * _sy
 	_panel.add_theme_stylebox_override("panel", style)
 	_panel.custom_minimum_size = Vector2(280 * _sx, 0)
-	_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	add_child(_panel)
 
 	_panel_vbox = VBoxContainer.new()
@@ -98,42 +86,84 @@ func _build_layout() -> void:
 	_panel_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_panel.add_child(_panel_vbox)
 
-	# Building header
+	# Header row: building name + toggle button
+	var header_row := HBoxContainer.new()
+	header_row.add_theme_constant_override("separation", int(8 * _sx))
+	header_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_panel_vbox.add_child(header_row)
+
 	_building_header = Label.new()
 	_building_header.add_theme_font_size_override("font_size", int(14 * _sy))
 	_building_header.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
+	_building_header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_building_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_panel_vbox.add_child(_building_header)
+	header_row.add_child(_building_header)
+
+	# Toggle button — inside panel header, right-aligned
+	_toggle_btn = Button.new()
+	_toggle_btn.text = "▼"
+	_toggle_btn.custom_minimum_size = Vector2(32 * _sx, 28 * _sy)
+	_toggle_btn.add_theme_font_size_override("font_size", int(16 * _sy))
+	_toggle_btn.add_theme_color_override("font_color", StyleFactory.GOLD)
+	var tbtn_normal := StyleBoxFlat.new()
+	tbtn_normal.bg_color = Color(0.15, 0.30, 0.55, 0.85)
+	tbtn_normal.corner_radius_top_left = 6
+	tbtn_normal.corner_radius_top_right = 6
+	tbtn_normal.corner_radius_bottom_left = 6
+	tbtn_normal.corner_radius_bottom_right = 6
+	tbtn_normal.border_width_top = 1
+	tbtn_normal.border_width_bottom = 1
+	tbtn_normal.border_width_left = 1
+	tbtn_normal.border_width_right = 1
+	tbtn_normal.border_color = StyleFactory.GOLD
+	var tbtn_hover := tbtn_normal.duplicate() as StyleBoxFlat
+	tbtn_hover.bg_color = Color(0.20, 0.42, 0.70, 0.95)
+	var tbtn_pressed := tbtn_normal.duplicate() as StyleBoxFlat
+	tbtn_pressed.bg_color = Color(0.10, 0.20, 0.40, 1.0)
+	_toggle_btn.add_theme_stylebox_override("normal", tbtn_normal)
+	_toggle_btn.add_theme_stylebox_override("hover", tbtn_hover)
+	_toggle_btn.add_theme_stylebox_override("pressed", tbtn_pressed)
+	_toggle_btn.pressed.connect(_toggle_collapsed)
+	_toggle_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	header_row.add_child(_toggle_btn)
+
+	# Collapsible content: topic, separator, checklist, completion
+	_collapsible_content = VBoxContainer.new()
+	_collapsible_content.add_theme_constant_override("separation", int(6 * _sy))
+	_collapsible_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_collapsible_content.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_panel_vbox.add_child(_collapsible_content)
 
 	_topic_header = Label.new()
 	_topic_header.add_theme_font_size_override("font_size", int(11 * _sy))
 	_topic_header.add_theme_color_override("font_color", StyleFactory.GOLD)
 	_topic_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_panel_vbox.add_child(_topic_header)
+	_collapsible_content.add_child(_topic_header)
 
 	# Separator
 	var sep := HSeparator.new()
 	sep.add_theme_constant_override("separation", int(2 * _sy))
 	sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_panel_vbox.add_child(sep)
+	_collapsible_content.add_child(sep)
 
 	# Checklist
 	_checklist_vbox = VBoxContainer.new()
 	_checklist_vbox.add_theme_constant_override("separation", int(6 * _sy))
 	_checklist_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_checklist_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_panel_vbox.add_child(_checklist_vbox)
+	_collapsible_content.add_child(_checklist_vbox)
 
 	# Completion state (hidden by default)
 	_completion_container = VBoxContainer.new()
 	_completion_container.visible = false
 	_completion_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_panel_vbox.add_child(_completion_container)
+	_collapsible_content.add_child(_completion_container)
 
 
 # ═════════════════════════════════════════════════════════════════════════════
 # SIGNALS
 # ═════════════════════════════════════════════════════════════════════════════
+
 
 func _connect_signals() -> void:
 	QuestManager.quest_started.connect(_on_quest_started)
@@ -163,9 +193,10 @@ func _on_quest_completed(_building_id: String, passed: bool, _score: int) -> voi
 
 func _on_building_unlocked(_building_id: String) -> void:
 	_set_item_completed(5)  # "Building unlocked!"
-	get_tree().create_timer(2.5).timeout.connect(func() -> void:
-		if is_instance_valid(self):
-			_refresh()
+	get_tree().create_timer(2.5).timeout.connect(
+		func() -> void:
+			if is_instance_valid(self):
+				_refresh()
 	)
 
 
@@ -176,6 +207,7 @@ func _on_all_unlocked() -> void:
 # ═════════════════════════════════════════════════════════════════════════════
 # PROXIMITY POLLING
 # ═════════════════════════════════════════════════════════════════════════════
+
 
 func _process(_delta: float) -> void:
 	if _items.size() == 0 or _proximity_checked:
@@ -194,6 +226,7 @@ func _process(_delta: float) -> void:
 # ═════════════════════════════════════════════════════════════════════════════
 # REFRESH / REBUILD CHECKLIST
 # ═════════════════════════════════════════════════════════════════════════════
+
 
 func _refresh() -> void:
 	_proximity_checked = false
@@ -237,13 +270,16 @@ func _refresh() -> void:
 			text = text % label
 		var row: HBoxContainer = _make_checklist_row(text, false)
 		_checklist_vbox.add_child(row)
-		_items.append({
-			"text": text,
-			"completed": false,
-			"row": row,
-		})
-
-
+		(
+			_items
+			. append(
+				{
+					"text": text,
+					"completed": false,
+					"row": row,
+				}
+			)
+		)
 
 
 func _find_building_node(building_id: String) -> Node:
@@ -262,6 +298,7 @@ func _find_building_node(building_id: String) -> Node:
 # ═════════════════════════════════════════════════════════════════════════════
 # CHECKLIST ITEM
 # ═════════════════════════════════════════════════════════════════════════════
+
 
 func _make_checklist_row(text: String, completed: bool) -> HBoxContainer:
 	var row := HBoxContainer.new()
@@ -282,8 +319,9 @@ func _make_checklist_row(text: String, completed: bool) -> HBoxContainer:
 	lbl.name = "Label"
 	lbl.text = text
 	lbl.add_theme_font_size_override("font_size", int(12 * _sy))
-	lbl.add_theme_color_override("font_color",
-		StyleFactory.SUCCESS_GREEN if completed else StyleFactory.TEXT_SECONDARY)
+	lbl.add_theme_color_override(
+		"font_color", StyleFactory.SUCCESS_GREEN if completed else StyleFactory.TEXT_SECONDARY
+	)
 	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	lbl.autowrap_mode = TextServer.AUTOWRAP_OFF
 	lbl.clip_text = true
@@ -353,10 +391,18 @@ func _set_item_completed(index: int, animate: bool = true) -> void:
 		if animate:
 			checkbox.pivot_offset = checkbox.size / 2.0
 			var tw := create_tween()
-			tw.tween_property(checkbox, "scale", Vector2(1.3, 1.3), 0.12) \
-				.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-			tw.tween_property(checkbox, "scale", Vector2.ONE, 0.15) \
-				.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			(
+				tw
+				. tween_property(checkbox, "scale", Vector2(1.3, 1.3), 0.12)
+				. set_trans(Tween.TRANS_BACK)
+				. set_ease(Tween.EASE_OUT)
+			)
+			(
+				tw
+				. tween_property(checkbox, "scale", Vector2.ONE, 0.15)
+				. set_trans(Tween.TRANS_BACK)
+				. set_ease(Tween.EASE_OUT)
+			)
 
 	if is_instance_valid(lbl):
 		lbl.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
@@ -366,6 +412,7 @@ func _set_item_completed(index: int, animate: bool = true) -> void:
 # COLLAPSE / EXPAND
 # ═════════════════════════════════════════════════════════════════════════════
 
+
 func _toggle_collapsed() -> void:
 	if _transitioning:
 		return
@@ -373,28 +420,36 @@ func _toggle_collapsed() -> void:
 	_collapsed = not _collapsed
 
 	if _collapsed:
-		_toggle_btn.text = "<"
+		_toggle_btn.text = "▶"
 		var tw := create_tween()
-		tw.tween_property(_panel, "modulate:a", 0.0, 0.25) \
-			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-		tw.tween_callback(func() -> void:
-			_panel.visible = false
-			_transitioning = false
+		(
+			tw
+			. tween_property(_collapsible_content, "modulate:a", 0.0, 0.22)
+			. set_trans(Tween.TRANS_QUAD)
+			. set_ease(Tween.EASE_IN)
+		)
+		tw.tween_callback(
+			func() -> void:
+				_collapsible_content.visible = false
+				_transitioning = false
 		)
 	else:
-		_panel.visible = true
-		_toggle_btn.text = ">"
+		_collapsible_content.visible = true
+		_toggle_btn.text = "▼"
 		var tw := create_tween()
-		tw.tween_property(_panel, "modulate:a", 1.0, 0.25) \
-			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		tw.tween_callback(func() -> void:
-			_transitioning = false
+		(
+			tw
+			. tween_property(_collapsible_content, "modulate:a", 1.0, 0.22)
+			. set_trans(Tween.TRANS_QUAD)
+			. set_ease(Tween.EASE_OUT)
 		)
+		tw.tween_callback(func() -> void: _transitioning = false)
 
 
 # ═════════════════════════════════════════════════════════════════════════════
 # VILLAGE RESTORED
 # ═════════════════════════════════════════════════════════════════════════════
+
 
 func _show_village_restored() -> void:
 	_checklist_vbox.visible = false

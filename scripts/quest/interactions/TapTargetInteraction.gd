@@ -86,24 +86,26 @@ func _build_ui() -> void:
 		btn.custom_minimum_size = Vector2(maxf(56 * _sx, seg_text.length() * 22 * _sx), 56 * _sy)
 		btn.add_theme_font_size_override("font_size", int(26 * _sy))
 		btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
-		btn.add_theme_stylebox_override("normal", StyleFactory.make_elevated_card(StyleFactory.BG_SURFACE, 10, 1))
-		btn.add_theme_stylebox_override("hover", StyleFactory.make_elevated_card(Color(0.14, 0.21, 0.36), 10, 2))
-		btn.add_theme_stylebox_override("pressed", StyleFactory.make_elevated_card(StyleFactory.BG_CARD, 10, 1))
+		btn.add_theme_stylebox_override(
+			"normal", StyleFactory.make_elevated_card(StyleFactory.BG_SURFACE, 10, 1)
+		)
+		btn.add_theme_stylebox_override(
+			"hover", StyleFactory.make_elevated_card(Color(0.14, 0.21, 0.36), 10, 2)
+		)
+		btn.add_theme_stylebox_override(
+			"pressed", StyleFactory.make_elevated_card(StyleFactory.BG_CARD, 10, 1)
+		)
 		btn.add_theme_stylebox_override("disabled", StyleFactory.make_disabled_button())
 
 		var captured_idx := i
 		btn.pressed.connect(func() -> void: _on_segment_pressed(captured_idx))
 		_segments_container.add_child(btn)
 
-		btn.ready.connect(func() -> void:
-			UIAnimations.make_interactive(btn)
-		)
+		btn.ready.connect(func() -> void: UIAnimations.make_interactive(btn))
 
 		# Practice hint: pulse the target segments
 		if _show_hints and i in target_indices:
-			btn.ready.connect(func() -> void:
-				_pulse_hint(btn)
-			)
+			btn.ready.connect(func() -> void: _pulse_hint(btn))
 
 	# Feedback panel
 	_feedback_panel = PanelContainer.new()
@@ -153,24 +155,37 @@ func _on_segment_pressed(index: int) -> void:
 		if child is Button:
 			if btn_idx == index:
 				var style := StyleFactory.make_elevated_card(
-					StyleFactory.SUCCESS_GREEN.darkened(0.5) if correct else StyleFactory.TEXT_ERROR.darkened(0.6),
-					10, 1
+					(
+						StyleFactory.SUCCESS_GREEN.darkened(0.5)
+						if correct
+						else StyleFactory.TEXT_ERROR.darkened(0.6)
+					),
+					10,
+					1
 				)
 				style.border_width_top = 3
-				style.border_color = StyleFactory.SUCCESS_GREEN if correct else StyleFactory.TEXT_ERROR
+				style.border_color = (
+					StyleFactory.SUCCESS_GREEN if correct else StyleFactory.TEXT_ERROR
+				)
 				child.add_theme_stylebox_override("disabled", style)
 
 				if correct:
 					child.pivot_offset = child.size / 2.0
 					var tw := create_tween()
-					tw.tween_property(child, "scale", Vector2(1.15, 1.15), 0.15) \
-						.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+					(
+						tw
+						. tween_property(child, "scale", Vector2(1.15, 1.15), 0.15)
+						. set_trans(Tween.TRANS_BACK)
+						. set_ease(Tween.EASE_OUT)
+					)
 					tw.tween_property(child, "scale", Vector2.ONE, 0.2)
 				else:
 					UIAnimations.shake_error(self, child)
 			elif btn_idx in target_indices and not correct:
 				# Show the correct one
-				var cs := StyleFactory.make_elevated_card(StyleFactory.SUCCESS_GREEN.darkened(0.5), 10, 1)
+				var cs := StyleFactory.make_elevated_card(
+					StyleFactory.SUCCESS_GREEN.darkened(0.5), 10, 1
+				)
 				cs.border_width_top = 3
 				cs.border_color = StyleFactory.SUCCESS_GREEN
 				child.add_theme_stylebox_override("disabled", cs)
@@ -179,14 +194,43 @@ func _on_segment_pressed(index: int) -> void:
 	_show_feedback_panel(correct)
 
 	if correct:
+		AudioManager.play_sfx("correct")
 		UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.08))
+	else:
+		AudioManager.play_sfx("wrong")
 
 	answer_submitted.emit(correct)
 
 
+func apply_hint(level: int) -> void:
+	if _answered:
+		return
+	var target_indices: Array = _question.get("target_indices", [])
+	match level:
+		1:
+			# Dim one wrong segment
+			var btn_idx := 0
+			for child in _segments_container.get_children():
+				if child is Button and not child.disabled:
+					if btn_idx not in target_indices:
+						child.modulate.a = 0.3
+						break
+				if child is Button:
+					btn_idx += 1
+		2:
+			# Brief pulse on correct segment
+			var btn_idx := 0
+			for child in _segments_container.get_children():
+				if child is Button:
+					if btn_idx in target_indices:
+						var tw := create_tween().set_loops(2)
+						tw.tween_property(child, "modulate:a", 0.4, 0.25)
+						tw.tween_property(child, "modulate:a", 1.0, 0.25)
+					btn_idx += 1
+
+
 func _show_feedback_panel(correct: bool) -> void:
-	_feedback_panel.add_theme_stylebox_override("panel",
-		StyleFactory.make_feedback_panel(correct))
+	_feedback_panel.add_theme_stylebox_override("panel", StyleFactory.make_feedback_panel(correct))
 	_feedback_panel.visible = true
 	_feedback_panel.modulate.a = 0.0
 
@@ -200,15 +244,14 @@ func _show_feedback_panel(correct: bool) -> void:
 		_feedback_text.text = _question.get("feedback_wrong", "")
 
 	var tw := create_tween()
-	tw.tween_property(_feedback_panel, "modulate:a", 1.0, 0.3) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_feedback_panel, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(
+		Tween.EASE_OUT
+	)
 
 
 func _pulse_hint(btn: Button) -> void:
 	if not is_instance_valid(btn):
 		return
 	var tw := create_tween().set_loops()
-	tw.tween_property(btn, "modulate:a", 0.6, 0.6) \
-		.set_trans(Tween.TRANS_SINE)
-	tw.tween_property(btn, "modulate:a", 1.0, 0.6) \
-		.set_trans(Tween.TRANS_SINE)
+	tw.tween_property(btn, "modulate:a", 0.6, 0.6).set_trans(Tween.TRANS_SINE)
+	tw.tween_property(btn, "modulate:a", 1.0, 0.6).set_trans(Tween.TRANS_SINE)

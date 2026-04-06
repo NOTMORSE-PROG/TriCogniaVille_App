@@ -47,9 +47,10 @@ func _ready() -> void:
 		return
 
 	# Listen for auth changes (e.g., from Google OAuth completing)
-	ApiClient.auth_state_changed.connect(func(logged_in: bool) -> void:
-		if logged_in:
-			_proceed_to_game()
+	ApiClient.auth_state_changed.connect(
+		func(logged_in: bool) -> void:
+			if logged_in:
+				_proceed_to_game()
 	)
 
 	_setup_ui()
@@ -82,6 +83,7 @@ func _setup_ui() -> void:
 
 
 # ── Build Views ──────────────────────────────────────────────────────────────
+
 
 func _build_landing_view() -> void:
 	_landing_view = VBoxContainer.new()
@@ -240,6 +242,7 @@ func _build_loading_view() -> void:
 
 # ── UI Helpers ───────────────────────────────────────────────────────────────
 
+
 func _make_input(placeholder: String, secret: bool = false) -> LineEdit:
 	var input := LineEdit.new()
 	input.placeholder_text = placeholder
@@ -304,6 +307,7 @@ func _make_spacer(height: float) -> Control:
 
 # ── Button Styling ───────────────────────────────────────────────────────────
 
+
 func _style_primary_button(btn: Button) -> void:
 	btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
 	btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
@@ -336,10 +340,8 @@ func _style_google_button(btn: Button) -> void:
 
 
 func _style_title() -> void:
-	var title: Label = $BrandingLayer/TitleLabel
 	var font := ThemeBuilder.load_font("res://assets/fonts/Nunito-Variable.ttf")
 	if font:
-		title.add_theme_font_override("font", font)
 		$BrandingLayer/SubtitleLabel.add_theme_font_override("font", font)
 
 
@@ -350,40 +352,65 @@ func _animate_entrance() -> void:
 	var original_y: float = branding.position.y + 30
 
 	var tw := create_tween().set_parallel(true)
-	tw.tween_property(branding, "modulate:a", 1.0, 0.5) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT) \
-		.set_delay(0.1)
-	tw.tween_property(branding, "position:y", original_y, 0.5) \
-		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT) \
-		.set_delay(0.1)
+	(
+		tw
+		. tween_property(branding, "modulate:a", 1.0, 0.5)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_OUT)
+		. set_delay(0.1)
+	)
+	(
+		tw
+		. tween_property(branding, "position:y", original_y, 0.5)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_OUT)
+		. set_delay(0.1)
+	)
 
 	_content_card.modulate.a = 0.0
 	var card_orig_y: float = _content_card.position.y
 	_content_card.position.y += 50
-	tw.tween_property(_content_card, "modulate:a", 1.0, 0.5) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT) \
-		.set_delay(0.25)
-	tw.tween_property(_content_card, "position:y", card_orig_y, 0.55) \
-		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT) \
-		.set_delay(0.25)
+	(
+		tw
+		. tween_property(_content_card, "modulate:a", 1.0, 0.5)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_OUT)
+		. set_delay(0.25)
+	)
+	(
+		tw
+		. tween_property(_content_card, "position:y", card_orig_y, 0.55)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_OUT)
+		. set_delay(0.25)
+	)
 
 
 # ── View Management ──────────────────────────────────────────────────────────
 
+
 func _get_view_node(v: View) -> Control:
 	match v:
-		View.LANDING: return _landing_view
-		View.SIGN_IN: return _signin_view
-		View.SIGN_UP: return _signup_view
-		View.LOADING: return _loading_view
+		View.LANDING:
+			return _landing_view
+		View.SIGN_IN:
+			return _signin_view
+		View.SIGN_UP:
+			return _signup_view
+		View.LOADING:
+			return _loading_view
 	return _landing_view
 
 
 func _show_view_instant(v: View) -> void:
-	if _landing_view: _landing_view.visible = (v == View.LANDING)
-	if _signin_view: _signin_view.visible = (v == View.SIGN_IN)
-	if _signup_view: _signup_view.visible = (v == View.SIGN_UP)
-	if _loading_view: _loading_view.visible = (v == View.LOADING)
+	if _landing_view:
+		_landing_view.visible = (v == View.LANDING)
+	if _signin_view:
+		_signin_view.visible = (v == View.SIGN_IN)
+	if _signup_view:
+		_signup_view.visible = (v == View.SIGN_UP)
+	if _loading_view:
+		_loading_view.visible = (v == View.LOADING)
 	_current_view = v
 
 
@@ -402,6 +429,7 @@ func _switch_view(new_view: View) -> void:
 
 # ── Auth Handlers ────────────────────────────────────────────────────────────
 
+
 func _on_signin_pressed() -> void:
 	var email := _signin_email.text.strip_edges()
 	var password := _signin_password.text
@@ -415,17 +443,20 @@ func _on_signin_pressed() -> void:
 	_signin_button.disabled = true
 	_signin_button.text = "Signing in..."
 
-	ApiClient.login(email, password, func(success: bool, data: Dictionary) -> void:
-		_signin_button.disabled = false
-		_signin_button.text = "Sign In"
+	ApiClient.login(
+		email,
+		password,
+		func(success: bool, data: Dictionary) -> void:
+			_signin_button.disabled = false
+			_signin_button.text = "Sign In"
 
-		if success:
-			UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.12))
-			await get_tree().create_timer(0.4).timeout
-			_proceed_to_game()
-		else:
-			_signin_error.text = data.get("error", "Login failed. Please try again.")
-			_signin_error.visible = true
+			if success:
+				UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.12))
+				await get_tree().create_timer(0.4).timeout
+				_proceed_to_game()
+			else:
+				_signin_error.text = data.get("error", "Login failed. Please try again.")
+				_signin_error.visible = true
 	)
 
 
@@ -454,17 +485,21 @@ func _on_signup_pressed() -> void:
 	_signup_button.disabled = true
 	_signup_button.text = "Creating account..."
 
-	ApiClient.register(email, password, player_name, func(success: bool, data: Dictionary) -> void:
-		_signup_button.disabled = false
-		_signup_button.text = "Create Account"
+	ApiClient.register(
+		email,
+		password,
+		player_name,
+		func(success: bool, data: Dictionary) -> void:
+			_signup_button.disabled = false
+			_signup_button.text = "Create Account"
 
-		if success:
-			UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.12))
-			await get_tree().create_timer(0.4).timeout
-			_proceed_to_game()
-		else:
-			_signup_error.text = data.get("error", "Registration failed. Please try again.")
-			_signup_error.visible = true
+			if success:
+				UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.12))
+				await get_tree().create_timer(0.4).timeout
+				_proceed_to_game()
+			else:
+				_signup_error.text = data.get("error", "Registration failed. Please try again.")
+				_signup_error.visible = true
 	)
 
 
@@ -472,15 +507,16 @@ func _on_google_signin() -> void:
 	_loading_label.text = "Opening Google Sign-In..."
 	_switch_view(View.LOADING)
 
-	ApiClient.google_auth_start(func(success: bool, data: Dictionary) -> void:
-		if success and data.has("sessionId"):
-			_google_session_id = data["sessionId"]
-			_loading_label.text = "Complete sign-in in your browser...\nThen return to the app."
-			_start_google_poll()
-		else:
-			_loading_label.text = "Failed to start Google Sign-In.\nPlease try again."
-			await get_tree().create_timer(2.0).timeout
-			_switch_view(View.LANDING)
+	ApiClient.google_auth_start(
+		func(success: bool, data: Dictionary) -> void:
+			if success and data.has("sessionId"):
+				_google_session_id = data["sessionId"]
+				_loading_label.text = "Complete sign-in in your browser...\nThen return to the app."
+				_start_google_poll()
+			else:
+				_loading_label.text = "Failed to start Google Sign-In.\nPlease try again."
+				await get_tree().create_timer(2.0).timeout
+				_switch_view(View.LANDING)
 	)
 
 
@@ -497,24 +533,27 @@ func _start_google_poll() -> void:
 	var poll_state := [0]  # [count] — array ref so lambda can mutate it
 	var max_polls := 150  # 5 minutes at 2s intervals
 
-	_google_poll_timer.timeout.connect(func() -> void:
-		poll_state[0] += 1
-		if poll_state[0] > max_polls:
-			_google_polling = false
-			_google_retry_btn.visible = false
-			_google_poll_timer.stop()
-			_loading_label.text = "Sign-in timed out. Please try again."
-			await get_tree().create_timer(2.0).timeout
-			_switch_view(View.LANDING)
-			return
-
-		ApiClient.google_auth_poll(_google_session_id, func(success: bool, data: Dictionary) -> void:
-			if success and data.get("status") == "completed":
+	_google_poll_timer.timeout.connect(
+		func() -> void:
+			poll_state[0] += 1
+			if poll_state[0] > max_polls:
 				_google_polling = false
+				_google_retry_btn.visible = false
 				_google_poll_timer.stop()
-				UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.12))
-				# ApiClient will update auth state, which triggers _proceed_to_game via signal
-		)
+				_loading_label.text = "Sign-in timed out. Please try again."
+				await get_tree().create_timer(2.0).timeout
+				_switch_view(View.LANDING)
+				return
+
+			ApiClient.google_auth_poll(
+				_google_session_id,
+				func(success: bool, data: Dictionary) -> void:
+					if success and data.get("status") == "completed":
+						_google_polling = false
+						_google_poll_timer.stop()
+						UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.12))
+						# ApiClient will update auth state, which triggers _proceed_to_game via signal
+			)
 	)
 	add_child(_google_poll_timer)
 
@@ -541,6 +580,7 @@ func _on_google_retry() -> void:
 
 
 # ── Navigation ───────────────────────────────────────────────────────────────
+
 
 func _proceed_to_game() -> void:
 	if _google_poll_timer:

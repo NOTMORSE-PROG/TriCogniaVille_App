@@ -45,7 +45,9 @@ func _build_ui() -> void:
 	var passage: String = _question.get("passage", "")
 	if not passage.is_empty():
 		var passage_card := PanelContainer.new()
-		passage_card.add_theme_stylebox_override("panel", StyleFactory.make_elevated_card(StyleFactory.BG_CARD, 12, 1))
+		passage_card.add_theme_stylebox_override(
+			"panel", StyleFactory.make_elevated_card(StyleFactory.BG_CARD, 12, 1)
+		)
 		passage_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 		_passage_label = RichTextLabel.new()
@@ -98,6 +100,10 @@ func _build_ui() -> void:
 	vbox.add_child(_options_container)
 
 	var options: Array = _question.get("options", [])
+	if options.is_empty():
+		push_error("[MCQInteraction] Question has no options: %s" % _question.get("question", "?"))
+		answer_submitted.emit(false)
+		return
 	for i in options.size():
 		var btn := Button.new()
 		btn.text = options[i]
@@ -115,9 +121,7 @@ func _build_ui() -> void:
 		btn.pressed.connect(func() -> void: _on_option_pressed(captured_idx))
 
 		# Defer make_interactive so size is calculated
-		btn.ready.connect(func() -> void:
-			UIAnimations.make_interactive(btn)
-		)
+		btn.ready.connect(func() -> void: UIAnimations.make_interactive(btn))
 
 	# Feedback panel (hidden initially)
 	_feedback_panel = PanelContainer.new()
@@ -149,9 +153,13 @@ func _build_ui() -> void:
 		if child is Control:
 			child.modulate.a = 0.0
 			var tw := create_tween()
-			tw.tween_property(child, "modulate:a", 1.0, 0.3) \
-				.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT) \
-				.set_delay(stagger_idx * 0.07)
+			(
+				tw
+				. tween_property(child, "modulate:a", 1.0, 0.3)
+				. set_trans(Tween.TRANS_QUAD)
+				. set_ease(Tween.EASE_OUT)
+				. set_delay(stagger_idx * 0.07)
+			)
 			stagger_idx += 1
 
 
@@ -161,7 +169,7 @@ func _on_option_pressed(index: int) -> void:
 	_answered = true
 
 	var correct_index: int = _question.get("correct_index", -1)
-	var correct := (index == correct_index)
+	var correct := index == correct_index
 
 	# Disable all options
 	for child in _options_container.get_children():
@@ -195,18 +203,42 @@ func _on_option_pressed(index: int) -> void:
 	# Show feedback
 	_show_feedback(correct)
 
-	# Effects
+	# Effects + SFX
 	if correct:
+		AudioManager.play_sfx("correct")
 		UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.08))
-	elif is_instance_valid(selected_btn):
-		UIAnimations.shake_error(self, selected_btn)
+	else:
+		AudioManager.play_sfx("wrong")
+		if is_instance_valid(selected_btn):
+			UIAnimations.shake_error(self, selected_btn)
 
 	answer_submitted.emit(correct)
 
 
+func apply_hint(level: int) -> void:
+	if _answered:
+		return
+	var correct_index: int = _question.get("correct_index", -1)
+	match level:
+		1:
+			# Eliminate one wrong option (grey it out)
+			for child in _options_container.get_children():
+				if child is Button and not child.disabled:
+					var idx := child.get_index()
+					if idx != correct_index:
+						child.disabled = true
+						child.modulate.a = 0.4
+						break  # Only eliminate one
+		2:
+			# Highlight a keyword in the question text
+			if is_instance_valid(_question_label):
+				var tw := create_tween().set_loops(3)
+				tw.tween_property(_question_label, "modulate:a", 0.5, 0.3)
+				tw.tween_property(_question_label, "modulate:a", 1.0, 0.3)
+
+
 func _show_feedback(correct: bool) -> void:
-	_feedback_panel.add_theme_stylebox_override("panel",
-		StyleFactory.make_feedback_panel(correct))
+	_feedback_panel.add_theme_stylebox_override("panel", StyleFactory.make_feedback_panel(correct))
 	_feedback_panel.visible = true
 	_feedback_panel.modulate.a = 0.0
 
@@ -220,5 +252,6 @@ func _show_feedback(correct: bool) -> void:
 		_feedback_text.text = _question.get("feedback_wrong", "")
 
 	var tw := create_tween()
-	tw.tween_property(_feedback_panel, "modulate:a", 1.0, 0.3) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_feedback_panel, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(
+		Tween.EASE_OUT
+	)

@@ -2,7 +2,7 @@ extends Control
 ## QuestPrompt — Floating prompt panel shown when tapping a locked building.
 ## Shows building info + "Start Quest" button or "Complete X first!" message.
 
-signal start_quest_pressed(building_id: String)
+signal start_quest_pressed(building_id: String, skip_tutorial: bool)
 signal dismissed
 
 var _sx: float = 1.0
@@ -25,8 +25,14 @@ func setup(sx: float, sy: float) -> void:
 	set_process(false)
 
 
-func show_quest_prompt(building_id: String, building_label: String, topic: String,
-					   building_color: Color, building_pos: Vector2, player: Node2D) -> void:
+func show_quest_prompt(
+	building_id: String,
+	building_label: String,
+	topic: String,
+	building_color: Color,
+	building_pos: Vector2,
+	player: Node2D
+) -> void:
 	if _transitioning:
 		return
 	_building_id = building_id
@@ -65,8 +71,9 @@ func _process(_delta: float) -> void:
 			hide_prompt()
 
 
-func _build_prompt(building_label: String, topic: String,
-				   building_color: Color, can_start: bool) -> void:
+func _build_prompt(
+	building_label: String, topic: String, building_color: Color, can_start: bool
+) -> void:
 	# Clear
 	for child in get_children():
 		child.queue_free()
@@ -78,11 +85,12 @@ func _build_prompt(building_label: String, topic: String,
 	blocker.anchor_bottom = 1.0
 	blocker.mouse_filter = Control.MOUSE_FILTER_STOP
 	# Tap outside dismisses
-	blocker.gui_input.connect(func(event: InputEvent) -> void:
-		if event is InputEventMouseButton and event.pressed:
-			hide_prompt()
-		elif event is InputEventScreenTouch and event.pressed:
-			hide_prompt()
+	blocker.gui_input.connect(
+		func(event: InputEvent) -> void:
+			if event is InputEventMouseButton and event.pressed:
+				hide_prompt()
+			elif event is InputEventScreenTouch and event.pressed:
+				hide_prompt()
 	)
 	add_child(blocker)
 
@@ -140,25 +148,87 @@ func _build_prompt(building_label: String, topic: String,
 	vbox.add_child(desc)
 
 	if can_start:
-		# Start Quest button
-		var start_btn := Button.new()
-		start_btn.text = "Start Quest"
-		start_btn.custom_minimum_size = Vector2(200 * _sx, 50 * _sy)
-		start_btn.add_theme_font_size_override("font_size", int(18 * _sy))
-		start_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
-		start_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
-		start_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
-		start_btn.add_theme_stylebox_override("pressed", StyleFactory.make_primary_button_pressed())
-		start_btn.pressed.connect(func() -> void:
-			set_process(false)
-			visible = false
-			start_quest_pressed.emit(_building_id)
-		)
-		var center_btn := CenterContainer.new()
-		center_btn.add_child(start_btn)
-		vbox.add_child(center_btn)
+		# Two-option choice: Tutorial vs Challenge
+		var choice_vbox := VBoxContainer.new()
+		choice_vbox.add_theme_constant_override("separation", int(8 * _sy))
+		vbox.add_child(choice_vbox)
 
-		start_btn.ready.connect(func() -> void: UIAnimations.make_interactive(start_btn))
+		# Start with Tutorial button (blue accent)
+		var tutorial_btn := Button.new()
+		tutorial_btn.text = "Start with Tutorial"
+		tutorial_btn.custom_minimum_size = Vector2(280 * _sx, 50 * _sy)
+		tutorial_btn.add_theme_font_size_override("font_size", int(17 * _sy))
+		tutorial_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
+		var tut_style := StyleFactory.make_secondary_button_normal()
+		tut_style.border_color = StyleFactory.STAGE_TUTORIAL_ACCENT
+		tut_style.border_width_top = 2
+		tut_style.border_width_left = 2
+		tut_style.border_width_right = 2
+		tut_style.border_width_bottom = 2
+		tutorial_btn.add_theme_stylebox_override("normal", tut_style)
+		var tut_hover := StyleFactory.make_secondary_button_hover()
+		tut_hover.border_color = StyleFactory.STAGE_TUTORIAL_ACCENT
+		tut_hover.bg_color = Color(
+			StyleFactory.STAGE_TUTORIAL_ACCENT.r,
+			StyleFactory.STAGE_TUTORIAL_ACCENT.g,
+			StyleFactory.STAGE_TUTORIAL_ACCENT.b,
+			0.1
+		)
+		tutorial_btn.add_theme_stylebox_override("hover", tut_hover)
+		tutorial_btn.add_theme_stylebox_override(
+			"pressed", StyleFactory.make_secondary_button_pressed()
+		)
+		tutorial_btn.pressed.connect(
+			func() -> void:
+				set_process(false)
+				visible = false
+				start_quest_pressed.emit(_building_id, false)
+		)
+		var tut_center := CenterContainer.new()
+		tut_center.add_child(tutorial_btn)
+		choice_vbox.add_child(tut_center)
+
+		var tut_desc := Label.new()
+		tut_desc.text = "Learn step-by-step with guided examples"
+		tut_desc.add_theme_font_size_override("font_size", int(12 * _sy))
+		tut_desc.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+		tut_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		tut_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		choice_vbox.add_child(tut_desc)
+
+		# Skip to Challenge button (coral/red accent)
+		var challenge_btn := Button.new()
+		challenge_btn.text = "Skip to Challenge"
+		challenge_btn.custom_minimum_size = Vector2(280 * _sx, 50 * _sy)
+		challenge_btn.add_theme_font_size_override("font_size", int(17 * _sy))
+		challenge_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
+		challenge_btn.add_theme_stylebox_override(
+			"normal", StyleFactory.make_primary_button_normal()
+		)
+		challenge_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
+		challenge_btn.add_theme_stylebox_override(
+			"pressed", StyleFactory.make_primary_button_pressed()
+		)
+		challenge_btn.pressed.connect(
+			func() -> void:
+				set_process(false)
+				visible = false
+				start_quest_pressed.emit(_building_id, true)
+		)
+		var ch_center := CenterContainer.new()
+		ch_center.add_child(challenge_btn)
+		choice_vbox.add_child(ch_center)
+
+		var ch_desc := Label.new()
+		ch_desc.text = "Go straight to the graded mission (10 questions)"
+		ch_desc.add_theme_font_size_override("font_size", int(12 * _sy))
+		ch_desc.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+		ch_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		ch_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		choice_vbox.add_child(ch_desc)
+
+		tutorial_btn.ready.connect(func() -> void: UIAnimations.make_interactive(tutorial_btn))
+		challenge_btn.ready.connect(func() -> void: UIAnimations.make_interactive(challenge_btn))
 
 	# Not now
 	var dismiss_btn := Button.new()
@@ -189,11 +259,12 @@ func _build_sequence_message(required_label: String) -> void:
 	blocker.anchor_right = 1.0
 	blocker.anchor_bottom = 1.0
 	blocker.mouse_filter = Control.MOUSE_FILTER_STOP
-	blocker.gui_input.connect(func(event: InputEvent) -> void:
-		if event is InputEventMouseButton and event.pressed:
-			hide_prompt()
-		elif event is InputEventScreenTouch and event.pressed:
-			hide_prompt()
+	blocker.gui_input.connect(
+		func(event: InputEvent) -> void:
+			if event is InputEventMouseButton and event.pressed:
+				hide_prompt()
+			elif event is InputEventScreenTouch and event.pressed:
+				hide_prompt()
 	)
 	add_child(blocker)
 

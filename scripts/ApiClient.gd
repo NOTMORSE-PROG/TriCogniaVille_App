@@ -6,14 +6,25 @@ extends Node
 signal auth_state_changed(logged_in: bool)
 
 const TOKEN_PATH := "user://auth_token.cfg"
+const CONFIG_PATH := "res://app_config.cfg"
+const API_PREFIX := "/api/v1"
 const DEFAULT_TIMEOUT := 10.0
 
-var base_url: String = "http://localhost:3000"
+var base_url: String = _get_default_base_url()
 var auth_token: String = ""
 var is_authenticated: bool = false
 var current_student: Dictionary = {}
-
 var _http_nodes: Array[HTTPRequest] = []
+
+
+static func _get_default_base_url() -> String:
+	if OS.has_feature("debug") or OS.has_feature("editor"):
+		return "http://localhost:3000"
+	var config := ConfigFile.new()
+	if config.load(CONFIG_PATH) == OK:
+		return config.get_value("backend", "url", "")
+	push_error("[ApiClient] app_config.cfg missing or invalid — backend URL not set")
+	return ""
 
 
 func _ready() -> void:
@@ -24,6 +35,7 @@ func _ready() -> void:
 
 
 # ── Token Management ──────────────────────────────────────────────────────────
+
 
 func _load_token() -> void:
 	var config := ConfigFile.new()
@@ -59,45 +71,49 @@ func _set_authenticated(student: Dictionary, token: String) -> void:
 
 # ── Auth Endpoints ────────────────────────────────────────────────────────────
 
+
 func register(email: String, password: String, player_name: String, callback: Callable) -> void:
-	var body := JSON.stringify({
-		"email": email,
-		"password": password,
-		"name": player_name
-	})
-	_post("/api/v1/auth/register", body, func(success: bool, data: Dictionary) -> void:
-		if success and data.has("token"):
-			_set_authenticated(data.get("student", {}), data["token"])
-		callback.call(success, data)
+	var body := JSON.stringify({"email": email, "password": password, "name": player_name})
+	_post(
+		"/auth/register",
+		body,
+		func(success: bool, data: Dictionary) -> void:
+			if success and data.has("token"):
+				_set_authenticated(data.get("student", {}), data["token"])
+			callback.call(success, data)
 	)
 
 
 func login(email: String, password: String, callback: Callable) -> void:
-	var body := JSON.stringify({
-		"email": email,
-		"password": password
-	})
-	_post("/api/v1/auth/login", body, func(success: bool, data: Dictionary) -> void:
-		if success and data.has("token"):
-			_set_authenticated(data.get("student", {}), data["token"])
-		callback.call(success, data)
+	var body := JSON.stringify({"email": email, "password": password})
+	_post(
+		"/auth/login",
+		body,
+		func(success: bool, data: Dictionary) -> void:
+			if success and data.has("token"):
+				_set_authenticated(data.get("student", {}), data["token"])
+			callback.call(success, data)
 	)
 
 
 func google_auth_start(callback: Callable) -> void:
-	_http_get("/api/v1/auth/google", func(success: bool, data: Dictionary) -> void:
-		if success and data.has("authUrl"):
-			OS.shell_open(data["authUrl"])
-		callback.call(success, data)
+	_http_get(
+		"/auth/google",
+		func(success: bool, data: Dictionary) -> void:
+			if success and data.has("authUrl"):
+				OS.shell_open(data["authUrl"])
+			callback.call(success, data)
 	)
 
 
 func google_auth_poll(session_id: String, callback: Callable) -> void:
-	_http_get("/api/v1/auth/google/poll?sessionId=" + session_id, func(success: bool, data: Dictionary) -> void:
-		if success and data.get("status") == "completed" and data.has("token"):
-			_save_token(data["token"])
-			verify_token()
-		callback.call(success, data)
+	_http_get(
+		"/auth/google/poll?sessionId=" + session_id,
+		func(success: bool, data: Dictionary) -> void:
+			if success and data.get("status") == "completed" and data.has("token"):
+				_save_token(data["token"])
+				verify_token()
+			callback.call(success, data)
 	)
 
 
@@ -105,13 +121,15 @@ func verify_token() -> void:
 	if auth_token.is_empty():
 		_clear_token()
 		return
-	_http_get("/api/v1/me", func(success: bool, data: Dictionary) -> void:
-		if success and data.has("student"):
-			current_student = data["student"]
-			is_authenticated = true
-			auth_state_changed.emit(true)
-		else:
-			_clear_token()
+	_http_get(
+		"/me",
+		func(success: bool, data: Dictionary) -> void:
+			if success and data.has("student"):
+				current_student = data["student"]
+				is_authenticated = true
+				auth_state_changed.emit(true)
+			else:
+				_clear_token()
 	)
 
 
@@ -121,35 +139,41 @@ func logout() -> void:
 
 # ── Game API Endpoints ────────────────────────────────────────────────────────
 
+
 func update_profile(updates: Dictionary, callback: Callable) -> void:
-	_patch("/api/v1/me", JSON.stringify(updates), callback)
+	_patch("/me", JSON.stringify(updates), callback)
 
 
 func sync_progress(data: Dictionary, callback: Callable) -> void:
-	_post("/api/v1/sync", JSON.stringify(data), callback)
+	_post("/sync", JSON.stringify(data), callback)
 
 
 func record_quest(quest_data: Dictionary, callback: Callable) -> void:
-	_post("/api/v1/quests", JSON.stringify(quest_data), callback)
+	_post("/quests", JSON.stringify(quest_data), callback)
 
 
 func record_building(building_data: Dictionary, callback: Callable) -> void:
-	_post("/api/v1/buildings", JSON.stringify(building_data), callback)
+	_post("/buildings", JSON.stringify(building_data), callback)
 
 
 func get_progress(callback: Callable) -> void:
-	_http_get("/api/v1/progress", callback)
+	_http_get("/progress", callback)
 
 
-func join_class(invite_code: String, callback: Callable) -> void:
-	_post("/api/v1/classes/join", JSON.stringify({"inviteCode": invite_code}), callback)
+func get_profile(callback: Callable) -> void:
+	_http_get("/profile", callback)
 
 
-func get_my_classes(callback: Callable) -> void:
-	_http_get("/api/v1/classes/mine", callback)
+func submit_speech_assessment(payload: Dictionary, callback: Callable) -> void:
+	_post("/speech/assess", JSON.stringify(payload), callback)
+
+
+func upload_audio(audio_b64: String, callback: Callable) -> void:
+	_post("/speech/upload", JSON.stringify({"audio": audio_b64}), callback)
 
 
 # ── HTTP Helpers ──────────────────────────────────────────────────────────────
+
 
 func _create_http_request() -> HTTPRequest:
 	var http := HTTPRequest.new()
@@ -165,10 +189,7 @@ func _cleanup_http(http: HTTPRequest) -> void:
 
 
 func _get_headers() -> PackedStringArray:
-	var headers := PackedStringArray([
-		"Content-Type: application/json",
-		"Accept: application/json"
-	])
+	var headers := PackedStringArray(["Content-Type: application/json", "Accept: application/json"])
 	if not auth_token.is_empty():
 		headers.append("Authorization: Bearer " + auth_token)
 	return headers
@@ -176,14 +197,17 @@ func _get_headers() -> PackedStringArray:
 
 func _http_get(endpoint: String, callback: Callable) -> void:
 	var http := _create_http_request()
-	var url := base_url + endpoint
+	var url := base_url + API_PREFIX + endpoint
 
-	http.request_completed.connect(func(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-		var parsed := _parse_response(response_code, body)
-		if response_code == 401:
-			_clear_token()
-		callback.call(parsed[0], parsed[1])
-		_cleanup_http(http)
+	http.request_completed.connect(
+		func(
+			_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
+		) -> void:
+			var parsed := _parse_response(response_code, body)
+			if response_code == 401:
+				_clear_token()
+			callback.call(parsed[0], parsed[1])
+			_cleanup_http(http)
 	)
 
 	var err := http.request(url, _get_headers(), HTTPClient.METHOD_GET)
@@ -194,14 +218,17 @@ func _http_get(endpoint: String, callback: Callable) -> void:
 
 func _post(endpoint: String, body_str: String, callback: Callable) -> void:
 	var http := _create_http_request()
-	var url := base_url + endpoint
+	var url := base_url + API_PREFIX + endpoint
 
-	http.request_completed.connect(func(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-		var parsed := _parse_response(response_code, body)
-		if response_code == 401:
-			_clear_token()
-		callback.call(parsed[0], parsed[1])
-		_cleanup_http(http)
+	http.request_completed.connect(
+		func(
+			_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
+		) -> void:
+			var parsed := _parse_response(response_code, body)
+			if response_code == 401:
+				_clear_token()
+			callback.call(parsed[0], parsed[1])
+			_cleanup_http(http)
 	)
 
 	var err := http.request(url, _get_headers(), HTTPClient.METHOD_POST, body_str)
@@ -212,14 +239,17 @@ func _post(endpoint: String, body_str: String, callback: Callable) -> void:
 
 func _patch(endpoint: String, body_str: String, callback: Callable) -> void:
 	var http := _create_http_request()
-	var url := base_url + endpoint
+	var url := base_url + API_PREFIX + endpoint
 
-	http.request_completed.connect(func(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-		var parsed := _parse_response(response_code, body)
-		if response_code == 401:
-			_clear_token()
-		callback.call(parsed[0], parsed[1])
-		_cleanup_http(http)
+	http.request_completed.connect(
+		func(
+			_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
+		) -> void:
+			var parsed := _parse_response(response_code, body)
+			if response_code == 401:
+				_clear_token()
+			callback.call(parsed[0], parsed[1])
+			_cleanup_http(http)
 	)
 
 	var err := http.request(url, _get_headers(), HTTPClient.METHOD_PATCH, body_str)

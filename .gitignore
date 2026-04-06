@@ -9,11 +9,11 @@ android/build/
 *.apk
 *.aab
 
-# Export presets — contains keystore passwords, NEVER commit
-export_presets.cfg
-
-# Godot keystore credentials (Godot 4.3+)
+# Godot keystore credentials (Godot 4.3+ — secrets live here, not in export_presets.cfg)
 .godot/export_credentials.cfg
+
+# Plugin build artifacts
+_plugin_build/
 
 # Claude Code Game Studios (AI framework — not game source)
 .claude/
@@ -22,8 +22,10 @@ export_presets.cfg
 backend/
 
 # Secrets
+app_config.cfg
 client_secret_*.json
 *.pem
+*.keystore
 .env*
 
 # Dependencies
@@ -32,6 +34,43 @@ node_modules/
 # Production logs
 production/session-logs/
 
+# Documents & media (not game assets)
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+*.csv
+
+# Archives
+*.zip
+*.rar
+*.7z
+*.tar.gz
+
+# Images (non-asset)
+*.psd
+*.ai
+*.sketch
+
+# Logs
+*.log
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
 # OS-generated
 .DS_Store
 Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Windows temp files
+~*
+*.TMP

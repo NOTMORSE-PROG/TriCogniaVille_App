@@ -5,12 +5,13 @@ extends Node
 
 signal building_unlocked(building_id: String)
 signal all_buildings_unlocked
-
-# Per-student unlocked list — loaded from DB on login, empty until then
-var unlocked_buildings: Array[String] = []
+signal badge_unlocked(badge_id: String)
 
 # Total buildings in the village (Phase 0 has 6)
 const TOTAL_BUILDINGS := 6
+
+# Per-student unlocked list — loaded from DB on login, empty until then
+var unlocked_buildings: Array[String] = []
 
 # Current logged-in student (empty dict = not logged in)
 var current_student: Dictionary = {}
@@ -31,7 +32,14 @@ func record_unlock(id: String) -> void:
 	# Persist to SQLite when a student session is active
 	if not current_student.is_empty():
 		DatabaseManager.set_building_unlocked(current_student.get("id", ""), id)
-	print("[GameManager] Building unlocked: ", id, " | Total: ", unlocked_buildings.size(), "/", TOTAL_BUILDINGS)
+	print(
+		"[GameManager] Building unlocked: ",
+		id,
+		" | Total: ",
+		unlocked_buildings.size(),
+		"/",
+		TOTAL_BUILDINGS
+	)
 	building_unlocked.emit(id)
 	# Trigger cloud sync
 	if has_node("/root/SyncManager"):
@@ -52,10 +60,19 @@ func set_current_student(student: Dictionary) -> void:
 		var sid: String = current_student.get("id", "")
 		unlocked_buildings = DatabaseManager.get_unlocked_buildings(sid)
 		current_student["tutorial_done"] = 1 if DatabaseManager.is_tutorial_done(sid) else 0
-		print("[GameManager] Student set: ", current_student.get("name", "?"),
-			" | Level: ", current_student.get("reading_level", 1),
-			" | Unlocked: ", unlocked_buildings.size(),
-			" | Tutorial: ", "done" if current_student.get("tutorial_done", 0) == 1 else "pending")
+		# Load story progress for Luminara narrative
+		if has_node("/root/StoryManager"):
+			StoryManager.load_progress(sid)
+		print(
+			"[GameManager] Student set: ",
+			current_student.get("name", "?"),
+			" | Level: ",
+			current_student.get("reading_level", 1),
+			" | Unlocked: ",
+			unlocked_buildings.size(),
+			" | Tutorial: ",
+			"done" if current_student.get("tutorial_done", 0) == 1 else "pending"
+		)
 
 
 func _normalize_student(s: Dictionary) -> Dictionary:
@@ -90,6 +107,33 @@ func record_quest_completion(building_id: String, xp_reward: int) -> void:
 			DatabaseManager.update_student_xp(student_id, new_xp)
 			current_student["xp"] = new_xp
 			print("[GameManager] XP awarded: +%d (total: %d)" % [xp_reward, new_xp])
+			_check_level_up(student_id, new_xp)
+
+
+func _check_level_up(student_id: String, xp: int) -> void:
+	var new_level: int
+	if xp >= 500:
+		new_level = 4
+	elif xp >= 250:
+		new_level = 3
+	elif xp >= 100:
+		new_level = 2
+	else:
+		new_level = 1
+	var current_level: int = current_student.get("reading_level", 1)
+	if new_level > current_level:
+		DatabaseManager.update_student_level(student_id, new_level)
+		current_student["reading_level"] = new_level
+		print("[GameManager] Level up! %d → %d" % [current_level, new_level])
+
+
+## Called by SyncManager when the server reports a newly earned badge.
+## Emits badge_unlocked so the UI layer can show a notification.
+func unlock_badge(badge_id: String) -> void:
+	if badge_id.is_empty():
+		return
+	print("[GameManager] Badge unlocked: ", badge_id)
+	badge_unlocked.emit(badge_id)
 
 
 func clear_current_student() -> void:

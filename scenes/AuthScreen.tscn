@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/AuthScreen.gd" id="1_auth"]
 [ext_resource type="Shader" path="res://assets/shaders/animated_background.gdshader" id="2_bg_shader"]
 [ext_resource type="Shader" path="res://assets/shaders/bokeh_particles.gdshader" id="3_bokeh"]
+[ext_resource type="Texture2D" path="res://logo.png" id="4_logo"]
 
 [sub_resource type="ShaderMaterial" id="bg_mat"]
 shader = ExtResource("2_bg_shader")
@@ -54,26 +55,20 @@ offset_bottom = 200.0
 mouse_filter = 2
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="BrandingLayer"]
+[node name="LogoTexture" type="TextureRect" parent="BrandingLayer"]
 layout_mode = 2
-text = "READVENTURE"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 68
-theme_override_colors/font_color = Color(0.914, 0.388, 0.431, 1)
+custom_minimum_size = Vector2(0, 110)
+size_flags_horizontal = 4
+texture = ExtResource("4_logo")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="SubtitleLabel" type="Label" parent="BrandingLayer"]
 layout_mode = 2
 text = "Story-Based Reading Adventure"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 28
-theme_override_colors/font_color = Color(0.392, 0.769, 0.91, 1)
-
-[node name="TaglineLabel" type="Label" parent="BrandingLayer"]
-layout_mode = 2
-text = "For Grade 7 Learners"
-horizontal_alignment = 1
 theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.659, 0.722, 0.816, 1)
+theme_override_colors/font_color = Color(0.392, 0.769, 0.91, 1)
 
 [node name="ContentCard" type="PanelContainer" parent="."]
 layout_mode = 1

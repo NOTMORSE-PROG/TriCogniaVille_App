@@ -3,6 +3,7 @@ extends Control
 ## Manages 3-stage flow: Tutorial → Practice → Mission → Results.
 ## Blocks all input below via MOUSE_FILTER_STOP.
 
+var _tutorial_demo_shown: bool = false
 var _sx: float = 1.0
 var _sy: float = 1.0
 var _transitioning: bool = false
@@ -12,6 +13,7 @@ var _bg: ColorRect
 var _header_container: VBoxContainer
 var _stage_dots: Array[Panel] = []
 var _question_container: VBoxContainer
+var _question_scroll: ScrollContainer
 var _interaction_node: Control
 var _bottom_bar: HBoxContainer
 var _next_btn: Button
@@ -20,6 +22,21 @@ var _close_btn: Button
 var _building_label: Label
 var _topic_label: Label
 var _stage_label: Label
+
+# Stage banner
+var _stage_banner: PanelContainer
+var _stage_banner_label: Label
+var _stage_banner_desc: Label
+var _stage_banner_icon: Label
+
+# Mission progress
+var _progress_container: HBoxContainer
+var _mission_progress_bar: ProgressBar
+var _running_score_label: Label
+
+# Hint system
+var _hint_manager: HintManager
+var _hint_nudge_label: Label
 
 # Result UI
 var _result_container: VBoxContainer
@@ -36,6 +53,12 @@ func setup(sx: float, sy: float) -> void:
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	set_process(false)
+
+
+func _process(delta: float) -> void:
+	if _hint_manager != null:
+		_hint_manager.update(delta)
 
 
 func _connect_quest_signals() -> void:
@@ -48,6 +71,7 @@ func _connect_quest_signals() -> void:
 # ═════════════════════════════════════════════════════════════════════════════
 # LAYOUT
 # ═════════════════════════════════════════════════════════════════════════════
+
 
 func _build_layout() -> void:
 	# Dark overlay background
@@ -149,8 +173,83 @@ func _build_layout() -> void:
 	_close_btn.pressed.connect(_on_close_pressed)
 	header_hbox.add_child(_close_btn)
 
+	# ── Stage Banner ──
+	_stage_banner = PanelContainer.new()
+	_stage_banner.custom_minimum_size = Vector2(0, 48 * _sy)
+	_stage_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var banner_style := StyleBoxFlat.new()
+	banner_style.bg_color = StyleFactory.STAGE_TUTORIAL_BG
+	banner_style.corner_radius_top_left = int(10 * _sx)
+	banner_style.corner_radius_top_right = int(10 * _sx)
+	banner_style.corner_radius_bottom_left = int(10 * _sx)
+	banner_style.corner_radius_bottom_right = int(10 * _sx)
+	banner_style.border_width_top = 2
+	banner_style.border_width_bottom = 2
+	banner_style.border_color = StyleFactory.STAGE_TUTORIAL_ACCENT
+	banner_style.content_margin_left = int(16 * _sx)
+	banner_style.content_margin_right = int(16 * _sx)
+	banner_style.content_margin_top = int(6 * _sy)
+	banner_style.content_margin_bottom = int(6 * _sy)
+	_stage_banner.add_theme_stylebox_override("panel", banner_style)
+	main_vbox.add_child(_stage_banner)
+
+	var banner_hbox := HBoxContainer.new()
+	banner_hbox.add_theme_constant_override("separation", int(12 * _sx))
+	banner_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	banner_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_stage_banner.add_child(banner_hbox)
+
+	_stage_banner_icon = Label.new()
+	_stage_banner_icon.text = "LEARN"
+	_stage_banner_icon.add_theme_font_size_override("font_size", int(12 * _sy))
+	_stage_banner_icon.add_theme_color_override("font_color", StyleFactory.STAGE_TUTORIAL_ACCENT)
+	_stage_banner_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	banner_hbox.add_child(_stage_banner_icon)
+
+	_stage_banner_label = Label.new()
+	_stage_banner_label.text = "TUTORIAL MODE"
+	_stage_banner_label.add_theme_font_size_override("font_size", int(20 * _sy))
+	_stage_banner_label.add_theme_color_override("font_color", Color.WHITE)
+	_stage_banner_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	banner_hbox.add_child(_stage_banner_label)
+
+	_stage_banner_desc = Label.new()
+	_stage_banner_desc.text = "Guided learning — no score"
+	_stage_banner_desc.add_theme_font_size_override("font_size", int(12 * _sy))
+	_stage_banner_desc.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+	_stage_banner_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	banner_hbox.add_child(_stage_banner_desc)
+
+	# ── Mission Progress Bar ──
+	_progress_container = HBoxContainer.new()
+	_progress_container.add_theme_constant_override("separation", int(12 * _sx))
+	_progress_container.visible = false
+	_progress_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	main_vbox.add_child(_progress_container)
+
+	_mission_progress_bar = ProgressBar.new()
+	_mission_progress_bar.min_value = 0.0
+	_mission_progress_bar.max_value = 10.0
+	_mission_progress_bar.value = 0.0
+	_mission_progress_bar.custom_minimum_size = Vector2(0, 10 * _sy)
+	_mission_progress_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_mission_progress_bar.add_theme_stylebox_override("background", StyleFactory.make_progress_bg())
+	var progress_fill := StyleFactory.make_progress_fill()
+	progress_fill.bg_color = StyleFactory.SUCCESS_GREEN
+	_mission_progress_bar.add_theme_stylebox_override("fill", progress_fill)
+	_mission_progress_bar.show_percentage = false
+	_progress_container.add_child(_mission_progress_bar)
+
+	_running_score_label = Label.new()
+	_running_score_label.text = "0/0 correct"
+	_running_score_label.add_theme_font_size_override("font_size", int(13 * _sy))
+	_running_score_label.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
+	_running_score_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_progress_container.add_child(_running_score_label)
+
 	# ── Content area ──
-	var scroll := ScrollContainer.new()
+	_question_scroll = ScrollContainer.new()
+	var scroll := _question_scroll
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -160,6 +259,17 @@ func _build_layout() -> void:
 	_question_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_question_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_question_container)
+
+	# ── Hint nudge label ──
+	_hint_nudge_label = Label.new()
+	_hint_nudge_label.text = ""
+	_hint_nudge_label.visible = false
+	_hint_nudge_label.add_theme_font_size_override("font_size", int(14 * _sy))
+	_hint_nudge_label.add_theme_color_override("font_color", StyleFactory.SKY_BLUE)
+	_hint_nudge_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_hint_nudge_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_hint_nudge_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	main_vbox.add_child(_hint_nudge_label)
 
 	# ── Bottom bar ──
 	_bottom_bar = HBoxContainer.new()
@@ -200,6 +310,7 @@ func _build_layout() -> void:
 # QUEST SIGNAL HANDLERS
 # ═════════════════════════════════════════════════════════════════════════════
 
+
 func _on_quest_started(building_id: String) -> void:
 	var quest := QuestManager.get_current_quest_data()
 	_building_label.text = QuestData.get_building_label(building_id)
@@ -208,16 +319,31 @@ func _on_quest_started(building_id: String) -> void:
 	visible = true
 	modulate.a = 0.0
 	var tw := create_tween()
-	tw.tween_property(self, "modulate:a", 1.0, 0.35) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(self, "modulate:a", 1.0, 0.35).set_trans(Tween.TRANS_QUAD).set_ease(
+		Tween.EASE_OUT
+	)
 
 
 func _on_stage_changed(stage: String) -> void:
+	_tutorial_demo_shown = false
 	_update_stage_dots(stage)
+	_update_stage_banner(stage)
 	match stage:
-		"tutorial": _stage_label.text = "Tutorial"
-		"practice": _stage_label.text = "Practice"
-		"mission":  _stage_label.text = "Mission"
+		"tutorial":
+			_stage_label.text = "Tutorial"
+		"practice":
+			_stage_label.text = "Practice"
+		"mission":
+			_stage_label.text = "Mission"
+
+	# Show progress bar only during mission
+	_progress_container.visible = (stage == "mission")
+	if stage == "mission":
+		var questions := QuestManager.get_current_questions()
+		_mission_progress_bar.max_value = float(questions.size())
+		_mission_progress_bar.value = 0.0
+		_running_score_label.text = "0/0 correct"
+
 	_load_current_question()
 
 
@@ -232,6 +358,7 @@ func _on_quest_abandoned(_building_id: String) -> void:
 # ═════════════════════════════════════════════════════════════════════════════
 # QUESTION LOADING
 # ═════════════════════════════════════════════════════════════════════════════
+
 
 func _load_current_question() -> void:
 	if _transitioning:
@@ -250,7 +377,12 @@ func _load_current_question() -> void:
 
 	var question: Dictionary = questions[idx]
 	var stage := QuestManager.get_current_stage()
-	var show_hints := (stage == "practice" or stage == "tutorial")
+	var show_hints := stage == "practice" or stage == "tutorial"
+
+	# For tutorial stage, show guided demo first (only once per question)
+	if stage == "tutorial" and not _tutorial_demo_shown:
+		_show_tutorial_demo(question)
+		return
 
 	# Update counter
 	if stage == "mission":
@@ -270,7 +402,12 @@ func _load_current_question() -> void:
 	var qtype: String = question.get("type", "mcq")
 	match qtype:
 		"mcq":
-			var mcq: Node = load("res://scripts/quest/interactions/MCQInteraction.gd").new()
+			var mcq_script := load("res://scripts/quest/interactions/MCQInteraction.gd")
+			if mcq_script == null:
+				push_error("[QuestOverlay] Failed to load MCQInteraction script")
+				_transitioning = false
+				return
+			var mcq: Node = mcq_script.new()
 			_question_container.add_child(mcq)
 			mcq.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			mcq.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -278,7 +415,12 @@ func _load_current_question() -> void:
 			mcq.answer_submitted.connect(_on_answer_submitted)
 			_interaction_node = mcq
 		"tap_target":
-			var tap: Node = load("res://scripts/quest/interactions/TapTargetInteraction.gd").new()
+			var tap_script := load("res://scripts/quest/interactions/TapTargetInteraction.gd")
+			if tap_script == null:
+				push_error("[QuestOverlay] Failed to load TapTargetInteraction script")
+				_transitioning = false
+				return
+			var tap: Node = tap_script.new()
 			_question_container.add_child(tap)
 			tap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			tap.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -286,7 +428,12 @@ func _load_current_question() -> void:
 			tap.answer_submitted.connect(_on_answer_submitted)
 			_interaction_node = tap
 		"drag_drop":
-			var dd: Node = load("res://scripts/quest/interactions/DragDropInteraction.gd").new()
+			var dd_script := load("res://scripts/quest/interactions/DragDropInteraction.gd")
+			if dd_script == null:
+				push_error("[QuestOverlay] Failed to load DragDropInteraction script")
+				_transitioning = false
+				return
+			var dd: Node = dd_script.new()
 			_question_container.add_child(dd)
 			dd.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			dd.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -294,42 +441,129 @@ func _load_current_question() -> void:
 			dd.answer_submitted.connect(_on_answer_submitted)
 			_interaction_node = dd
 		"read_aloud":
-			var ra: Node = load("res://scripts/quest/interactions/ReadAloudInteraction.gd").new()
+			var ra_script := load("res://scripts/quest/interactions/ReadAloudInteraction.gd")
+			if ra_script == null:
+				push_error("[QuestOverlay] Failed to load ReadAloudInteraction script")
+				_transitioning = false
+				return
+			var ra: Node = ra_script.new()
 			_question_container.add_child(ra)
 			ra.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			ra.size_flags_vertical = Control.SIZE_EXPAND_FILL
 			ra.setup(question, show_hints, _sx, _sy)
 			ra.answer_submitted.connect(_on_answer_submitted)
 			_interaction_node = ra
+		"fluency_check":
+			var fl_script := load("res://scripts/quest/interactions/FluencyInteraction.gd")
+			if fl_script == null:
+				push_error("[QuestOverlay] Failed to load FluencyInteraction script")
+				_transitioning = false
+				return
+			var fl: Node = fl_script.new()
+			_question_container.add_child(fl)
+			fl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			fl.size_flags_vertical = Control.SIZE_EXPAND_FILL
+			fl.setup(question, show_hints, _sx, _sy)
+			fl.answer_submitted.connect(_on_answer_submitted)
+			fl.fluency_score_submitted.connect(
+				func(score: int) -> void: QuestManager.submit_fluency_score(score)
+			)
+			_interaction_node = fl
 
 	if is_instance_valid(_interaction_node):
 		UIAnimations.fade_in_up(self, _interaction_node)
 
+	# Start hint tracking for mission mode
+	_hint_nudge_label.visible = false
+	_hint_nudge_label.text = ""
+	if stage == "mission":
+		_hint_manager = HintManager.new()
+		_hint_manager.hint_triggered.connect(_on_hint_triggered)
+		_hint_manager.start_tracking()
+		set_process(true)
+	else:
+		_hint_manager = null
+		set_process(false)
+
 	_transitioning = false
 
 
-func _on_answer_submitted(correct: bool) -> void:
-	QuestManager.submit_answer(correct)
-	# Show Next button after a short delay
-	_next_btn.visible = false
-	var timer := get_tree().create_timer(1.2)
-	timer.timeout.connect(func() -> void:
-		if not is_instance_valid(_next_btn):
-			return
-		var questions := QuestManager.get_current_questions()
-		var idx := QuestManager.get_current_question_index()
-		var stage := QuestManager.get_current_stage()
+func _on_hint_triggered(level: int) -> void:
+	match level:
+		0:
+			# Gentle nudge
+			_hint_nudge_label.text = "Take your time! Read the question carefully."
+			_hint_nudge_label.visible = true
+			_hint_nudge_label.modulate.a = 0.0
+			var tw := create_tween()
+			tw.tween_property(_hint_nudge_label, "modulate:a", 1.0, 0.3)
+		1:
+			# Eliminate one wrong answer — delegate to interaction
+			_hint_nudge_label.text = "Here's a hint to help you..."
+			if is_instance_valid(_interaction_node) and _interaction_node.has_method("apply_hint"):
+				_interaction_node.apply_hint(1)
+		2:
+			# Stronger hint — delegate to interaction
+			_hint_nudge_label.text = "One more hint — look closely!"
+			if is_instance_valid(_interaction_node) and _interaction_node.has_method("apply_hint"):
+				_interaction_node.apply_hint(2)
 
-		if idx + 1 >= questions.size():
-			if stage == "mission":
-				_next_btn.text = "See Results"
-			else:
-				_next_btn.text = "Next Stage"
-		else:
-			_next_btn.text = "Next"
-		_next_btn.visible = true
-		UIAnimations.fade_in_up(self, _next_btn)
-	)
+
+func _on_answer_submitted(correct: bool) -> void:
+	# Stop hint tracking (hints are shown automatically on inactivity, not counted)
+	if _hint_manager != null:
+		_hint_manager.stop_tracking()
+		set_process(false)
+	_hint_nudge_label.visible = false
+
+	# Only record the answer when correct to avoid inflating wrong-answer counts on retries
+	if correct:
+		QuestManager.submit_answer(correct)
+
+	# Update mission progress bar
+	if correct and QuestManager.get_current_stage() == "mission":
+		var total := QuestManager.get_mission_total()
+		var score := QuestManager.get_mission_score()
+		_mission_progress_bar.value = float(total)
+		_running_score_label.text = "%d/%d correct" % [score, total]
+		if score > 0:
+			_running_score_label.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
+		# Tween the progress bar
+		var tw := create_tween()
+		(
+			tw
+			. tween_property(_mission_progress_bar, "value", float(total), 0.3)
+			. set_trans(Tween.TRANS_QUAD)
+			. set_ease(Tween.EASE_OUT)
+		)
+
+	_next_btn.visible = false
+
+	if correct:
+		# Show Next button after a short delay
+		var timer := get_tree().create_timer(1.2)
+		timer.timeout.connect(
+			func() -> void:
+				if not is_instance_valid(_next_btn):
+					return
+				var questions := QuestManager.get_current_questions()
+				var idx := QuestManager.get_current_question_index()
+				var stage := QuestManager.get_current_stage()
+
+				if idx + 1 >= questions.size():
+					if stage == "mission":
+						_next_btn.text = "See Results"
+					else:
+						_next_btn.text = "Next Stage"
+				else:
+					_next_btn.text = "Next"
+				_next_btn.visible = true
+				UIAnimations.fade_in_up(self, _next_btn)
+		)
+	else:
+		# Wrong answer — reload the same question for retry after feedback delay
+		var retry_timer := get_tree().create_timer(1.5)
+		retry_timer.timeout.connect(func() -> void: _reload_current_question())
 
 
 func _on_next_pressed() -> void:
@@ -346,6 +580,15 @@ func _on_next_pressed() -> void:
 			QuestManager.advance_stage()
 
 
+func _reload_current_question() -> void:
+	# Reset hint manager for the retry attempt
+	if _hint_manager != null:
+		_hint_manager.reset()
+	_hint_nudge_label.visible = false
+	# Reload the same question (no advance_question call)
+	_load_current_question()
+
+
 func _on_close_pressed() -> void:
 	QuestManager.abandon_quest()
 
@@ -354,7 +597,18 @@ func _on_close_pressed() -> void:
 # RESULTS
 # ═════════════════════════════════════════════════════════════════════════════
 
+
 func _show_result(_building_id: String, passed: bool, score: int) -> void:
+	if passed:
+		AudioManager.play_sfx("quest_pass")
+	else:
+		AudioManager.play_sfx("quest_fail")
+
+	# Hide progress bar and hints
+	_progress_container.visible = false
+	_hint_nudge_label.visible = false
+	set_process(false)
+
 	# Clear question area
 	if is_instance_valid(_interaction_node):
 		_interaction_node.queue_free()
@@ -363,97 +617,218 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 	_next_btn.visible = false
 	_counter_label.text = ""
 
+	var total := QuestManager.get_mission_total()
+	var question_results := QuestManager.get_question_results()
+
 	# Build result UI in question container
 	var vbox := VBoxContainer.new()
 	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	vbox.add_theme_constant_override("separation", int(16 * _sy))
+	vbox.add_theme_constant_override("separation", int(12 * _sy))
 	_question_container.add_child(vbox)
 	_interaction_node = vbox  # for cleanup
 
-	var center := CenterContainer.new()
-	center.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(center)
+	# ── Score Header ──
+	var header_card := PanelContainer.new()
+	header_card.add_theme_stylebox_override(
+		"panel", StyleFactory.make_elevated_card(StyleFactory.BG_CARD, 16, 2)
+	)
+	header_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(header_card)
 
-	var result_card := VBoxContainer.new()
-	result_card.add_theme_constant_override("separation", int(16 * _sy))
-	result_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	center.add_child(result_card)
+	var header_vbox := VBoxContainer.new()
+	header_vbox.add_theme_constant_override("separation", int(8 * _sy))
+	header_card.add_child(header_vbox)
 
-	# Result icon/title
+	# Title
 	var title := Label.new()
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", int(28 * _sy))
+	title.add_theme_font_size_override("font_size", int(26 * _sy))
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	result_card.add_child(title)
+	header_vbox.add_child(title)
 
+	# Score display
 	var score_label := Label.new()
-	score_label.text = "Score: %d / %d" % [score, QuestManager.get_mission_total()]
-	score_label.add_theme_font_size_override("font_size", int(20 * _sy))
-	score_label.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
+	score_label.text = "%d / %d" % [score, total]
+	score_label.add_theme_font_size_override("font_size", int(36 * _sy))
 	score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	score_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	result_card.add_child(score_label)
+	header_vbox.add_child(score_label)
+
+	# Personalized message
+	var message := Label.new()
+	message.add_theme_font_size_override("font_size", int(15 * _sy))
+	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	message.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header_vbox.add_child(message)
 
 	if passed:
 		title.text = "Quest Complete!"
 		title.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
+		score_label.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
 
-		var xp_label := Label.new()
+		if score >= total:
+			message.text = "Perfect score! You're a reading champion!"
+		elif score >= total - 1:
+			message.text = "Excellent work! Almost perfect!"
+		else:
+			message.text = "You passed! Well done!"
+		message.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
+
 		var xp: int = QuestManager.get_current_quest_data().get("xp", 0)
+		var xp_label := Label.new()
 		xp_label.text = "+%d XP" % xp
-		xp_label.add_theme_font_size_override("font_size", int(24 * _sy))
+		xp_label.add_theme_font_size_override("font_size", int(22 * _sy))
 		xp_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 		xp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		xp_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		result_card.add_child(xp_label)
+		header_vbox.add_child(xp_label)
 
 		UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.12))
-		UIAnimations.elastic_reveal(self, result_card)
+		UIAnimations.elastic_reveal(self, header_card)
+	else:
+		title.text = "Keep Trying!"
+		title.add_theme_color_override("font_color", StyleFactory.TEXT_ERROR)
+		score_label.add_theme_color_override("font_color", StyleFactory.TEXT_ERROR)
 
-		# Close button after delay
-		var close_timer := get_tree().create_timer(2.0)
-		close_timer.timeout.connect(func() -> void:
-			var done_btn := Button.new()
-			done_btn.text = "Continue"
-			done_btn.custom_minimum_size = Vector2(180 * _sx, 50 * _sy)
-			done_btn.add_theme_font_size_override("font_size", int(18 * _sy))
-			done_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
-			done_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
-			done_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
-			done_btn.add_theme_stylebox_override("pressed", StyleFactory.make_primary_button_pressed())
-			done_btn.pressed.connect(func() -> void:
+		if score >= total - 3:
+			message.text = "Almost there! You need 7 correct to pass."
+		elif score >= total / 2:
+			message.text = "Good effort! Review the questions and try again."
+		else:
+			message.text = "Keep practicing — you'll get it!"
+		message.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
+
+		UIAnimations.fade_in_up(self, header_card)
+
+	# ── Story: Lumi encouragement on fail ──
+	if not passed:
+		var fail_outro := StoryManager.get_outro(_building_id, false)
+		if fail_outro.size() > 0:
+			var lumi_card := PanelContainer.new()
+			var lumi_style := StyleFactory.make_elevated_card(StyleFactory.BG_CARD, 12, 1)
+			lumi_style.border_width_left = 3
+			lumi_style.border_color = StyleFactory.SUCCESS_GREEN
+			lumi_card.add_theme_stylebox_override("panel", lumi_style)
+			lumi_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			vbox.add_child(lumi_card)
+
+			var lumi_hbox := HBoxContainer.new()
+			lumi_hbox.add_theme_constant_override("separation", int(10 * _sx))
+			lumi_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			lumi_card.add_child(lumi_hbox)
+
+			var lumi_icon := Label.new()
+			lumi_icon.text = "\u2726"
+			lumi_icon.add_theme_font_size_override("font_size", int(16 * _sy))
+			lumi_icon.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
+			lumi_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			lumi_hbox.add_child(lumi_icon)
+
+			var lumi_text := Label.new()
+			lumi_text.text = fail_outro[0].get("text", "")
+			lumi_text.add_theme_font_size_override("font_size", int(14 * _sy))
+			lumi_text.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
+			lumi_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			lumi_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			lumi_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			lumi_hbox.add_child(lumi_text)
+
+			UIAnimations.fade_in_up(self, lumi_card, 0.3)
+
+	# ── Question Breakdown ──
+	if question_results.size() > 0:
+		var breakdown_label := Label.new()
+		breakdown_label.text = "Question Breakdown"
+		breakdown_label.add_theme_font_size_override("font_size", int(16 * _sy))
+		breakdown_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+		breakdown_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(breakdown_label)
+
+		for i in question_results.size():
+			var result: Dictionary = question_results[i]
+			var correct: bool = result.get("correct", false)
+			var q: Dictionary = result.get("question", {})
+
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", int(8 * _sx))
+			row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			vbox.add_child(row)
+
+			# Status icon
+			var icon := Label.new()
+			icon.text = "+" if correct else "x"
+			icon.add_theme_font_size_override("font_size", int(16 * _sy))
+			icon.add_theme_color_override(
+				"font_color", StyleFactory.SUCCESS_GREEN if correct else StyleFactory.TEXT_ERROR
+			)
+			icon.custom_minimum_size = Vector2(24 * _sx, 0)
+			icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			row.add_child(icon)
+
+			# Question number
+			var num := Label.new()
+			num.text = "Q%d" % (i + 1)
+			num.add_theme_font_size_override("font_size", int(13 * _sy))
+			num.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+			num.custom_minimum_size = Vector2(32 * _sx, 0)
+			num.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			row.add_child(num)
+
+			# Question preview
+			var preview := Label.new()
+			var q_text: String = q.get("question", q.get("instruction", q.get("word", "")))
+			if q_text.length() > 50:
+				q_text = q_text.substr(0, 47) + "..."
+			preview.text = q_text
+			preview.add_theme_font_size_override("font_size", int(13 * _sy))
+			preview.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
+			preview.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			preview.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+			preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			row.add_child(preview)
+
+	# ── Action Buttons ──
+	var btn_row := HBoxContainer.new()
+	btn_row.add_theme_constant_override("separation", int(12 * _sx))
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(btn_row)
+
+	if passed:
+		var done_btn := Button.new()
+		done_btn.text = "Continue"
+		done_btn.custom_minimum_size = Vector2(180 * _sx, 50 * _sy)
+		done_btn.add_theme_font_size_override("font_size", int(18 * _sy))
+		done_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
+		done_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
+		done_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
+		done_btn.add_theme_stylebox_override("pressed", StyleFactory.make_primary_button_pressed())
+		done_btn.pressed.connect(
+			func() -> void:
+				# ── Story: outro dialogue after quest pass ──
+				var bid := _building_label.text.to_lower().replace(" ", "_")
+				# Get building_id from QuestManager (more reliable)
+				var quest_bid := QuestManager.get_last_completed_building_id()
+				if not quest_bid.is_empty():
+					bid = quest_bid
+				if StoryManager.should_show_outro(bid):
+					var outro := StoryManager.get_outro(bid, true)
+					if outro.size() > 0:
+						var dp := get_node_or_null("/root/Main/UI/DialoguePanel")
+						if dp and dp.has_method("show_sequence"):
+							QuestManager._reset_state()
+							_hide_overlay()
+							dp.show_sequence(outro)
+							await dp.dialogue_sequence_finished
+							StoryManager.mark_outro_seen(bid)
+							return
 				QuestManager._reset_state()
 				_hide_overlay()
-			)
-			var btn_center := CenterContainer.new()
-			btn_center.add_child(done_btn)
-			result_card.add_child(btn_center)
-			UIAnimations.fade_in_up(self, done_btn)
-			UIAnimations.make_interactive(done_btn)
 		)
+		btn_row.add_child(done_btn)
+		done_btn.ready.connect(func() -> void: UIAnimations.make_interactive(done_btn))
 	else:
-		title.text = "Keep trying!"
-		title.add_theme_color_override("font_color", StyleFactory.TEXT_ERROR)
-
-		var encourage := Label.new()
-		encourage.text = "You need 7 correct answers to unlock this building."
-		encourage.add_theme_font_size_override("font_size", int(15 * _sy))
-		encourage.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
-		encourage.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		encourage.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		encourage.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		result_card.add_child(encourage)
-
-		UIAnimations.fade_in_up(self, result_card)
-
-		# Retry + Close buttons
-		var btn_row := HBoxContainer.new()
-		btn_row.add_theme_constant_override("separation", int(12 * _sx))
-		btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
-		result_card.add_child(btn_row)
-
 		var retry_btn := Button.new()
 		retry_btn.text = "Try Again"
 		retry_btn.custom_minimum_size = Vector2(140 * _sx, 48 * _sy)
@@ -462,11 +837,12 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 		retry_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
 		retry_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
 		retry_btn.add_theme_stylebox_override("pressed", StyleFactory.make_primary_button_pressed())
-		retry_btn.pressed.connect(func() -> void:
-			if is_instance_valid(_interaction_node):
-				_interaction_node.queue_free()
-				_interaction_node = null
-			QuestManager.retry_mission()
+		retry_btn.pressed.connect(
+			func() -> void:
+				if is_instance_valid(_interaction_node):
+					_interaction_node.queue_free()
+					_interaction_node = null
+				QuestManager.retry_mission()
 		)
 		btn_row.add_child(retry_btn)
 
@@ -477,10 +853,13 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 		quit_btn.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 		quit_btn.add_theme_stylebox_override("normal", StyleFactory.make_secondary_button_normal())
 		quit_btn.add_theme_stylebox_override("hover", StyleFactory.make_secondary_button_hover())
-		quit_btn.add_theme_stylebox_override("pressed", StyleFactory.make_secondary_button_pressed())
-		quit_btn.pressed.connect(func() -> void:
-			QuestManager._reset_state()
-			_hide_overlay()
+		quit_btn.add_theme_stylebox_override(
+			"pressed", StyleFactory.make_secondary_button_pressed()
+		)
+		quit_btn.pressed.connect(
+			func() -> void:
+				QuestManager._reset_state()
+				_hide_overlay()
 		)
 		btn_row.add_child(quit_btn)
 
@@ -492,12 +871,145 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 # HELPERS
 # ═════════════════════════════════════════════════════════════════════════════
 
+
+func _show_tutorial_demo(question: Dictionary) -> void:
+	_tutorial_demo_shown = true
+	_transitioning = true
+
+	# Clear old interaction
+	if is_instance_valid(_interaction_node):
+		_interaction_node.queue_free()
+		_interaction_node = null
+	_next_btn.visible = false
+
+	# Hide the empty content area so there's no big blank box while guide is shown
+	if is_instance_valid(_question_scroll):
+		_question_scroll.visible = false
+	_hint_nudge_label.visible = false
+	_bottom_bar.visible = false
+
+	# Add guide directly to self (not _question_container) so PRESET_FULL_RECT works
+	var guide: Control = load("res://scripts/quest/QuestTutorialGuide.gd").new()
+	add_child(guide)
+	guide.setup(question, _sx, _sy)
+
+	guide.demo_complete.connect(
+		func() -> void:
+			# Restore content area then load the real interaction
+			if is_instance_valid(_question_scroll):
+				_question_scroll.visible = true
+			_bottom_bar.visible = true
+			_transitioning = false
+			_load_current_question(),
+		CONNECT_ONE_SHOT
+	)
+
+
+func _show_story_toast(text: String, stage: String) -> void:
+	var theme := StyleFactory.get_stage_theme(stage)
+	var mood_color: Color = theme.get("accent", StyleFactory.GOLD)
+
+	# Build a small toast card
+	var toast := PanelContainer.new()
+	var toast_style := StyleFactory.make_elevated_card(StyleFactory.BG_CARD, 12, 1)
+	toast_style.border_width_left = 3
+	toast_style.border_color = mood_color
+	toast.add_theme_stylebox_override("panel", toast_style)
+	toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var hbox := HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", int(10 * _sx))
+	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	toast.add_child(hbox)
+
+	# Lumi icon
+	var icon := Label.new()
+	icon.text = "\u2726"
+	icon.add_theme_font_size_override("font_size", int(16 * _sy))
+	icon.add_theme_color_override("font_color", mood_color)
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(icon)
+
+	# Text
+	var lbl := Label.new()
+	lbl.text = text
+	lbl.add_theme_font_size_override("font_size", int(14 * _sy))
+	lbl.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(lbl)
+
+	# Position: centered, below stage banner
+	toast.anchor_left = 0.15
+	toast.anchor_right = 0.85
+	toast.anchor_top = 0.18
+	add_child(toast)
+
+	# Animate in
+	UIAnimations.fade_in_up(self, toast)
+
+	# Auto-dismiss after delay
+	await get_tree().create_timer(2.5).timeout
+	if is_instance_valid(toast):
+		await UIAnimations.panel_out(self, toast)
+		if is_instance_valid(toast):
+			toast.queue_free()
+
+
+func _update_stage_banner(stage: String) -> void:
+	var theme := StyleFactory.get_stage_theme(stage)
+	if theme.get("label", "").is_empty():
+		return
+
+	# Animate banner transition
+	var tw := create_tween().set_parallel(true)
+	tw.tween_property(_stage_banner, "modulate:a", 0.0, 0.15)
+	tw.chain().tween_callback(
+		func() -> void:
+			# Update banner style
+			var banner_style := StyleBoxFlat.new()
+			banner_style.bg_color = theme["bg"]
+			banner_style.corner_radius_top_left = int(10 * _sx)
+			banner_style.corner_radius_top_right = int(10 * _sx)
+			banner_style.corner_radius_bottom_left = int(10 * _sx)
+			banner_style.corner_radius_bottom_right = int(10 * _sx)
+			banner_style.border_width_top = 2
+			banner_style.border_width_bottom = 2
+			banner_style.border_color = theme["accent"]
+			banner_style.content_margin_left = int(16 * _sx)
+			banner_style.content_margin_right = int(16 * _sx)
+			banner_style.content_margin_top = int(6 * _sy)
+			banner_style.content_margin_bottom = int(6 * _sy)
+			_stage_banner.add_theme_stylebox_override("panel", banner_style)
+
+			_stage_banner_icon.text = theme["icon"]
+			_stage_banner_icon.add_theme_color_override("font_color", theme["accent"])
+			_stage_banner_label.text = theme["label"]
+			_stage_banner_desc.text = theme["desc"]
+
+			# Tint the background overlay slightly
+			var bg_tint := Color(theme["bg"].r, theme["bg"].g, theme["bg"].b, 0.88)
+			_bg.color = bg_tint
+	)
+	(
+		tw
+		. chain()
+		. tween_property(_stage_banner, "modulate:a", 1.0, 0.2)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_OUT)
+	)
+
+
 func _update_stage_dots(stage: String) -> void:
 	var active_idx := 0
 	match stage:
-		"tutorial": active_idx = 0
-		"practice": active_idx = 1
-		"mission":  active_idx = 2
+		"tutorial":
+			active_idx = 0
+		"practice":
+			active_idx = 1
+		"mission":
+			active_idx = 2
 	UIAnimations.update_page_dots(self, _stage_dots, active_idx)
 
 
@@ -506,12 +1018,15 @@ func _hide_overlay() -> void:
 		_interaction_node.queue_free()
 		_interaction_node = null
 	_set_tracker_visible(true)
+	AudioManager.start_village_music()
 	var tw := create_tween()
-	tw.tween_property(self, "modulate:a", 0.0, 0.3) \
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tw.tween_callback(func() -> void:
-		visible = false
-		modulate.a = 1.0
+	tw.tween_property(self, "modulate:a", 0.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(
+		Tween.EASE_IN
+	)
+	tw.tween_callback(
+		func() -> void:
+			visible = false
+			modulate.a = 1.0
 	)
 
 

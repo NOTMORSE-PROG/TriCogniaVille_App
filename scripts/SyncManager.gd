@@ -57,39 +57,45 @@ func _do_sync() -> void:
 
 	var sync_data := _collect_unsynced_data()
 
-	# Skip if nothing to sync
-	if sync_data["questAttempts"].is_empty() and sync_data["buildingStates"].is_empty() and not sync_data.has("xp"):
-		is_syncing = false
-		is_online = true
-		_retry_count = 0
-		_sync_timer.start()
-		return
+	ApiClient.sync_progress(
+		sync_data,
+		func(success: bool, data: Dictionary) -> void:
+			is_syncing = false
 
-	ApiClient.sync_progress(sync_data, func(success: bool, data: Dictionary) -> void:
-		is_syncing = false
+			if success:
+				is_online = true
+				_retry_count = 0
 
-		if success:
-			is_online = true
-			_retry_count = 0
-
-			# Mark synced records
-			var synced: Dictionary = data.get("synced", {})
-			if synced.get("quests", 0) > 0 or synced.get("buildings", 0) > 0:
+				# Mark all locally queued records as synced on every successful response
+				var synced: Dictionary = data.get("synced", {})
 				_mark_as_synced()
-				print("[SyncManager] Synced: ", synced.get("quests", 0), " quests, ", synced.get("buildings", 0), " buildings")
+				print(
+					"[SyncManager] Synced: ",
+					synced.get("quests", 0),
+					" quests, ",
+					synced.get("buildings", 0),
+					" buildings, ",
+					synced.get("storyProgress", 0),
+					" story events"
+				)
 
-			# Update local student data from server response
-			if data.has("student"):
-				GameManager.current_student = data["student"]
-		else:
-			is_online = false
-			_retry_count += 1
-			# Exponential backoff
-			var delay := minf(SYNC_INTERVAL * pow(2, _retry_count), MAX_RETRY_DELAY)
-			_sync_timer.wait_time = delay
-			print("[SyncManager] Sync failed. Retrying in ", delay, "s")
+				# Update local student data from server response
+				if data.has("student"):
+					GameManager.current_student = data["student"]
 
-		_sync_timer.start()
+				# Notify game of any badges just earned during this sync
+				var new_badges: Array = data.get("badges", [])
+				for badge_id: Variant in new_badges:
+					GameManager.unlock_badge(str(badge_id))
+			else:
+				is_online = false
+				_retry_count += 1
+				# Exponential backoff
+				var delay := minf(SYNC_INTERVAL * pow(2, _retry_count), MAX_RETRY_DELAY)
+				_sync_timer.wait_time = delay
+				print("[SyncManager] Sync failed. Retrying in ", delay, "s")
+
+			_sync_timer.start()
 	)
 
 
@@ -101,15 +107,17 @@ func _collect_unsynced_data() -> Dictionary:
 	if not quests.is_empty():
 		var quest_array: Array[Dictionary] = []
 		for q in quests:
-			quest_array.append({
-				"questId": q.get("quest_id", ""),
-				"buildingId": q.get("building_id", ""),
-				"passed": q.get("passed", 0) == 1,
-				"score": q.get("score", 0),
-				"totalItems": q.get("total_items", 0),
-				"attempts": q.get("attempts", 1),
-				"completedAt": q.get("completed_at", "")
-			})
+			quest_array.append(
+				{
+					"questId": q.get("quest_id", ""),
+					"buildingId": q.get("building_id", ""),
+					"passed": q.get("passed", 0) == 1,
+					"score": q.get("score", 0),
+					"totalItems": q.get("total_items", 0),
+					"attempts": q.get("attempts", 1),
+					"completedAt": q.get("completed_at", "")
+				}
+			)
 		data["questAttempts"] = quest_array
 	else:
 		data["questAttempts"] = []
@@ -119,14 +127,34 @@ func _collect_unsynced_data() -> Dictionary:
 	if not buildings.is_empty():
 		var building_array: Array[Dictionary] = []
 		for b in buildings:
-			building_array.append({
-				"buildingId": b.get("building_id", ""),
-				"unlocked": b.get("unlocked", 0) == 1,
-				"unlockedAt": b.get("unlocked_at", "")
-			})
+			building_array.append(
+				{
+					"buildingId": b.get("building_id", ""),
+					"unlocked": b.get("unlocked", 0) == 1,
+					"unlockedAt": b.get("unlocked_at", "")
+				}
+			)
 		data["buildingStates"] = building_array
 	else:
 		data["buildingStates"] = []
+
+	# Collect unsynced story progress
+	var stories := DatabaseManager.get_unsynced_story_progress()
+	if not stories.is_empty():
+		var story_array: Array[Dictionary] = []
+		for s in stories:
+			story_array.append(
+				{
+					"buildingId": s.get("building_id", ""),
+					"prologueSeen": s.get("prologue_seen", 0) == 1,
+					"introSeen": s.get("intro_seen", 0) == 1,
+					"outroSeen": s.get("outro_seen", 0) == 1,
+					"endingSeen": s.get("ending_seen", 0) == 1
+				}
+			)
+		data["storyProgress"] = story_array
+	else:
+		data["storyProgress"] = []
 
 	# Include current student stats
 	if not GameManager.current_student.is_empty():
@@ -141,3 +169,4 @@ func _collect_unsynced_data() -> Dictionary:
 func _mark_as_synced() -> void:
 	DatabaseManager.mark_quest_attempts_synced()
 	DatabaseManager.mark_building_states_synced()
+	DatabaseManager.mark_story_progress_synced()

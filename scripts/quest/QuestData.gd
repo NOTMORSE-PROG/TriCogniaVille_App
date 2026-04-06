@@ -3,16 +3,13 @@ class_name QuestData
 ## Maps buildings to weekly missions. Each building has 3 stages: tutorial, practice, mission.
 ## All content is syllabus-aligned for Grade 7 learners (READVENTURE FINAL IT CONTENT GUIDE).
 
-
 # ── Sequential Unlock Order ─────────────────────────────────────────────────
-const UNLOCK_ORDER: Array[String] = [
-	"town_hall", "school", "library", "well", "market", "bakery"
-]
-
+const UNLOCK_ORDER: Array[String] = ["town_hall", "school", "library", "well", "market", "bakery"]
 
 # ── Building → Quest Mapping ────────────────────────────────────────────────
 const BUILDING_QUEST_MAP := {
-	"town_hall": {
+	"town_hall":
+	{
 		"quest_id": "week1_decoding",
 		"week": 1,
 		"topic": "Decoding",
@@ -20,7 +17,8 @@ const BUILDING_QUEST_MAP := {
 		"xp": 100,
 		"pass_threshold": 7,
 	},
-	"school": {
+	"school":
+	{
 		"quest_id": "week2_syllabication",
 		"week": 2,
 		"topic": "Syllabication",
@@ -28,7 +26,8 @@ const BUILDING_QUEST_MAP := {
 		"xp": 120,
 		"pass_threshold": 7,
 	},
-	"library": {
+	"library":
+	{
 		"quest_id": "week5_vocabulary",
 		"week": 5,
 		"topic": "Vocabulary",
@@ -36,7 +35,8 @@ const BUILDING_QUEST_MAP := {
 		"xp": 150,
 		"pass_threshold": 7,
 	},
-	"well": {
+	"well":
+	{
 		"quest_id": "week6_main_idea",
 		"week": 6,
 		"topic": "Main Idea",
@@ -44,7 +44,8 @@ const BUILDING_QUEST_MAP := {
 		"xp": 160,
 		"pass_threshold": 7,
 	},
-	"market": {
+	"market":
+	{
 		"quest_id": "week7_inference",
 		"week": 7,
 		"topic": "Inference",
@@ -52,16 +53,28 @@ const BUILDING_QUEST_MAP := {
 		"xp": 170,
 		"pass_threshold": 7,
 	},
-	"bakery": {
+	"bakery":
+	{
 		"quest_id": "week8_final_mission",
 		"week": 8,
 		"topic": "Final Mission",
-		"types": ["read_aloud", "mcq"],
+		"types": ["read_aloud", "fluency_check", "mcq"],
 		"xp": 200,
-		"pass_threshold": 7,
+		"pass_threshold": 18,
+		"assessment":
+		{
+			"weights": {"decoding": 30, "fluency": 30, "comprehension": 40},
+			"pass_score": 75,
+			"decoding_pass": 75,
+			"fluency_pass": 60,
+			"max_attempts": 3,
+			"phonetic_credit": 0.7,
+			"soundex_credit": 0.8,
+			"decoding_items": 10,
+			"comprehension_items": 10,
+		},
 	},
 }
-
 
 # ═════════════════════════════════════════════════════════════════════════════
 # WEEK 1 — DECODING (Town Hall)
@@ -71,16 +84,28 @@ const BUILDING_QUEST_MAP := {
 const _TOWN_HALL_TUTORIAL := [
 	{
 		"type": "mcq",
-		"instruction": "Let's learn about vowel sounds! A long vowel says its own name (like 'a' in 'cake'). A short vowel is quick (like 'a' in 'cat').",
+		"instruction":
+		"Let's learn about vowel sounds! A long vowel says its own name (like 'a' in 'cake'). A short vowel is quick (like 'a' in 'cat').",
 		"question": "What vowel sound does the word 'gate' have?",
 		"options": ["Long a", "Short a", "Long e", "Short e"],
 		"correct_index": 0,
 		"feedback_correct": "Great! The 'e' at the end makes the 'a' say its name — long a!",
-		"feedback_wrong": "The 'e' at the end of 'gate' makes the 'a' say its name. That's a long a sound.",
+		"feedback_wrong":
+		"The 'e' at the end of 'gate' makes the 'a' say its name. That's a long a sound.",
 	},
 ]
 
 const _TOWN_HALL_PRACTICE := [
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound.",
+		"question": "What vowel sound does 'gate' have?",
+		"options": ["Long a", "Short a", "Long e", "Short e"],
+		"correct_index": 0,
+		"hint": "The 'e' at the end of 'gate' changes how the 'a' sounds.",
+		"feedback_correct": "Correct! 'Gate' has a long a sound.",
+		"feedback_wrong": "The 'e' at the end of 'gate' makes the 'a' say its name — long a.",
+	},
 	{
 		"type": "mcq",
 		"instruction": "Identify the vowel sound.",
@@ -219,7 +244,6 @@ const _TOWN_HALL_MISSION := [
 	},
 ]
 
-
 # ═════════════════════════════════════════════════════════════════════════════
 # WEEK 2 — SYLLABICATION (School)
 # Interaction types: Drag & Drop (syllable splitting) + Read-Aloud
@@ -228,7 +252,8 @@ const _TOWN_HALL_MISSION := [
 const _SCHOOL_TUTORIAL := [
 	{
 		"type": "drag_drop",
-		"instruction": "Let's learn to split words into syllables! Drag the syllables into the correct order to form the word.",
+		"instruction":
+		"Let's learn to split words into syllables! Drag the syllables into the correct order to form the word.",
 		"mode": "syllable",
 		"word": "paper",
 		"pieces": ["per", "pa"],
@@ -354,18 +379,23 @@ const _SCHOOL_MISSION := [
 	},
 ]
 
-
 # ═════════════════════════════════════════════════════════════════════════════
 # WEEK 5 — VOCABULARY (Library)
 # Interaction types: MCQ + Tap Target (Word Spark)
 # ═════════════════════════════════════════════════════════════════════════════
 
-const _LIBRARY_PASSAGE := "The Readventurer entered a quiet part of the village where everything seemed still. The houses looked ancient, and the doors were fragile from years of neglect.\nThe air was silent, and even the narrow streets felt empty. Despite the quiet surroundings, a bright light flickered from one of the windows, giving a small sign of hope."
+const _LIBRARY_PASSAGE := (
+	"The Readventurer entered a quiet part of the village where everything seemed still."
+	+ " The houses looked ancient, and the doors were fragile from years of neglect.\n"
+	+ "The air was silent, and even the narrow streets felt empty."
+	+ " Despite the quiet surroundings, a bright light flickered from one of the windows, giving a small sign of hope."
+)
 
 const _LIBRARY_TUTORIAL := [
 	{
 		"type": "mcq",
-		"instruction": "Let's learn about vocabulary! Read the passage and figure out what words mean from the context.",
+		"instruction":
+		"Let's learn about vocabulary! Read the passage and figure out what words mean from the context.",
 		"passage": _LIBRARY_PASSAGE,
 		"question": "What does 'ancient' mean?",
 		"options": ["Very new", "Very old", "Very tall", "Very small"],
@@ -383,7 +413,8 @@ const _LIBRARY_PRACTICE := [
 		"question": "What does 'fragile' mean?",
 		"options": ["Very strong", "Easily broken", "Very big", "Very dark"],
 		"correct_index": 1,
-		"hint": "The doors were fragile 'from years of neglect.' What happens when things aren't taken care of?",
+		"hint":
+		"The doors were fragile 'from years of neglect.' What happens when things aren't taken care of?",
 		"feedback_correct": "Correct! 'Fragile' means easily broken.",
 		"feedback_wrong": "'Fragile' means easily broken — neglect makes things weak.",
 	},
@@ -496,38 +527,49 @@ const _LIBRARY_MISSION := [
 		"instruction": "Based on the passage, answer the question.",
 		"passage": _LIBRARY_PASSAGE,
 		"question": "What helps you understand 'fragile'?",
-		"options": ["The bright light", "Doors from years of neglect", "The narrow streets", "The silent air"],
+		"options":
+		["The bright light", "Doors from years of neglect", "The narrow streets", "The silent air"],
 		"correct_index": 1,
 		"feedback_correct": "Correct! The context clue is 'from years of neglect.'",
-		"feedback_wrong": "The context clue is 'doors from years of neglect' — neglect made them fragile.",
+		"feedback_wrong":
+		"The context clue is 'doors from years of neglect' — neglect made them fragile.",
 	},
 	{
 		"type": "mcq",
 		"instruction": "Based on the passage, answer the question.",
 		"passage": _LIBRARY_PASSAGE,
 		"question": "What is the main idea?",
-		"options": ["A noisy place", "A quiet but hopeful place", "A dangerous forest", "A busy school"],
+		"options":
+		["A noisy place", "A quiet but hopeful place", "A dangerous forest", "A busy school"],
 		"correct_index": 1,
 		"feedback_correct": "Correct!",
 		"feedback_wrong": "The passage describes a quiet but hopeful place.",
 	},
 ]
 
-
 # ═════════════════════════════════════════════════════════════════════════════
 # WEEK 6 — MAIN IDEA (Well)
 # Interaction types: MCQ + Drag & Drop (sequence ordering)
 # ═════════════════════════════════════════════════════════════════════════════
 
-const _WELL_PASSAGE := "One morning, a small dog wandered into the village. It looked weak and tired, as if it had been lost for many days.\nThe Readventurer found the dog near the river and gently carried it home. He gave it food and water and allowed it to rest.\nLater that day, a villager came searching for the dog. The Readventurer returned it safely, and the villager was grateful."
+const _WELL_PASSAGE := (
+	"One morning, a small dog wandered into the village."
+	+ " It looked weak and tired, as if it had been lost for many days.\n"
+	+ "The Readventurer found the dog near the river and gently carried it home."
+	+ " He gave it food and water and allowed it to rest.\n"
+	+ "Later that day, a villager came searching for the dog."
+	+ " The Readventurer returned it safely, and the villager was grateful."
+)
 
 const _WELL_TUTORIAL := [
 	{
 		"type": "mcq",
-		"instruction": "The main idea is what the passage is mostly about. Read the passage and think: what is the most important message?",
+		"instruction":
+		"The main idea is what the passage is mostly about. Read the passage and think: what is the most important message?",
 		"passage": _WELL_PASSAGE,
 		"question": "What is this passage mostly about?",
-		"options": ["A boy going to school", "Helping a lost dog", "Building a house", "Playing a game"],
+		"options":
+		["A boy going to school", "Helping a lost dog", "Building a house", "Playing a game"],
 		"correct_index": 1,
 		"feedback_correct": "Great! The main idea is about helping a lost dog.",
 		"feedback_wrong": "The passage is mostly about the Readventurer helping a lost dog.",
@@ -550,8 +592,18 @@ const _WELL_PRACTICE := [
 		"type": "drag_drop",
 		"instruction": "Arrange these events in the correct order (first to last).",
 		"mode": "sequence",
-		"pieces": ["The dog was returned", "The Readventurer found the dog", "A dog wandered into the village"],
-		"correct_order": ["A dog wandered into the village", "The Readventurer found the dog", "The dog was returned"],
+		"pieces":
+		[
+			"The dog was returned",
+			"The Readventurer found the dog",
+			"A dog wandered into the village"
+		],
+		"correct_order":
+		[
+			"A dog wandered into the village",
+			"The Readventurer found the dog",
+			"The dog was returned"
+		],
 		"hint": "What happened first? What happened last?",
 		"feedback_correct": "Correct order!",
 		"feedback_wrong": "The dog wandered in first, then was found, then returned.",
@@ -595,7 +647,12 @@ const _WELL_MISSION := [
 		"instruction": "Answer the questions based on the passage.",
 		"passage": _WELL_PASSAGE,
 		"question": "What happened at the end?",
-		"options": ["The dog ran away", "The dog was returned to its owner", "The dog stayed with the Readventurer"],
+		"options":
+		[
+			"The dog ran away",
+			"The dog was returned to its owner",
+			"The dog stayed with the Readventurer"
+		],
 		"correct_index": 1,
 		"feedback_correct": "Correct!",
 		"feedback_wrong": "The dog was returned to its owner.",
@@ -613,16 +670,19 @@ const _WELL_MISSION := [
 	# Part B — Drag & Drop sequence (5 items as one)
 	{
 		"type": "drag_drop",
-		"instruction": "Arrange the events in the correct order. Drag the sentences from FIRST to LAST.",
+		"instruction":
+		"Arrange the events in the correct order. Drag the sentences from FIRST to LAST.",
 		"mode": "sequence",
-		"pieces": [
+		"pieces":
+		[
 			"The owner searched for the dog",
 			"The dog wandered into the village",
 			"The dog was returned to its owner",
 			"He took care of the dog",
 			"The Readventurer found the dog",
 		],
-		"correct_order": [
+		"correct_order":
+		[
 			"The dog wandered into the village",
 			"The Readventurer found the dog",
 			"He took care of the dog",
@@ -630,7 +690,8 @@ const _WELL_MISSION := [
 			"The dog was returned to its owner",
 		],
 		"feedback_correct": "Perfect order!",
-		"feedback_wrong": "The correct order follows the story: wander, find, care, search, return.",
+		"feedback_wrong":
+		"The correct order follows the story: wander, find, care, search, return.",
 	},
 	# Fill remaining 4 items with comprehension MCQ
 	{
@@ -675,24 +736,32 @@ const _WELL_MISSION := [
 	},
 ]
 
-
 # ═════════════════════════════════════════════════════════════════════════════
 # WEEK 7 — INFERENCE (Market)
 # Interaction types: MCQ
 # ═════════════════════════════════════════════════════════════════════════════
 
-const _MARKET_PASSAGE := "The sky slowly turned dark as heavy clouds gathered above the village. The wind began to move faster, shaking the trees and scattering dry leaves.\nPeople closed their doors and hurried inside their homes. The Readventurer looked up and noticed the sudden change in the air."
+const _MARKET_PASSAGE := (
+	"The sky slowly turned dark as heavy clouds gathered above the village."
+	+ " The wind began to move faster, shaking the trees and scattering dry leaves.\n"
+	+ "People closed their doors and hurried inside their homes."
+	+ " The Readventurer looked up and noticed the sudden change in the air."
+)
 
 const _MARKET_TUTORIAL := [
 	{
 		"type": "mcq",
-		"instruction": "Inference means figuring out what is NOT directly said, using clues from the text. Read the passage and make inferences.",
+		"instruction":
+		"Inference means figuring out what is NOT directly said, using clues from the text. Read the passage and make inferences.",
 		"passage": _MARKET_PASSAGE,
 		"question": "What is happening in the passage?",
-		"options": ["A party is starting", "A storm is coming", "School is beginning", "A fire is burning"],
+		"options":
+		["A party is starting", "A storm is coming", "School is beginning", "A fire is burning"],
 		"correct_index": 1,
-		"feedback_correct": "Great inference! The dark sky and heavy clouds tell us a storm is coming.",
-		"feedback_wrong": "The clues — dark sky, heavy clouds, strong wind — all point to a storm coming.",
+		"feedback_correct":
+		"Great inference! The dark sky and heavy clouds tell us a storm is coming.",
+		"feedback_wrong":
+		"The clues — dark sky, heavy clouds, strong wind — all point to a storm coming.",
 	},
 ]
 
@@ -767,7 +836,8 @@ const _MARKET_MISSION := [
 		"instruction": "Use clues from the passage to answer.",
 		"passage": _MARKET_PASSAGE,
 		"question": "What might happen next?",
-		"options": ["The sun will shine", "It will rain", "People will go outside", "The wind will stop"],
+		"options":
+		["The sun will shine", "It will rain", "People will go outside", "The wind will stop"],
 		"correct_index": 1,
 		"feedback_correct": "Correct!",
 		"feedback_wrong": "With dark clouds and wind, rain is most likely next.",
@@ -797,7 +867,8 @@ const _MARKET_MISSION := [
 		"instruction": "Use clues from the passage to answer.",
 		"passage": _MARKET_PASSAGE,
 		"question": "Why is the Readventurer observing?",
-		"options": ["He is bored", "To understand the situation", "To paint a picture", "To count the clouds"],
+		"options":
+		["He is bored", "To understand the situation", "To paint a picture", "To count the clouds"],
 		"correct_index": 1,
 		"feedback_correct": "Correct!",
 		"feedback_wrong": "He is observing to understand the situation.",
@@ -807,7 +878,8 @@ const _MARKET_MISSION := [
 		"instruction": "Use clues from the passage to answer.",
 		"passage": _MARKET_PASSAGE,
 		"question": "What is implied by the passage?",
-		"options": ["Everything is safe", "Danger is near", "It's a good day", "Nothing will happen"],
+		"options":
+		["Everything is safe", "Danger is near", "It's a good day", "Nothing will happen"],
 		"correct_index": 1,
 		"feedback_correct": "Correct!",
 		"feedback_wrong": "The passage implies that danger is near.",
@@ -824,18 +896,31 @@ const _MARKET_MISSION := [
 	},
 ]
 
-
 # ═════════════════════════════════════════════════════════════════════════════
 # WEEK 8 — FINAL MISSION (Bakery)
 # Interaction types: Read-Aloud + MCQ (comprehensive)
 # ═════════════════════════════════════════════════════════════════════════════
 
-const _BAKERY_PASSAGE := "The young Readventurer stepped carefully into the forest, guided only by a faint glowing path. For many days, the village had remained silent, and no one knew why the voices had disappeared.\nAs the Readventurer moved deeper into the woods, he discovered a narrow pathway covered with leaves and broken branches. It seemed untouched for years. With courage and curiosity, he followed the path until he reached an ancient gate hidden behind tall trees.\nSlowly, the gate opened, revealing a forgotten village called Luminara. The houses stood still, and the air felt quiet and heavy. It was said that the village lost its voice when its words were forgotten.\nDetermined to restore the village, the Readventurer began to read the lost words aloud. As each word was spoken clearly, the village started to awaken. Lights flickered, doors opened, and the silence slowly disappeared.\nAt last, the village was no longer quiet. The voices returned, and Luminara was restored\u2014one word, one sentence, and one story at a time."
+const _BAKERY_PASSAGE := (
+	"The young Readventurer stepped carefully into the forest, guided only by a faint glowing path."
+	+ " For many days, the village had remained silent, and no one knew why the voices had disappeared.\n"
+	+ "As the Readventurer moved deeper into the woods, he discovered a narrow pathway covered with leaves and broken branches."
+	+ " It seemed untouched for years. With courage and curiosity, he followed the path until he reached an ancient gate hidden behind tall trees.\n"
+	+ "Slowly, the gate opened, revealing a forgotten village called Luminara."
+	+ " The houses stood still, and the air felt quiet and heavy."
+	+ " It was said that the village lost its voice when its words were forgotten.\n"
+	+ "Determined to restore the village, the Readventurer began to read the lost words aloud."
+	+ " As each word was spoken clearly, the village started to awaken."
+	+ " Lights flickered, doors opened, and the silence slowly disappeared.\n"
+	+ "At last, the village was no longer quiet."
+	+ " The voices returned, and Luminara was restored\u2014one word, one sentence, and one story at a time."
+)
 
 const _BAKERY_TUTORIAL := [
 	{
 		"type": "read_aloud",
-		"instruction": "This is the final mission! First, let's practice reading some words aloud. Read this word clearly.",
+		"instruction":
+		"This is the final mission! First, let's practice reading some words aloud. Read this word clearly.",
 		"word": "Readventurer",
 		"feedback_correct": "Great reading!",
 	},
@@ -868,7 +953,25 @@ const _BAKERY_PRACTICE := [
 ]
 
 const _BAKERY_MISSION := [
-	# Part A — Read-Aloud words from the passage (5 items)
+	# Part A — Read-Aloud words from the passage (10 items)
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "Readventurer",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "carefully",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "discovered",
+		"feedback_correct": "Great reading!",
+	},
 	{
 		"type": "read_aloud",
 		"instruction": "Read this word aloud clearly.",
@@ -896,10 +999,29 @@ const _BAKERY_MISSION := [
 	{
 		"type": "read_aloud",
 		"instruction": "Read this word aloud clearly.",
+		"word": "restore",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "awaken",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
 		"word": "disappeared",
 		"feedback_correct": "Great reading!",
 	},
-	# Part C — Comprehension MCQ (5 items)
+	# Part B — Full passage read-aloud (1 item)
+	{
+		"type": "fluency_check",
+		"instruction": "Read the full passage aloud clearly. Speak at a steady pace.",
+		"passage": _BAKERY_PASSAGE,
+		"feedback_correct": "Excellent reading! You read the full passage clearly.",
+	},
+	# Part C — Comprehension MCQ (10 items)
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
@@ -945,13 +1067,65 @@ const _BAKERY_MISSION := [
 		"instruction": "Answer based on the passage.",
 		"passage": _BAKERY_PASSAGE,
 		"question": "What is the main idea of the story?",
-		"options": ["Exploring the forest", "Restoring a village through reading", "Finding a gate"],
+		"options":
+		["Exploring the forest", "Restoring a village through reading", "Finding a gate"],
 		"correct_index": 1,
 		"feedback_correct": "Correct!",
 		"feedback_wrong": "The main idea is restoring a village through reading.",
 	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE,
+		"question": "Who is the main character?",
+		"options": ["A villager", "The Readventurer", "A traveler"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The Readventurer is the main character.",
+		"feedback_wrong": "The main character is the Readventurer.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE,
+		"question": "What did he discover?",
+		"options": ["A river", "A pathway", "A house"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! He discovered a narrow pathway.",
+		"feedback_wrong":
+		"The Readventurer discovered a pathway covered with leaves and broken branches.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE,
+		"question": "What happened to the village?",
+		"options": ["It was destroyed", "It lost its voice", "It was flooded"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The village lost its voice.",
+		"feedback_wrong": "The village lost its voice when its words were forgotten.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE,
+		"question": "Why was the village silent?",
+		"options": ["No people", "Words were forgotten", "No houses"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The village was silent because its words were forgotten.",
+		"feedback_wrong": "The village lost its voice when its words were forgotten.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE,
+		"question": "What does 'the village started to awaken' mean?",
+		"options": ["It became noisy again", "It came back to life", "It disappeared"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Awaken' means the village came back to life.",
+		"feedback_wrong":
+		"When the village 'started to awaken,' it means it came back to life as the words were read aloud.",
+	},
 ]
-
 
 # ═════════════════════════════════════════════════════════════════════════════
 # QUEST LOOKUP
@@ -959,15 +1133,45 @@ const _BAKERY_MISSION := [
 
 # ── Static Helpers ──────────────────────────────────────────────────────────
 
+
 static func _lookup_stages(building_id: String) -> Dictionary:
 	match building_id:
-		"town_hall": return { "tutorial": _TOWN_HALL_TUTORIAL, "practice": _TOWN_HALL_PRACTICE, "mission": _TOWN_HALL_MISSION }
-		"school":    return { "tutorial": _SCHOOL_TUTORIAL,    "practice": _SCHOOL_PRACTICE,    "mission": _SCHOOL_MISSION }
-		"library":   return { "tutorial": _LIBRARY_TUTORIAL,   "practice": _LIBRARY_PRACTICE,   "mission": _LIBRARY_MISSION }
-		"well":      return { "tutorial": _WELL_TUTORIAL,      "practice": _WELL_PRACTICE,      "mission": _WELL_MISSION }
-		"market":    return { "tutorial": _MARKET_TUTORIAL,     "practice": _MARKET_PRACTICE,    "mission": _MARKET_MISSION }
-		"bakery":    return { "tutorial": _BAKERY_TUTORIAL,     "practice": _BAKERY_PRACTICE,    "mission": _BAKERY_MISSION }
-		_:           return {}
+		"town_hall":
+			return {
+				"tutorial": _TOWN_HALL_TUTORIAL,
+				"practice": _TOWN_HALL_PRACTICE,
+				"mission": _TOWN_HALL_MISSION
+			}
+		"school":
+			return {
+				"tutorial": _SCHOOL_TUTORIAL,
+				"practice": _SCHOOL_PRACTICE,
+				"mission": _SCHOOL_MISSION
+			}
+		"library":
+			return {
+				"tutorial": _LIBRARY_TUTORIAL,
+				"practice": _LIBRARY_PRACTICE,
+				"mission": _LIBRARY_MISSION
+			}
+		"well":
+			return {
+				"tutorial": _WELL_TUTORIAL, "practice": _WELL_PRACTICE, "mission": _WELL_MISSION
+			}
+		"market":
+			return {
+				"tutorial": _MARKET_TUTORIAL,
+				"practice": _MARKET_PRACTICE,
+				"mission": _MARKET_MISSION
+			}
+		"bakery":
+			return {
+				"tutorial": _BAKERY_TUTORIAL,
+				"practice": _BAKERY_PRACTICE,
+				"mission": _BAKERY_MISSION
+			}
+		_:
+			return {}
 
 
 static func get_quest_for_building(building_id: String) -> Dictionary:
@@ -978,7 +1182,7 @@ static func get_quest_for_building(building_id: String) -> Dictionary:
 	var stages: Dictionary = _lookup_stages(building_id)
 	meta["tutorial"] = stages.get("tutorial", [])
 	meta["practice"] = stages.get("practice", [])
-	meta["mission"]  = stages.get("mission", [])
+	meta["mission"] = stages.get("mission", [])
 	return meta
 
 
@@ -995,13 +1199,20 @@ static func is_next_in_sequence(building_id: String, unlocked: Array) -> bool:
 
 static func get_building_label(building_id: String) -> String:
 	match building_id:
-		"town_hall": return "Town Hall"
-		"school":    return "School"
-		"library":   return "Library"
-		"well":      return "Well"
-		"market":    return "Market"
-		"bakery":    return "Bakery"
-		_:           return building_id.capitalize()
+		"town_hall":
+			return "Town Hall"
+		"school":
+			return "School"
+		"library":
+			return "Library"
+		"well":
+			return "Well"
+		"market":
+			return "Market"
+		"bakery":
+			return "Bakery"
+		_:
+			return building_id.capitalize()
 
 
 static func validate_quest(building_id: String) -> bool:
@@ -1010,7 +1221,9 @@ static func validate_quest(building_id: String) -> bool:
 		return false
 	var mission: Array = quest.get("mission", [])
 	if mission.size() < 10:
-		push_error("[QuestData] Mission for '%s' has %d items (need 10)" % [building_id, mission.size()])
+		push_error(
+			"[QuestData] Mission for '%s' has %d items (need 10)" % [building_id, mission.size()]
+		)
 		return false
 	for i in mission.size():
 		var q: Dictionary = mission[i]
@@ -1022,25 +1235,39 @@ static func validate_quest(building_id: String) -> bool:
 					return false
 				var ci: int = q.get("correct_index", -1)
 				if ci < 0 or ci >= q.get("options", []).size():
-					push_error("[QuestData] MCQ %d in '%s' has invalid correct_index" % [i, building_id])
+					push_error(
+						"[QuestData] MCQ %d in '%s' has invalid correct_index" % [i, building_id]
+					)
 					return false
 			"tap_target":
 				if q.get("segments", []).size() == 0:
-					push_error("[QuestData] TapTarget %d in '%s' has no segments" % [i, building_id])
+					push_error(
+						"[QuestData] TapTarget %d in '%s' has no segments" % [i, building_id]
+					)
 					return false
-				for idx in q.get("target_indices", []):
+				var ti: Array = q.get("target_indices", [])
+				for idx: int in ti:
 					if idx < 0 or idx >= q.get("segments", []).size():
-						push_error("[QuestData] TapTarget %d in '%s' has invalid target_index" % [i, building_id])
+						push_error(
+							(
+								"[QuestData] TapTarget %d in '%s' has invalid target_index"
+								% [i, building_id]
+							)
+						)
 						return false
 			"drag_drop":
 				var co: Array = q.get("correct_order", [])
 				var pieces: Array = q.get("pieces", [])
 				if co.size() == 0 or pieces.size() != co.size():
-					push_error("[QuestData] DragDrop %d in '%s' has size mismatch" % [i, building_id])
+					push_error(
+						"[QuestData] DragDrop %d in '%s' has size mismatch" % [i, building_id]
+					)
 					return false
 			"read_aloud":
 				if q.get("word", "").is_empty() and q.get("passage", "").is_empty():
-					push_error("[QuestData] ReadAloud %d in '%s' has no word or passage" % [i, building_id])
+					push_error(
+						"[QuestData] ReadAloud %d in '%s' has no word or passage" % [i, building_id]
+					)
 					return false
 			_:
 				push_error("[QuestData] Unknown type '%s' at %d in '%s'" % [qtype, i, building_id])
