@@ -108,6 +108,8 @@ func record_quest_completion(building_id: String, xp_reward: int) -> void:
 			current_student["xp"] = new_xp
 			print("[GameManager] XP awarded: +%d (total: %d)" % [xp_reward, new_xp])
 			_check_level_up(student_id, new_xp)
+			if has_node("/root/SyncManager"):
+				SyncManager.queue_sync()
 
 
 func _check_level_up(student_id: String, xp: int) -> void:
