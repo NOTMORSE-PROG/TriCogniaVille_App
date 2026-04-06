@@ -87,8 +87,29 @@ jobs:
           keystore/release_password="${{ secrets.KEYSTORE_PASSWORD }}"
           EOF
 
+      - name: Validate secrets
+        run: |
+          if [ -z "${{ secrets.BACKEND_URL }}" ]; then
+            echo "ERROR: BACKEND_URL secret is not set" >&2
+            exit 1
+          fi
+          if [ -z "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "ERROR: KEYSTORE_BASE64 secret is not set" >&2
+            exit 1
+          fi
+          echo "BACKEND_URL target: ${{ secrets.BACKEND_URL }}"
+
       - name: Inject production backend URL
         run: printf '[backend]\nurl=%s\n' "${{ secrets.BACKEND_URL }}" > app_config.cfg
+
+      - name: Print release keystore SHA-1
+        run: |
+          keytool -list -v \
+            -keystore /tmp/release.keystore \
+            -alias "${{ secrets.KEYSTORE_ALIAS }}" \
+            -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
+            -keypass "${{ secrets.KEYSTORE_PASSWORD }}" \
+            2>/dev/null | grep -A1 "SHA1:" | head -2
 
       - name: Pre-import warmup (absorbs GDExtension restart dialog)
         run: timeout 60 godot --headless --editor --quit --path . || true
