@@ -6,9 +6,10 @@ extends Node
 signal auth_state_changed(logged_in: bool)
 
 const TOKEN_PATH := "user://auth_token.cfg"
-const CONFIG_PATH := "res://app_config.cfg"
 const API_PREFIX := "/api/v1"
 const DEFAULT_TIMEOUT := 10.0
+## CI replaces this placeholder via sed before export — do not change the string literal.
+const PRODUCTION_URL := "BACKEND_URL_PLACEHOLDER"
 
 var base_url: String = _get_default_base_url()
 var auth_token: String = ""
@@ -20,11 +21,7 @@ var _http_nodes: Array[HTTPRequest] = []
 static func _get_default_base_url() -> String:
 	if OS.has_feature("debug") or OS.has_feature("editor"):
 		return "http://localhost:3000"
-	var config := ConfigFile.new()
-	if config.load(CONFIG_PATH) == OK:
-		return config.get_value("backend", "url", "")
-	push_error("[ApiClient] app_config.cfg missing or invalid — backend URL not set")
-	return ""
+	return PRODUCTION_URL
 
 
 func _ready() -> void:

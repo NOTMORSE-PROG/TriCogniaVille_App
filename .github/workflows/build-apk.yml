@@ -100,7 +100,8 @@ jobs:
           echo "BACKEND_URL target: ${{ secrets.BACKEND_URL }}"
 
       - name: Inject production backend URL
-        run: printf '[backend]\nurl=%s\n' "${{ secrets.BACKEND_URL }}" > app_config.cfg
+        run: |
+          sed -i "s|BACKEND_URL_PLACEHOLDER|${{ secrets.BACKEND_URL }}|g" scripts/ApiClient.gd
 
       - name: Print release keystore SHA-1
         run: |
