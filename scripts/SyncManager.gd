@@ -162,6 +162,7 @@ func _collect_unsynced_data() -> Dictionary:
 		data["streakDays"] = GameManager.current_student.get("streak_days", 0)
 		data["readingLevel"] = GameManager.current_student.get("reading_level", 1)
 		data["onboardingDone"] = GameManager.current_student.get("onboarding_done", 0) == 1
+		data["tutorialDone"] = GameManager.current_student.get("tutorial_done", 0) == 1
 
 	return data
 

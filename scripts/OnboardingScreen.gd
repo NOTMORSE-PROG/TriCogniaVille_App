@@ -465,12 +465,16 @@ func _on_character_continue() -> void:
 	if _character_gender.is_empty():
 		return
 
-	# Save username + character_gender to DB
+	# Save username + character_gender locally and sync to backend
 	var student: Dictionary = GameManager.current_student
 	if not student.is_empty():
 		DatabaseManager.update_student_profile(student.id, _username, _character_gender)
 		GameManager.current_student["username"] = _username
 		GameManager.current_student["character_gender"] = _character_gender
+		ApiClient.update_profile(
+			{"username": _username, "characterGender": _character_gender},
+			func(_s: bool, _d: Dictionary) -> void: pass
+		)
 
 	# Transition to quiz
 	_transitioning = true
