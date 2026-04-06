@@ -31,8 +31,6 @@ func _ready() -> void:
 			_plugin.connect(
 				"recognition_unavailable", func() -> void: recognition_unavailable.emit()
 			)
-		if _plugin.has_signal("listening_started"):
-			_plugin.connect("listening_started", func() -> void: listening_started.emit())
 		if _plugin.has_signal("listening_ended"):
 			_plugin.connect("listening_ended", func() -> void: listening_ended.emit())
 	else:

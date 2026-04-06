@@ -1620,7 +1620,10 @@ func _start_tutorial() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
-		print("[Main] Back button — ignored in Phase 0.")
+		if QuestManager.is_quest_active():
+			QuestManager.abandon_quest()
+		else:
+			print("[Main] Back button — ignored in Phase 0.")
 
 
 # ═════════════════════════════════════════════════════════════════════════════

@@ -80,8 +80,14 @@ func _do_sync() -> void:
 				)
 
 				# Update local student data from server response
+				# Use max XP to guard against a race where a sync in-flight
+				# when a quest completes would overwrite the just-awarded XP.
 				if data.has("student"):
-					GameManager.current_student = data["student"]
+					var server_student: Dictionary = data["student"]
+					var local_xp: int = GameManager.current_student.get("xp", 0)
+					var server_xp: int = server_student.get("xp", 0)
+					server_student["xp"] = maxi(local_xp, server_xp)
+					GameManager.current_student = server_student
 
 				# Notify game of any badges just earned during this sync
 				var new_badges: Array = data.get("badges", [])

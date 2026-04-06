@@ -561,9 +561,26 @@ func _on_answer_submitted(correct: bool) -> void:
 				UIAnimations.fade_in_up(self, _next_btn)
 		)
 	else:
-		# Wrong answer — reload the same question for retry after feedback delay
-		var retry_timer := get_tree().create_timer(1.5)
-		retry_timer.timeout.connect(func() -> void: _reload_current_question())
+		# Wrong answer — still allow player to proceed after feedback delay
+		var timer := get_tree().create_timer(1.5)
+		timer.timeout.connect(
+			func() -> void:
+				if not is_instance_valid(_next_btn):
+					return
+				var questions := QuestManager.get_current_questions()
+				var idx := QuestManager.get_current_question_index()
+				var stage := QuestManager.get_current_stage()
+
+				if idx + 1 >= questions.size():
+					if stage == "mission":
+						_next_btn.text = "See Results"
+					else:
+						_next_btn.text = "Next Stage"
+				else:
+					_next_btn.text = "Next"
+				_next_btn.visible = true
+				UIAnimations.fade_in_up(self, _next_btn)
+		)
 
 
 func _on_next_pressed() -> void:
@@ -676,7 +693,7 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 			message.text = "You passed! Well done!"
 		message.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 
-		var xp: int = QuestManager.get_current_quest_data().get("xp", 0)
+		var xp: int = QuestManager.get_last_xp_reward()
 		var xp_label := Label.new()
 		xp_label.text = "+%d XP" % xp
 		xp_label.add_theme_font_size_override("font_size", int(22 * _sy))

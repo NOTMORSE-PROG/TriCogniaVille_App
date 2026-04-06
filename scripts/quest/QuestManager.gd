@@ -12,6 +12,7 @@ signal quest_abandoned(building_id: String)
 var _is_quest_active: bool = false
 var _current_building_id: String = ""
 var _last_completed_building_id: String = ""  # Persists across _reset_state for outro dialogue
+var _last_xp_reward: int = 0  # Persists across _reset_state for results screen display
 var _current_stage: String = ""  # "tutorial", "practice", "mission"
 var _current_quest_data: Dictionary = {}
 var _mission_score: int = 0
@@ -50,6 +51,10 @@ func get_current_stage() -> String:
 
 func get_current_quest_data() -> Dictionary:
 	return _current_quest_data
+
+
+func get_last_xp_reward() -> int:
+	return _last_xp_reward
 
 
 func get_current_questions() -> Array:
@@ -331,6 +336,7 @@ func _finish_quest() -> void:
 	var score := _mission_score
 	_last_completed_building_id = building_id
 	if passed:
+		_last_xp_reward = xp_reward
 		_reset_state()
 	# If failed, keep state active for retry option
 	quest_completed.emit(building_id, passed, score)
