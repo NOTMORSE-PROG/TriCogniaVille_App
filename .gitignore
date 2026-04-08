@@ -77,3 +77,6 @@ ehthumbs.db
 # Windows temp files
 ~*
 *.TMP
+
+# Backend (separate repo)
+TriCogniaVille_Backend/

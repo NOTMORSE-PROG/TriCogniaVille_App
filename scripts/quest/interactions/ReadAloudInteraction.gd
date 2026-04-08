@@ -295,7 +295,9 @@ func _build_ui() -> void:
 	_continue_btn.set_meta("action_center", action_center)
 
 	# ── Decide initial state ───────────────────────────────────────────────────
-	if _recognizer.is_available():
+	if QuestManager.AUTO_PASS_MIC_QUESTS:
+		_set_state(State.UNAVAILABLE)
+	elif _recognizer.is_available():
 		_set_state(State.IDLE)
 	else:
 		_set_state(State.UNAVAILABLE)

@@ -8,6 +8,8 @@ signal quest_completed(building_id: String, passed: bool, score: int)
 signal quest_stage_changed(stage: String)
 signal quest_abandoned(building_id: String)
 
+const AUTO_PASS_MIC_QUESTS := true
+
 # ── State ────────────────────────────────────────────────────────────────────
 var _is_quest_active: bool = false
 var _current_building_id: String = ""
