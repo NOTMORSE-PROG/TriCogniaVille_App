@@ -149,7 +149,7 @@ class SpeechPlugin(godot: Godot) : GodotPlugin(godot) {
                 MediaRecorder()
             }
             recorder.apply {
-                setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION)
+                setAudioSource(MediaRecorder.AudioSource.MIC)
                 setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                 setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
                 setAudioSamplingRate(44100)
