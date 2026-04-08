@@ -8,6 +8,7 @@ signal choice_selected(choice_key: String)
 
 const CHARS_PER_SECOND := 30.0
 const BLIP_INTERVAL := 3  # Play blip every N characters
+const AUTO_ADVANCE_DELAY := 3.5
 
 var _sx: float = 1.0
 var _sy: float = 1.0
@@ -18,6 +19,7 @@ var _current_index: int = -1
 var _typing: bool = false
 var _waiting_for_choice: bool = false
 var _active: bool = false
+var _last_advance_frame: int = -1  # deduplicates double-events from touch emulation
 
 # ── Branch support ────────────────────────────────────────────────────────────
 # Maps lore keys to their dialogue arrays, set before show_sequence()
@@ -39,6 +41,7 @@ var _content_vbox: VBoxContainer
 var _typewriter_tween: Tween
 var _blink_tween: Tween
 var _glow_tween: Tween
+var _auto_advance_tween: Tween
 
 func setup(sx: float, sy: float) -> void:
 	_sx = sx
@@ -112,10 +115,12 @@ func advance() -> void:
 		return  # Must select a choice
 
 	if _typing:
-		# Complete typewriter instantly
+		# Complete typewriter instantly — auto-advance timer starts after
 		_complete_typewriter()
 		return
 
+	# Text already fully shown: cancel auto-advance and go to next line immediately
+	_cancel_auto_advance()
 	_advance()
 
 
@@ -144,11 +149,11 @@ func _build_layout() -> void:
 
 	# ── Bottom anchor container ──
 	var bottom := Control.new()
-	bottom.anchor_left = 0.075
-	bottom.anchor_right = 0.925
+	bottom.anchor_left = 0.04
+	bottom.anchor_right = 0.96
 	bottom.anchor_top = 1.0
 	bottom.anchor_bottom = 1.0
-	bottom.offset_top = -220.0 * _sy
+	bottom.offset_top = -340.0 * _sy
 	bottom.offset_bottom = -20.0 * _sy
 	bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bottom)
@@ -156,19 +161,20 @@ func _build_layout() -> void:
 	# ── Glass card panel ──
 	_panel = PanelContainer.new()
 	var style := StyleFactory.make_glass_card(20)
-	style.content_margin_left = int(28 * _sx)
-	style.content_margin_right = int(28 * _sx)
-	style.content_margin_top = int(20 * _sy)
-	style.content_margin_bottom = int(20 * _sy)
+	style.content_margin_left = int(44 * _sx)
+	style.content_margin_right = int(44 * _sx)
+	style.content_margin_top = int(32 * _sy)
+	style.content_margin_bottom = int(32 * _sy)
 	_panel.add_theme_stylebox_override("panel", style)
 	_panel.anchor_right = 1.0
 	_panel.anchor_bottom = 1.0
 	_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	_panel.gui_input.connect(_on_blocker_input)
 	bottom.add_child(_panel)
 
 	# ── Main VBox ──
 	_content_vbox = VBoxContainer.new()
-	_content_vbox.add_theme_constant_override("separation", int(10 * _sy))
+	_content_vbox.add_theme_constant_override("separation", int(18 * _sy))
 	_panel.add_child(_content_vbox)
 
 	# ── Top row: Portrait + Text + Skip ──
@@ -179,10 +185,11 @@ func _build_layout() -> void:
 
 	# Portrait circle
 	_portrait_panel = PanelContainer.new()
-	var portrait_size := int(56 * minf(_sx, _sy))
+	var portrait_size := int(120 * minf(_sx, _sy))
 	_portrait_panel.custom_minimum_size = Vector2(portrait_size, portrait_size)
 	var portrait_style := StyleBoxFlat.new()
 	portrait_style.bg_color = StoryData.MOOD_COLORS.get("hopeful", StyleFactory.GOLD)
+	@warning_ignore("integer_division")
 	var radius := portrait_size / 2
 	portrait_style.corner_radius_top_left = radius
 	portrait_style.corner_radius_top_right = radius
@@ -201,7 +208,7 @@ func _build_layout() -> void:
 	# Portrait icon
 	_portrait_label = Label.new()
 	_portrait_label.text = "\u2726"  # ✦
-	_portrait_label.add_theme_font_size_override("font_size", int(24 * minf(_sx, _sy)))
+	_portrait_label.add_theme_font_size_override("font_size", int(54 * minf(_sx, _sy)))
 	_portrait_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_portrait_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_portrait_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -220,7 +227,7 @@ func _build_layout() -> void:
 	# Speaker name
 	_speaker_label = Label.new()
 	_speaker_label.text = "Lumi"
-	_speaker_label.add_theme_font_size_override("font_size", int(13 * _sy))
+	_speaker_label.add_theme_font_size_override("font_size", int(32 * _sy))
 	_speaker_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 	_speaker_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	text_vbox.add_child(_speaker_label)
@@ -230,7 +237,7 @@ func _build_layout() -> void:
 	_text_label.bbcode_enabled = true
 	_text_label.fit_content = true
 	_text_label.scroll_active = false
-	_text_label.add_theme_font_size_override("normal_font_size", int(17 * _sy))
+	_text_label.add_theme_font_size_override("normal_font_size", int(40 * _sy))
 	_text_label.add_theme_color_override("default_color", StyleFactory.TEXT_PRIMARY)
 	_text_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_text_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -239,13 +246,13 @@ func _build_layout() -> void:
 	# Skip button
 	_skip_btn = Button.new()
 	_skip_btn.text = "Skip"
-	_skip_btn.add_theme_font_size_override("font_size", int(12 * _sy))
+	_skip_btn.add_theme_font_size_override("font_size", int(28 * _sy))
 	_skip_btn.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	var skip_style := StyleFactory.make_secondary_button_normal()
-	skip_style.content_margin_left = int(12 * _sx)
-	skip_style.content_margin_right = int(12 * _sx)
-	skip_style.content_margin_top = int(6 * _sy)
-	skip_style.content_margin_bottom = int(6 * _sy)
+	skip_style.content_margin_left = int(20 * _sx)
+	skip_style.content_margin_right = int(20 * _sx)
+	skip_style.content_margin_top = int(12 * _sy)
+	skip_style.content_margin_bottom = int(12 * _sy)
 	_skip_btn.add_theme_stylebox_override("normal", skip_style)
 	_skip_btn.add_theme_stylebox_override("hover", StyleFactory.make_secondary_button_hover())
 	_skip_btn.add_theme_stylebox_override("pressed", StyleFactory.make_secondary_button_pressed())
@@ -261,7 +268,7 @@ func _build_layout() -> void:
 	# ── "Tap to continue" indicator ──
 	_continue_label = Label.new()
 	_continue_label.text = "Tap to continue  \u25bc"
-	_continue_label.add_theme_font_size_override("font_size", int(12 * _sy))
+	_continue_label.add_theme_font_size_override("font_size", int(28 * _sy))
 	_continue_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	_continue_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_continue_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -297,6 +304,8 @@ func _advance() -> void:
 
 
 func _show_line(line: Dictionary) -> void:
+	_cancel_auto_advance()
+
 	var speaker: String = line.get("speaker", "Lumi")
 	var mood: String = line.get("mood", "hopeful")
 	var text: String = line.get("text", "")
@@ -403,9 +412,10 @@ func _on_typewriter_done(choices: Array) -> void:
 	if choices.size() > 0:
 		_show_choices(choices)
 	else:
-		# Show "tap to continue" with blink
+		# Show "tap to continue" with blink, then auto-advance after delay
 		_continue_label.visible = true
 		_start_blink()
+		_start_auto_advance(AUTO_ADVANCE_DELAY)
 
 
 func _show_choices(choices: Array) -> void:
@@ -424,8 +434,8 @@ func _show_choices(choices: Array) -> void:
 		var choice: Dictionary = choices[i]
 		var btn := Button.new()
 		btn.text = choice.get("label", "...")
-		btn.custom_minimum_size = Vector2(200 * _sx, 44 * _sy)
-		btn.add_theme_font_size_override("font_size", int(15 * _sy))
+		btn.custom_minimum_size = Vector2(420 * _sx, 90 * _sy)
+		btn.add_theme_font_size_override("font_size", int(34 * _sy))
 		btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 
 		var btn_style := StyleFactory.make_secondary_button_normal()
@@ -617,7 +627,25 @@ func _kill_tweens() -> void:
 		_blink_tween.kill()
 	if _glow_tween and _glow_tween.is_running():
 		_glow_tween.kill()
+	_cancel_auto_advance()
 	_typing = false
+
+
+func _start_auto_advance(delay: float) -> void:
+	_cancel_auto_advance()
+	_auto_advance_tween = create_tween()
+	_auto_advance_tween.tween_interval(delay)
+	_auto_advance_tween.tween_callback(
+		func() -> void:
+			if _active and not _typing and not _waiting_for_choice:
+				_advance()
+	)
+
+
+func _cancel_auto_advance() -> void:
+	if _auto_advance_tween and _auto_advance_tween.is_running():
+		_auto_advance_tween.kill()
+	_auto_advance_tween = null
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -627,6 +655,16 @@ func _kill_tweens() -> void:
 
 func _on_blocker_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
-		advance()
+		_advance_once()
 	elif event is InputEventScreenTouch and event.pressed:
-		advance()
+		_advance_once()
+
+
+func _advance_once() -> void:
+	# Guard against double-firing (Godot emulates MouseButton from ScreenTouch,
+	# so one tap can produce two events in the same frame).
+	var frame := Engine.get_process_frames()
+	if frame == _last_advance_frame:
+		return
+	_last_advance_frame = frame
+	advance()

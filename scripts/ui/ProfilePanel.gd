@@ -32,6 +32,7 @@ var _dot_count: int = 0
 # ── Structural nodes ──────────────────────────────────────────────────────────
 @onready var _blocker: ColorRect = $Blocker
 @onready var _panel: PanelContainer = $Panel
+@warning_ignore("unused_private_class_variable")
 @onready var _scroll: ScrollContainer = $Panel/Scroll
 @onready var _content: VBoxContainer = $Panel/Scroll/Content
 @onready var _close_btn: Button = $Panel/Scroll/Content/CloseRow/CloseBtn
@@ -65,7 +66,7 @@ var _streak_val: Label = $Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol
 
 # XP
 @onready var _xp_total_lbl: Label = $Panel/Scroll/Content/ProfileContent/XPSection/XPTitleRow/XPTotal
-@onready var _xp_bar_bg: PanelContainer = $Panel/Scroll/Content/ProfileContent/XPSection/XPBarBg
+@onready var _xp_bar_bg: Panel = $Panel/Scroll/Content/ProfileContent/XPSection/XPBarBg
 @onready var _xp_fill: ColorRect = $Panel/Scroll/Content/ProfileContent/XPSection/XPBarBg/XPFill
 @onready var _xp_sub_lbl: Label = $Panel/Scroll/Content/ProfileContent/XPSection/XPSubLabel
 
@@ -250,7 +251,7 @@ func _reset_content() -> void:
 	_quest_val.text = "-"
 	_building_val.text = "-"
 	_streak_val.text = "-"
-	_xp_fill.custom_minimum_size.x = 4.0
+	_xp_fill.offset_right = 4.0
 
 
 # =============================================================================
@@ -356,14 +357,15 @@ func _populate_header(data: Dictionary) -> void:
 	_rl_lbl.text = "📖  Reading Level %d" % _level_num
 	_rl_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 
-	var username: String = data.get("username", GameManager.current_student.get("username", ""))
+	var username_raw: Variant = data.get("username", GameManager.current_student.get("username", ""))
+	var username: String = str(username_raw) if username_raw != null else ""
 	_username_lbl.text = ("@%s" % username) if not username.is_empty() else ""
 	_username_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 
 
 func _populate_stats(stats: Dictionary, streak_days: int) -> void:
 	_quest_val.text = str(stats.get("questsPassed", 0))
-	_building_val.text = "%d / 6" % stats.get("buildingsUnlocked", 0)
+	_building_val.text = "%d / %d" % [stats.get("buildingsUnlocked", 0), GameManager.TOTAL_BUILDINGS]
 	_streak_val.text = "%dd" % streak_days
 
 
@@ -381,16 +383,22 @@ func _populate_xp(level_data: Dictionary, total_xp: int) -> void:
 		% [_format_number(progress_xp), _format_number(range_xp), level_num + 1]
 	)
 
-	var fill_target := (
-		_xp_bar_bg.custom_minimum_size.x * clampf(float(progress_pct) / 100.0, 0.0, 1.0)
-	)
+	# Defer so the bar container has its final rendered size before we measure it.
+	var pct := clampf(float(progress_pct) / 100.0, 0.0, 1.0)
+	_xp_fill.offset_right = 4.0  # reset so old fill doesn't show
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var bar_width := _xp_bar_bg.size.x
+	if bar_width <= 0.0:
+		bar_width = _xp_bar_bg.custom_minimum_size.x
+	var fill_target := max(bar_width * pct, 4.0)
 	(
 		_xp_fill
 		. create_tween()
-		. tween_property(_xp_fill, "custom_minimum_size:x", max(fill_target, 4.0), 0.6)
+		. tween_property(_xp_fill, "offset_right", fill_target, 0.6)
 		. set_trans(Tween.TRANS_CUBIC)
 		. set_ease(Tween.EASE_OUT)
-		. set_delay(0.3)
+		. set_delay(0.1)
 	)
 
 

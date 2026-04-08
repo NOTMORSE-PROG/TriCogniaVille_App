@@ -57,25 +57,25 @@ alignment = 1
 
 [node name="LogoTexture" type="TextureRect" parent="BrandingLayer"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 110)
+custom_minimum_size = Vector2(0, 165)
 size_flags_horizontal = 4
 texture = ExtResource("4_logo")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="SubtitleLabel" type="Label" parent="BrandingLayer"]
+[node name="TitleLabel" type="Label" parent="BrandingLayer"]
 layout_mode = 2
-text = "Story-Based Reading Adventure"
+text = "TriCognia Ville"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.392, 0.769, 0.91, 1)
+theme_override_font_sizes/font_size = 66
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 
 [node name="ContentCard" type="PanelContainer" parent="."]
 layout_mode = 1
 anchor_left = 0.08
-anchor_top = 0.28
+anchor_top = 0.34
 anchor_right = 0.92
-anchor_bottom = 0.92
+anchor_bottom = 0.94
 offset_left = 0.0
 offset_right = 0.0
 

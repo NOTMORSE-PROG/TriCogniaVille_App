@@ -24,10 +24,10 @@ static func build() -> Theme:
 		theme.set_font("font", "LineEdit", ui_font)
 
 	# ── Font Sizes ────────────────────────────────────────────────────────────
-	theme.set_font_size("font_size", "Label", 24)
-	theme.set_font_size("font_size", "Button", 26)
-	theme.set_font_size("font_size", "LineEdit", 26)
-	theme.set_font_size("normal_font_size", "RichTextLabel", 26)
+	theme.set_font_size("font_size", "Label", 36)
+	theme.set_font_size("font_size", "Button", 38)
+	theme.set_font_size("font_size", "LineEdit", 38)
+	theme.set_font_size("normal_font_size", "RichTextLabel", 38)
 
 	# ── Colors ────────────────────────────────────────────────────────────────
 	theme.set_color("font_color", "Label", StyleFactory.TEXT_PRIMARY)

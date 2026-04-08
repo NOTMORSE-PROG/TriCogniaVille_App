@@ -107,17 +107,24 @@ func _build_prompt(
 	style.border_width_top = 4
 	style.border_color = building_color
 	_panel.add_theme_stylebox_override("panel", style)
-	_panel.custom_minimum_size = Vector2(380 * _sx, 0)
+	_panel.custom_minimum_size = Vector2(560 * _sx, 0)
 	center.add_child(_panel)
 
+	var panel_margin := MarginContainer.new()
+	panel_margin.add_theme_constant_override("margin_left", int(36 * _sx))
+	panel_margin.add_theme_constant_override("margin_right", int(36 * _sx))
+	panel_margin.add_theme_constant_override("margin_top", int(32 * _sy))
+	panel_margin.add_theme_constant_override("margin_bottom", int(32 * _sy))
+	_panel.add_child(panel_margin)
+
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", int(12 * _sy))
-	_panel.add_child(vbox)
+	vbox.add_theme_constant_override("separation", int(20 * _sy))
+	panel_margin.add_child(vbox)
 
 	# Building name + topic
 	var title := Label.new()
 	title.text = building_label
-	title.add_theme_font_size_override("font_size", int(22 * _sy))
+	title.add_theme_font_size_override("font_size", int(50 * _sy))
 	title.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -125,7 +132,7 @@ func _build_prompt(
 
 	var topic_label := Label.new()
 	topic_label.text = topic
-	topic_label.add_theme_font_size_override("font_size", int(14 * _sy))
+	topic_label.add_theme_font_size_override("font_size", int(32 * _sy))
 	topic_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 	topic_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	topic_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -133,14 +140,14 @@ func _build_prompt(
 
 	# Separator
 	var sep := HSeparator.new()
-	sep.add_theme_constant_override("separation", int(4 * _sy))
+	sep.add_theme_constant_override("separation", int(6 * _sy))
 	sep.add_theme_stylebox_override("separator", StyleBoxFlat.new())
 	vbox.add_child(sep)
 
 	# Description
 	var desc := Label.new()
 	desc.text = "Complete this reading quest to unlock!"
-	desc.add_theme_font_size_override("font_size", int(16 * _sy))
+	desc.add_theme_font_size_override("font_size", int(36 * _sy))
 	desc.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -148,16 +155,19 @@ func _build_prompt(
 	vbox.add_child(desc)
 
 	if can_start:
+		var tutorial_done: bool = GameManager.is_tutorial_done(_building_id)
+		var challenge_done: bool = GameManager.is_unlocked(_building_id)
+
 		# Two-option choice: Tutorial vs Challenge
 		var choice_vbox := VBoxContainer.new()
-		choice_vbox.add_theme_constant_override("separation", int(8 * _sy))
+		choice_vbox.add_theme_constant_override("separation", int(14 * _sy))
 		vbox.add_child(choice_vbox)
 
 		# Start with Tutorial button (blue accent)
 		var tutorial_btn := Button.new()
-		tutorial_btn.text = "Start with Tutorial"
-		tutorial_btn.custom_minimum_size = Vector2(280 * _sx, 50 * _sy)
-		tutorial_btn.add_theme_font_size_override("font_size", int(17 * _sy))
+		tutorial_btn.text = "✓  Tutorial Done" if tutorial_done else "Start with Tutorial"
+		tutorial_btn.custom_minimum_size = Vector2(520 * _sx, 96 * _sy)
+		tutorial_btn.add_theme_font_size_override("font_size", int(38 * _sy))
 		tutorial_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 		var tut_style := StyleFactory.make_secondary_button_normal()
 		tut_style.border_color = StyleFactory.STAGE_TUTORIAL_ACCENT
@@ -190,51 +200,73 @@ func _build_prompt(
 
 		var tut_desc := Label.new()
 		tut_desc.text = "Learn step-by-step with guided examples"
-		tut_desc.add_theme_font_size_override("font_size", int(12 * _sy))
+		tut_desc.add_theme_font_size_override("font_size", int(26 * _sy))
 		tut_desc.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 		tut_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		tut_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		choice_vbox.add_child(tut_desc)
 
-		# Skip to Challenge button (coral/red accent)
+		# Skip to Challenge button — locked until tutorial is done
 		var challenge_btn := Button.new()
-		challenge_btn.text = "Skip to Challenge"
-		challenge_btn.custom_minimum_size = Vector2(280 * _sx, 50 * _sy)
-		challenge_btn.add_theme_font_size_override("font_size", int(17 * _sy))
+		if challenge_done:
+			challenge_btn.text = "✓  Challenge Done"
+		elif tutorial_done:
+			challenge_btn.text = "Start the Challenge"
+		else:
+			challenge_btn.text = "🔒  Complete Tutorial First"
+		challenge_btn.disabled = not tutorial_done
+		challenge_btn.custom_minimum_size = Vector2(520 * _sx, 96 * _sy)
+		challenge_btn.add_theme_font_size_override("font_size", int(38 * _sy))
 		challenge_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
-		challenge_btn.add_theme_stylebox_override(
-			"normal", StyleFactory.make_primary_button_normal()
-		)
-		challenge_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
-		challenge_btn.add_theme_stylebox_override(
-			"pressed", StyleFactory.make_primary_button_pressed()
-		)
-		challenge_btn.pressed.connect(
-			func() -> void:
-				set_process(false)
-				visible = false
-				start_quest_pressed.emit(_building_id, true)
-		)
+		if tutorial_done:
+			challenge_btn.add_theme_stylebox_override(
+				"normal", StyleFactory.make_primary_button_normal()
+			)
+			challenge_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
+			challenge_btn.add_theme_stylebox_override(
+				"pressed", StyleFactory.make_primary_button_pressed()
+			)
+			challenge_btn.pressed.connect(
+				func() -> void:
+					set_process(false)
+					visible = false
+					start_quest_pressed.emit(_building_id, true)
+			)
+		else:
+			challenge_btn.add_theme_stylebox_override(
+				"normal", StyleFactory.make_disabled_button()
+			)
+			challenge_btn.add_theme_stylebox_override(
+				"disabled", StyleFactory.make_disabled_button()
+			)
 		var ch_center := CenterContainer.new()
 		ch_center.add_child(challenge_btn)
 		choice_vbox.add_child(ch_center)
 
 		var ch_desc := Label.new()
-		ch_desc.text = "Go straight to the graded mission (10 questions)"
-		ch_desc.add_theme_font_size_override("font_size", int(12 * _sy))
-		ch_desc.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+		ch_desc.text = (
+			"Go straight to the graded mission (10 questions)"
+			if tutorial_done
+			else "Finish the tutorial to unlock the challenge"
+		)
+		ch_desc.add_theme_font_size_override("font_size", int(26 * _sy))
+		ch_desc.add_theme_color_override(
+			"font_color",
+			StyleFactory.TEXT_MUTED if tutorial_done else StyleFactory.TEXT_MUTED
+		)
 		ch_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		ch_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		choice_vbox.add_child(ch_desc)
 
 		tutorial_btn.ready.connect(func() -> void: UIAnimations.make_interactive(tutorial_btn))
-		challenge_btn.ready.connect(func() -> void: UIAnimations.make_interactive(challenge_btn))
+		if tutorial_done:
+			challenge_btn.ready.connect(func() -> void: UIAnimations.make_interactive(challenge_btn))
 
 	# Not now
 	var dismiss_btn := Button.new()
 	dismiss_btn.text = "Not now"
-	dismiss_btn.custom_minimum_size = Vector2(100 * _sx, 36 * _sy)
-	dismiss_btn.add_theme_font_size_override("font_size", int(14 * _sy))
+	dismiss_btn.custom_minimum_size = Vector2(240 * _sx, 80 * _sy)
+	dismiss_btn.add_theme_font_size_override("font_size", int(30 * _sy))
 	dismiss_btn.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	dismiss_btn.add_theme_stylebox_override("normal", StyleFactory.make_secondary_button_normal())
 	dismiss_btn.add_theme_stylebox_override("hover", StyleFactory.make_secondary_button_hover())
@@ -276,16 +308,23 @@ func _build_sequence_message(required_label: String) -> void:
 
 	_panel = PanelContainer.new()
 	_panel.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(16))
-	_panel.custom_minimum_size = Vector2(340 * _sx, 0)
+	_panel.custom_minimum_size = Vector2(500 * _sx, 0)
 	center.add_child(_panel)
 
+	var seq_margin := MarginContainer.new()
+	seq_margin.add_theme_constant_override("margin_left", int(36 * _sx))
+	seq_margin.add_theme_constant_override("margin_right", int(36 * _sx))
+	seq_margin.add_theme_constant_override("margin_top", int(32 * _sy))
+	seq_margin.add_theme_constant_override("margin_bottom", int(32 * _sy))
+	_panel.add_child(seq_margin)
+
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", int(12 * _sy))
-	_panel.add_child(vbox)
+	vbox.add_theme_constant_override("separation", int(20 * _sy))
+	seq_margin.add_child(vbox)
 
 	var msg := Label.new()
 	msg.text = "Complete %s first!" % required_label
-	msg.add_theme_font_size_override("font_size", int(18 * _sy))
+	msg.add_theme_font_size_override("font_size", int(40 * _sy))
 	msg.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	msg.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -294,8 +333,8 @@ func _build_sequence_message(required_label: String) -> void:
 
 	var dismiss_btn := Button.new()
 	dismiss_btn.text = "OK"
-	dismiss_btn.custom_minimum_size = Vector2(80 * _sx, 40 * _sy)
-	dismiss_btn.add_theme_font_size_override("font_size", int(16 * _sy))
+	dismiss_btn.custom_minimum_size = Vector2(200 * _sx, 84 * _sy)
+	dismiss_btn.add_theme_font_size_override("font_size", int(36 * _sy))
 	dismiss_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	dismiss_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
 	dismiss_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())

@@ -160,6 +160,9 @@ func advance_stage() -> void:
 	match _current_stage:
 		"tutorial":
 			_current_stage = "practice"
+			# Persist tutorial completion (local + backend) so QuestPrompt
+			# unlocks "Skip to Challenge" and shows a checkmark on revisits.
+			GameManager.mark_tutorial_done(_current_building_id)
 		"practice":
 			_current_stage = "mission"
 			_mission_score = 0
@@ -323,15 +326,25 @@ func _finish_quest() -> void:
 		)
 	)
 
-	# Persist attempt to database
-	if not GameManager.current_student.is_empty():
-		var student_id: String = GameManager.current_student.get("id", "")
-		if not student_id.is_empty():
-			DatabaseManager.record_quest_attempt(
-				student_id, quest_id, building_id, passed, _mission_score, _mission_total
-			)
-			if passed:
-				GameManager.record_quest_completion(building_id, xp_reward)
+	# Persist attempt to backend (server-authoritative). The server recomputes
+	# `passed` from (buildingId, score, totalItems) — we don't send the client's
+	# verdict. The server response drives XP, level, unlock, and badges via
+	# GameManager.submit_quest_attempt.
+	if ApiClient.is_authenticated:
+		# `attempts` reflects how many times the player has tried THIS quest
+		# this run; for the first POST it's 1.
+		var payload := {
+			"questId": quest_id,
+			"buildingId": building_id,
+			"score": _mission_score,
+			"totalItems": _mission_total,
+			"attempts": 1,
+		}
+		GameManager.submit_quest_attempt(payload)
+
+	# Note: the client's `passed` and `xp_reward` here are *display* values.
+	# The server is authoritative — it recomputes pass/fail and the actual XP
+	# delta lands on GameManager.current_student via apply_student_update.
 
 	var score := _mission_score
 	_last_completed_building_id = building_id

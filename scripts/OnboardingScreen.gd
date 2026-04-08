@@ -153,12 +153,12 @@ var _female_select_btn: Button = $CharacterContainer/CharacterCard/CardContent/C
 var _character_continue: Button = $CharacterContainer/CharacterCard/CardContent/CharacterContinue
 
 @onready var _result_panel: Panel = $ResultPanel
-@onready var _result_title: Label = $ResultPanel/ResultTitle
-@onready var _result_level_name: Label = $ResultPanel/LevelName
-@onready var _result_level_desc: Label = $ResultPanel/LevelDesc
-@onready var _result_badge: Panel = $ResultPanel/LevelBadge
-@onready var _result_badge_label: Label = $ResultPanel/LevelBadge/BadgeLabel
-@onready var _start_btn: Button = $ResultPanel/StartAdventureButton
+@onready var _result_title: Label = $ResultPanel/ResultMargin/ResultVBox/ResultTitle
+@onready var _result_level_name: Label = $ResultPanel/ResultMargin/ResultVBox/LevelName
+@onready var _result_level_desc: Label = $ResultPanel/ResultMargin/ResultVBox/LevelDesc
+@onready var _result_badge: Panel = $ResultPanel/ResultMargin/ResultVBox/LevelBadge
+@onready var _result_badge_label: Label = $ResultPanel/ResultMargin/ResultVBox/LevelBadge/BadgeLabel
+@onready var _start_btn: Button = $ResultPanel/ResultMargin/ResultVBox/StartAdventureButton
 
 # ── Lifecycle ─��───────────────────────────���────────────────────────────────────
 
@@ -189,7 +189,7 @@ func _ready() -> void:
 
 	# Style result panel
 	_result_panel.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(20))
-	_style_primary($ResultPanel/StartAdventureButton)
+	_style_primary($ResultPanel/ResultMargin/ResultVBox/StartAdventureButton)
 
 	_show_slide_instant(0)
 	_connect_controls()
@@ -465,16 +465,14 @@ func _on_character_continue() -> void:
 	if _character_gender.is_empty():
 		return
 
-	# Save username + character_gender locally and sync to backend
+	# Username + character gender are *staged* locally — they're committed to
+	# the backend atomically by `_on_start_adventure_pressed` via the new
+	# /api/v1/onboarding/complete endpoint along with the quiz-derived
+	# reading_level. This avoids the old dual-write race.
 	var student: Dictionary = GameManager.current_student
 	if not student.is_empty():
-		DatabaseManager.update_student_profile(student.id, _username, _character_gender)
 		GameManager.current_student["username"] = _username
 		GameManager.current_student["character_gender"] = _character_gender
-		ApiClient.update_profile(
-			{"username": _username, "characterGender": _character_gender},
-			func(_s: bool, _d: Dictionary) -> void: pass
-		)
 
 	# Transition to quiz
 	_transitioning = true
@@ -531,10 +529,10 @@ func _load_question(index: int) -> void:
 	_passage_card.offset_bottom = _passage_card.offset_top + maxf(card_h, 140.0)
 
 	# Reposition elements below the card
-	var below_card: float = _passage_card.offset_bottom + 12.0
+	var below_card: float = _passage_card.offset_bottom + 24.0
 	_question_label.offset_top = below_card
 	_question_label.offset_bottom = below_card + 50.0
-	var answers_top: float = _question_label.offset_bottom + 10.0
+	var answers_top: float = _question_label.offset_bottom + 24.0
 	_mc_container.offset_top = answers_top
 	_fill_container.offset_top = answers_top
 	_drag_container.offset_top = answers_top
@@ -626,8 +624,8 @@ func _populate_drag_drop(q: Dictionary) -> void:
 func _add_chip_to_bank(word: String) -> void:
 	var btn := Button.new()
 	btn.text = word
-	btn.custom_minimum_size = Vector2(90, 52)
-	btn.add_theme_font_size_override("font_size", 24)
+	btn.custom_minimum_size = Vector2(130, 80)
+	btn.add_theme_font_size_override("font_size", 38)
 	# Bank chip style: sky blue tint
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.392, 0.769, 0.910, 0.15)
@@ -655,8 +653,8 @@ func _add_chip_to_bank(word: String) -> void:
 func _add_chip_to_zone(word: String) -> void:
 	var btn := Button.new()
 	btn.text = word
-	btn.custom_minimum_size = Vector2(90, 52)
-	btn.add_theme_font_size_override("font_size", 24)
+	btn.custom_minimum_size = Vector2(130, 80)
+	btn.add_theme_font_size_override("font_size", 38)
 	# Placed chip style: coral tint
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.914, 0.388, 0.431, 0.2)
@@ -867,16 +865,29 @@ func _on_start_adventure_pressed() -> void:
 		get_tree().change_scene_to_file("res://scenes/Main.tscn")
 		return
 	var level := _score_to_level(_score)
-	DatabaseManager.update_student_level(student.id, level)
-	DatabaseManager.mark_onboarding_done(student.id)
-	GameManager.current_student["reading_level"] = level
-	GameManager.current_student["onboarding_done"] = 1
+	var payload := {
+		"username": _username,
+		"characterGender": _character_gender if not _character_gender.is_empty() else "male",
+		"readingLevel": level,
+	}
 
-	# Fade out before transition
+	# Atomic finalize via NetworkGate. Only transition once the server confirms;
+	# the player can't slip into Main with stale local-only state on failure.
+	NetworkGate.run(
+		func(cb: Callable) -> void: ApiClient.complete_onboarding(payload, cb),
+		func(data: Dictionary) -> void:
+			if data.has("error"):
+				return  # Modal stays open / cancel returns the player to picker
+			if data.has("student"):
+				GameManager.apply_student_update(data["student"])
+			_finish_onboarding_transition()
+	)
+
+
+func _finish_onboarding_transition() -> void:
 	var tw := create_tween()
 	tw.tween_property(self, "modulate:a", 0.0, 0.4).set_trans(Tween.TRANS_QUAD).set_ease(
 		Tween.EASE_IN
 	)
 	await tw.finished
-
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")

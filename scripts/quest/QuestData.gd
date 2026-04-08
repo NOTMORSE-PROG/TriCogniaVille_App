@@ -4,7 +4,9 @@ class_name QuestData
 ## All content is syllabus-aligned for Grade 7 learners (READVENTURE FINAL IT CONTENT GUIDE).
 
 # ── Sequential Unlock Order ─────────────────────────────────────────────────
-const UNLOCK_ORDER: Array[String] = ["town_hall", "school", "library", "well", "market", "bakery"]
+const UNLOCK_ORDER: Array[String] = [
+	"town_hall", "school", "inn", "chapel", "library", "well", "market", "bakery"
+]
 
 # ── Building → Quest Mapping ────────────────────────────────────────────────
 const BUILDING_QUEST_MAP := {
@@ -24,6 +26,24 @@ const BUILDING_QUEST_MAP := {
 		"topic": "Syllabication",
 		"types": ["drag_drop", "read_aloud"],
 		"xp": 120,
+		"pass_threshold": 7,
+	},
+	"inn":
+	{
+		"quest_id": "week3_punctuation",
+		"week": 3,
+		"topic": "Punctuation",
+		"types": ["mcq", "punctuation_read"],
+		"xp": 130,
+		"pass_threshold": 7,
+	},
+	"chapel":
+	{
+		"quest_id": "week4_fluency",
+		"week": 4,
+		"topic": "Fluency",
+		"types": ["fluency_check", "mcq"],
+		"xp": 140,
 		"pass_threshold": 7,
 	},
 	"library":
@@ -1128,6 +1148,441 @@ const _BAKERY_MISSION := [
 ]
 
 # ═════════════════════════════════════════════════════════════════════════════
+# WEEK 3 — PUNCTUATION (Inn)
+# Interaction types: MCQ + PunctuationRead (read-aloud + MCQ pairs)
+# DepED K-12 Grade 7: prosodic features — stress, intonation, juncture, rate
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _INN_TUTORIAL := [
+	{
+		"type": "mcq",
+		"instruction":
+		"Punctuation marks are signals for readers!\n• A comma (,) = pause briefly.\n• A period (.) = stop completely.\n• A question mark (?) = rising tone.\n• An exclamation mark (!) = read with strong feeling.",
+		"question": "What should you do when you see a comma in a sentence?",
+		"options": ["Stop completely", "Pause briefly", "Read faster", "Skip it"],
+		"correct_index": 1,
+		"feedback_correct": "Right! A comma is a short pause — like taking a small breath before continuing.",
+		"feedback_wrong":
+		"A comma tells you to pause briefly, not stop completely. Think of it as a quick breath.",
+	},
+]
+
+const _INN_PRACTICE := [
+	{
+		"type": "punctuation_read",
+		"sentence": "The fire is warm.",
+		"word": "The fire is warm.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What does the period at the end tell you?",
+		"options": ["Pause briefly", "Stop — the sentence is finished", "Ask a question", "Read louder"],
+		"correct_index": 1,
+		"hint": "A period ends a sentence. Your voice should drop and stop completely.",
+		"feedback_correct": "Correct! A period means full stop — the sentence is finished.",
+		"feedback_wrong":
+		"A period ends the sentence completely. Your voice drops and stops — not just a pause.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Where are you going?",
+		"word": "Where are you going?",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should this sentence be read?",
+		"options":
+		["With a falling tone", "Very slowly, word by word", "With a rising tone at the end", "In a whisper"],
+		"correct_index": 2,
+		"hint": "A question mark signals that your voice goes UP at the end.",
+		"feedback_correct": "Right! A question mark means rising intonation — your voice lifts at the end.",
+		"feedback_wrong": "A question mark tells you to raise your voice at the end, like you're really asking.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about punctuation.",
+		"question": "What does an exclamation mark (!) tell a reader?",
+		"options": ["Slow down", "Stop reading", "Read with strong feeling or urgency", "Pause briefly"],
+		"correct_index": 2,
+		"hint": "Think of how you'd say 'Look out!' in real life — is it calm or urgent?",
+		"feedback_correct": "Right! Exclamation marks signal strong emotion — urgency, excitement, alarm.",
+		"feedback_wrong":
+		"An exclamation mark means strong feeling. Think of 'Look out!' — you wouldn't say that quietly.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Come in, sit down, and rest.",
+		"word": "Come in, sit down, and rest.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How many commas are in this sentence?",
+		"options": ["1", "2", "3", "4"],
+		"correct_index": 1,
+		"hint": "Count the commas — each one is a brief pause between instructions.",
+		"feedback_correct": "Correct! Two commas = two brief pauses. It makes the list easy to follow.",
+		"feedback_wrong":
+		"Look carefully: 'Come in, sit down, and rest.' The comma after 'in' and after 'down' — that's two.",
+	},
+]
+
+const _INN_MISSION := [
+	{
+		"type": "punctuation_read",
+		"sentence": "The lantern glowed softly, casting light on the empty road.",
+		"word": "The lantern glowed softly, casting light on the empty road.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "Where should you pause when reading this sentence?",
+		"options":
+		["After 'lantern'", "After the comma — after 'softly'", "After 'casting'", "At the end only"],
+		"correct_index": 1,
+		"hint": "Find the comma. That is where you pause briefly.",
+		"feedback_correct": "Right! The comma after 'softly' tells you to pause briefly before continuing.",
+		"feedback_wrong":
+		"The comma after 'softly' is the pause point. Commas = brief breath, not a full stop.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Have you seen the innkeeper today?",
+		"word": "Have you seen the innkeeper today?",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should this sentence be read?",
+		"options":
+		["With a flat, steady tone", "With a rising tone at the end", "Very fast", "In a deep voice"],
+		"correct_index": 1,
+		"hint": "The question mark at the end tells you something about your intonation.",
+		"feedback_correct": "Correct! A question mark signals rising intonation — your voice lifts at the end.",
+		"feedback_wrong": "A question mark means your voice rises. Think of how you actually ask a question out loud.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "He opened the door, stepped inside, and sat down by the fire.",
+		"word": "He opened the door, stepped inside, and sat down by the fire.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How many brief pauses should you make while reading this sentence?",
+		"options": ["None", "One", "Two", "Four"],
+		"correct_index": 2,
+		"hint": "Count the commas — each one = one brief pause.",
+		"feedback_correct": "Right! Two commas = two brief pauses. It keeps the actions clear and separate.",
+		"feedback_wrong":
+		"There are two commas: after 'door' and after 'inside.' Each one = a brief pause.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Look out!",
+		"word": "Look out!",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What does the exclamation mark tell you about how to read this?",
+		"options":
+		["Read it quietly", "Read it with urgency and force", "Read it slowly", "Read it as a question"],
+		"correct_index": 1,
+		"hint": "An exclamation mark signals strong emotion — something important is happening!",
+		"feedback_correct": "Right! An exclamation mark = read with urgency and force. It's alarming!",
+		"feedback_wrong": "The exclamation mark means strong feeling. 'Look out!' should sound urgent and loud.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "No one had spoken in the inn for many years.",
+		"word": "No one had spoken in the inn for many years.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What should your voice do at the end of this sentence?",
+		"options": ["Rise up", "Stay flat, then stop completely", "Get louder", "Pause in the middle"],
+		"correct_index": 1,
+		"hint": "A period ends a sentence. What does your voice do at the end?",
+		"feedback_correct": "Correct! A period = full stop. Your voice drops and the sentence ends completely.",
+		"feedback_wrong":
+		"The period at the end means stop completely — your voice should drop and come to rest.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Where did the story go?",
+		"word": "Where did the story go?",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What kind of sentence is this?",
+		"options": ["A statement", "A command", "A question", "An exclamation"],
+		"correct_index": 2,
+		"hint": "What punctuation ends the sentence? It tells you the type.",
+		"feedback_correct": "Correct! A question mark ends it — it's a question, so your voice rises.",
+		"feedback_wrong":
+		"The question mark tells you it's a question. Questions use rising intonation at the end.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "The walls, the chairs, and the fireplace all seemed to wait.",
+		"word": "The walls, the chairs, and the fireplace all seemed to wait.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What do the commas in this list tell a reader to do?",
+		"options":
+		[
+			"Stop completely after each item",
+			"Speed up between items",
+			"Pause briefly after each item",
+			"Skip the commas"
+		],
+		"correct_index": 2,
+		"hint": "Commas in a list separate each item with a brief pause.",
+		"feedback_correct": "Right! Each comma = a brief pause. It helps the listener separate the items in the list.",
+		"feedback_wrong":
+		"Commas in a list signal a brief pause after each item — not a full stop, just a breath.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "She paused, then continued reading from the old book.",
+		"word": "She paused, then continued reading from the old book.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What does the comma after 'paused' signal?",
+		"options":
+		[
+			"The sentence is finished",
+			"A brief pause before continuing",
+			"A rising tone",
+			"Read louder after the comma"
+		],
+		"correct_index": 1,
+		"hint": "The character literally paused — the comma makes you feel that pause too.",
+		"feedback_correct": "Right! The comma mirrors the character's pause — a brief breath before continuing.",
+		"feedback_wrong":
+		"The comma after 'paused' = a brief pause in your reading, just like the character paused.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "The words were fading — slowly, surely, one by one.",
+		"word": "The words were fading — slowly, surely, one by one.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What do the commas after 'slowly' and 'surely' signal?",
+		"options": ["Stop completely", "Read faster", "A brief pause after each word", "Louder emphasis"],
+		"correct_index": 2,
+		"hint": "Each comma creates a tiny pause — it slows down the sentence to match the mood.",
+		"feedback_correct":
+		"Right! The commas slow the rhythm — 'slowly... surely... one by one.' Each word has its moment.",
+		"feedback_wrong":
+		"The commas create brief pauses after 'slowly' and 'surely,' slowing the sentence's rhythm.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Why does the silence never end?",
+		"word": "Why does the silence never end?",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "Which punctuation mark ends this sentence, and what does it signal?",
+		"options":
+		[
+			"A period — stop completely",
+			"A comma — pause briefly",
+			"A question mark — rising tone",
+			"An exclamation — strong feeling"
+		],
+		"correct_index": 2,
+		"hint": "Look at the very last character. What is it, and what does it do to your voice?",
+		"feedback_correct":
+		"Correct! A question mark ends it and signals rising intonation — your voice lifts as you ask.",
+		"feedback_wrong":
+		"The last character is a question mark (?). It signals rising intonation — your voice goes up at the end.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 4 — FLUENCY (Chapel)
+# Interaction types: FluencyCheck + MCQ
+# DepED K-12 Grade 7: read aloud grade-level texts effortlessly and accurately
+# Phil-IRI: literal, inferential, and meta-comprehension questions
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _CHAPEL_PASSAGE := (
+	"The morning mist had settled over the village of Luminara.\n"
+	+ "A soft silence covered the stone path near the chapel.\n"
+	+ "The Readventurer stepped forward, moving carefully through the quiet air.\n"
+	+ "Each footstep felt slow and deliberate, as if the village itself was listening.\n"
+	+ "Far ahead, a warm glow appeared from the chapel window.\n"
+	+ "He breathed deeply and walked on, one steady step at a time."
+)
+
+const _CHAPEL_TUTORIAL := [
+	{
+		"type": "mcq",
+		"instruction":
+		"Reading fluently means reading smoothly and expressively — in natural phrases, with the right pace and pauses. It's the difference between reading like a robot and reading like a storyteller.",
+		"question": "Which way of reading shows fluency?",
+		"options":
+		[
+			"Reading one word... at a time... slowly...",
+			"Reading smoothly in natural phrases with pauses",
+			"Reading as fast as possible",
+			"Skipping difficult words"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Exactly! Fluent reading flows naturally — smooth, steady, and expressive.",
+		"feedback_wrong":
+		"Fluent reading isn't word-by-word or rushed. It flows in natural phrases, like natural speech.",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this sentence aloud as smoothly as you can.",
+		"word": "The morning mist had settled over the village of Luminara.",
+		"feedback_correct": "Beautiful reading — smooth and steady!",
+	},
+]
+
+const _CHAPEL_PRACTICE := [
+	{
+		"type": "fluency_check",
+		"instruction": "Read these two sentences as smoothly and expressively as you can.",
+		"passage":
+		"The morning mist had settled over the village of Luminara.\nA soft silence covered the stone path near the chapel.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about how the passage should be read.",
+		"question": "How should 'A soft silence covered the stone path' be read?",
+		"options":
+		["Loudly and fast", "Softly and slowly, matching the mood", "With excitement", "Word by word"],
+		"correct_index": 1,
+		"hint": "The mood is quiet and still. Let your voice match the feeling of the sentence.",
+		"feedback_correct": "Right! A soft, slow reading matches the quiet, peaceful mood.",
+		"feedback_wrong":
+		"The sentence has a soft, still mood — your voice should match. Read it quietly and slowly.",
+	},
+	{
+		"type": "mcq",
+		"question": "What helps you read a long sentence smoothly?",
+		"options":
+		[
+			"Reading each word separately",
+			"Ignoring the punctuation marks",
+			"Reading in natural phrases, pausing at commas and periods",
+			"Rushing through it quickly"
+		],
+		"correct_index": 2,
+		"hint": "Punctuation marks are like road signs — they tell you where to breathe.",
+		"feedback_correct": "Right! Natural phrases + punctuation pauses = smooth, fluent reading.",
+		"feedback_wrong":
+		"Use the punctuation as your guide — pause where the commas and periods are. That's what makes it flow.",
+	},
+]
+
+const _CHAPEL_MISSION := [
+	{
+		"type": "fluency_check",
+		"instruction":
+		"Read the full passage aloud. Read smoothly, at a steady pace, with expression.",
+		"passage": _CHAPEL_PASSAGE,
+	},
+	# Literal comprehension (Phil-IRI)
+	{
+		"type": "mcq",
+		"instruction": "Answer based on how the passage should be read.",
+		"question":
+		"Where should you pause in 'The morning mist had settled over the village of Luminara.'?",
+		"options":
+		["After 'mist'", "After 'settled'", "At the end — after the period", "After 'over'"],
+		"correct_index": 2,
+		"feedback_correct": "Right! A period at the end = full stop. That is where you pause completely.",
+		"feedback_wrong":
+		"The period at the very end of the sentence is where you stop. That's where the sentence ends.",
+	},
+	{
+		"type": "mcq",
+		"question": "How should 'A soft silence covered the stone path near the chapel.' be read?",
+		"options":
+		[
+			"Loudly, to emphasize the silence",
+			"Softly and calmly, to match the mood",
+			"Very fast to convey urgency",
+			"Word by word, pausing after each word"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The mood is soft and still — your reading should feel the same way.",
+		"feedback_wrong": "The mood is calm and quiet. Soft, slow reading matches it — not loud or rushed.",
+	},
+	{
+		"type": "mcq",
+		"question": "What tone fits 'Each footstep felt slow and deliberate'?",
+		"options":
+		["Excited and fast", "Calm and measured", "Loud and urgent", "High-pitched and light"],
+		"correct_index": 1,
+		"feedback_correct": "Right! Slow and deliberate = calm and measured. Let your voice match the pacing.",
+		"feedback_wrong":
+		"The word 'deliberate' means careful and unhurried. Your reading should be calm and measured.",
+	},
+	# Inferential comprehension
+	{
+		"type": "mcq",
+		"question": "Which phrase should be read together smoothly, without breaking it up?",
+		"options":
+		[
+			"moving / carefully / through",
+			"moving carefully through the quiet air",
+			"the / quiet / air",
+			"stepped / forward / moving"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Right! Read the whole phrase as one smooth unit — it flows naturally.",
+		"feedback_wrong": "Phrases belong together. 'Moving carefully through the quiet air' is one meaningful chunk.",
+	},
+	{
+		"type": "mcq",
+		"question": "Where should the reader naturally slow down in the passage?",
+		"options":
+		[
+			"At the very beginning only",
+			"During 'one steady step at a time'",
+			"During the longest sentence",
+			"Everywhere equally — same speed throughout"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Right! 'One steady step at a time' — the phrase itself is slow and deliberate.",
+		"feedback_wrong":
+		"The phrase 'one steady step at a time' mirrors the pace of walking slowly. Slow down there.",
+	},
+	{
+		"type": "mcq",
+		"question": "What does the morning mist suggest about the mood of the passage?",
+		"options":
+		["Danger and urgency", "Peaceful and quiet", "Excitement and joy", "Confusion and fear"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! Morning mist over a quiet village creates a peaceful, reflective mood.",
+		"feedback_wrong":
+		"Morning mist settling over a village creates a soft, calm atmosphere — peaceful and quiet.",
+	},
+	# Meta-comprehension (Phil-IRI)
+	{
+		"type": "mcq",
+		"question": "What makes this passage read fluently?",
+		"options":
+		[
+			"Reading word by word with equal pauses",
+			"Skipping the punctuation to go faster",
+			"Reading in smooth phrases with pauses at commas and periods",
+			"Reading as fast as possible"
+		],
+		"correct_index": 2,
+		"feedback_correct": "Right! Smooth phrases + punctuation pauses = fluent, expressive reading.",
+		"feedback_wrong":
+		"Fluency comes from smooth phrases and honouring the punctuation. Those pauses give the text meaning.",
+	},
+	{
+		"type": "mcq",
+		"question":
+		"How should 'The Readventurer stepped forward, moving carefully through the quiet air.' be read?",
+		"options":
+		[
+			"Word by word, stopping after each word",
+			"Very fast to convey movement",
+			"In smooth chunks, pausing at the comma",
+			"Skipping the comma"
+		],
+		"correct_index": 2,
+		"feedback_correct": "Right! Smooth chunks + pause at the comma = fluent reading of a long sentence.",
+		"feedback_wrong":
+		"Long sentences need to be broken into smooth chunks. Pause at the comma, then continue.",
+	},
+	{
+		"type": "mcq",
+		"question":
+		"Where should you pause in 'He breathed deeply and walked on, one steady step at a time.'?",
+		"options":
+		["After 'breathed'", "After 'and'", "After the comma — after 'on'", "Nowhere — read it all at once"],
+		"correct_index": 2,
+		"feedback_correct": "Right! The comma after 'walked on' is the pause point — then continue slowly.",
+		"feedback_wrong":
+		"The comma after 'on' tells you to pause there. Then finish slowly: 'one steady step at a time.'",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
 # QUEST LOOKUP
 # ═════════════════════════════════════════════════════════════════════════════
 
@@ -1147,6 +1602,18 @@ static func _lookup_stages(building_id: String) -> Dictionary:
 				"tutorial": _SCHOOL_TUTORIAL,
 				"practice": _SCHOOL_PRACTICE,
 				"mission": _SCHOOL_MISSION
+			}
+		"inn":
+			return {
+				"tutorial": _INN_TUTORIAL,
+				"practice": _INN_PRACTICE,
+				"mission": _INN_MISSION
+			}
+		"chapel":
+			return {
+				"tutorial": _CHAPEL_TUTORIAL,
+				"practice": _CHAPEL_PRACTICE,
+				"mission": _CHAPEL_MISSION
 			}
 		"library":
 			return {
@@ -1203,6 +1670,10 @@ static func get_building_label(building_id: String) -> String:
 			return "Town Hall"
 		"school":
 			return "School"
+		"inn":
+			return "The Inn"
+		"chapel":
+			return "The Chapel"
 		"library":
 			return "Library"
 		"well":
@@ -1267,6 +1738,23 @@ static func validate_quest(building_id: String) -> bool:
 				if q.get("word", "").is_empty() and q.get("passage", "").is_empty():
 					push_error(
 						"[QuestData] ReadAloud %d in '%s' has no word or passage" % [i, building_id]
+					)
+					return false
+			"fluency_check":
+				if q.get("passage", "").is_empty():
+					push_error(
+						"[QuestData] FluencyCheck %d in '%s' has no passage" % [i, building_id]
+					)
+					return false
+			"punctuation_read":
+				if q.get("sentence", "").is_empty():
+					push_error(
+						"[QuestData] PunctuationRead %d in '%s' has no sentence" % [i, building_id]
+					)
+					return false
+				if q.get("options", []).size() < 2:
+					push_error(
+						"[QuestData] PunctuationRead %d in '%s' has < 2 options" % [i, building_id]
 					)
 					return false
 			_:

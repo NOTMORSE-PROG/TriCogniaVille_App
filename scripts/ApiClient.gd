@@ -35,17 +35,18 @@ func _ready() -> void:
 
 
 func _load_token() -> void:
+	# We deliberately ONLY load the JWT — base_url always comes from the
+	# build-time PRODUCTION_URL placeholder. Persisting base_url meant a stale
+	# install could be locked to a dead server until uninstall; never again.
 	var config := ConfigFile.new()
 	if config.load(TOKEN_PATH) == OK:
 		auth_token = config.get_value("auth", "token", "")
-		base_url = config.get_value("auth", "base_url", base_url)
 
 
 func _save_token(token: String) -> void:
 	auth_token = token
 	var config := ConfigFile.new()
 	config.set_value("auth", "token", token)
-	config.set_value("auth", "base_url", base_url)
 	config.save(TOKEN_PATH)
 
 
@@ -141,22 +142,49 @@ func update_profile(updates: Dictionary, callback: Callable) -> void:
 	_patch("/me", JSON.stringify(updates), callback)
 
 
-func sync_progress(data: Dictionary, callback: Callable) -> void:
-	_post("/sync", JSON.stringify(data), callback)
+## Generic PATCH /me — used for tutorial_done, name, etc. (alias for update_profile.)
+func patch_me(updates: Dictionary, callback: Callable) -> void:
+	_patch("/me", JSON.stringify(updates), callback)
 
 
+## Server-authoritative quest finalize. The caller MUST include
+## `attemptId` (UUIDv4) — reused on retries so the backend deduplicates.
+## `passed` is intentionally absent: the server recomputes it from
+## (buildingId, score, totalItems).
 func record_quest(quest_data: Dictionary, callback: Callable) -> void:
 	_post("/quests", JSON.stringify(quest_data), callback)
 
 
-func record_building(building_data: Dictionary, callback: Callable) -> void:
-	_post("/buildings", JSON.stringify(building_data), callback)
+## Mark a single story flag as seen. flag ∈ {prologueSeen, introSeen, outroSeen, endingSeen}.
+func record_story_flag(building_id: String, flag: String, callback: Callable) -> void:
+	_post(
+		"/story-progress",
+		JSON.stringify({"buildingId": building_id, "flag": flag}),
+		callback
+	)
 
 
-func get_progress(callback: Callable) -> void:
-	_http_get("/progress", callback)
+## Mark the tutorial stage as completed for a building. Idempotent on the server.
+func mark_tutorial_done(building_id: String, callback: Callable) -> void:
+	_post(
+		"/buildings/tutorial",
+		JSON.stringify({"buildingId": building_id}),
+		callback
+	)
 
 
+## Atomic onboarding finalize. Body: { username, characterGender, readingLevel }.
+func complete_onboarding(payload: Dictionary, callback: Callable) -> void:
+	_post("/onboarding/complete", JSON.stringify(payload), callback)
+
+
+## Boot hydration — single round trip pulling student + badges + stats +
+## unlockedBuildings + storyProgress + recentQuestAttempts.
+func fetch_profile(callback: Callable) -> void:
+	_http_get("/profile", callback)
+
+
+## Legacy alias retained for ProfilePanel which already calls get_profile.
 func get_profile(callback: Callable) -> void:
 	_http_get("/profile", callback)
 
@@ -167,6 +195,25 @@ func submit_speech_assessment(payload: Dictionary, callback: Callable) -> void:
 
 func upload_audio(audio_b64: String, callback: Callable) -> void:
 	_post("/speech/upload", JSON.stringify({"audio": audio_b64}), callback)
+
+
+## Generate a UUIDv4 string for use as `attemptId` on POST /quests.
+## Reuse the same value for all retries of a single quest run so the
+## backend's idempotency dedupe works.
+static func new_uuid() -> String:
+	var bytes := Crypto.new().generate_random_bytes(16)
+	# Set version (4) and variant bits per RFC 4122
+	var b := bytes.duplicate()
+	b[6] = (b[6] & 0x0F) | 0x40
+	b[8] = (b[8] & 0x3F) | 0x80
+	var hex := b.hex_encode()
+	return "%s-%s-%s-%s-%s" % [
+		hex.substr(0, 8),
+		hex.substr(8, 4),
+		hex.substr(12, 4),
+		hex.substr(16, 4),
+		hex.substr(20, 12),
+	]
 
 
 # ── HTTP Helpers ──────────────────────────────────────────────────────────────

@@ -8,6 +8,8 @@ enum TreeType { OAK, PINE, FRUIT }
 const BUILDING_DATA := [
 	{"id": "town_hall", "label": "Town Hall", "color": Color("#E8C547"), "x": 0.50, "y": 0.34},
 	{"id": "school", "label": "School", "color": Color("#5B9BD5"), "x": 0.15, "y": 0.44},
+	{"id": "inn", "label": "The Inn", "color": Color("#C07B3A"), "x": 0.34, "y": 0.50},
+	{"id": "chapel", "label": "The Chapel", "color": Color("#9AA8BF"), "x": 0.64, "y": 0.50},
 	{"id": "library", "label": "Library", "color": Color("#8B5CF6"), "x": 0.80, "y": 0.40},
 	{"id": "well", "label": "Well", "color": Color("#3E8948"), "x": 0.50, "y": 0.58},
 	{"id": "market", "label": "Market", "color": Color("#EB6B1F"), "x": 0.18, "y": 0.68},
@@ -41,8 +43,12 @@ var _foliage_shader: Shader
 # ─────────────────────────────────────────────────────────────────────────────
 func _ready() -> void:
 	_vp = get_viewport().get_visible_rect().size
-	_sx = _vp.x / 1920.0
-	_sy = _vp.y / 1080.0
+	# Uniform scale: prevents horizontal stretching on wider-than-16:9 phones
+	# (e.g. 20:9 / 19.5:9 landscape devices). _sx and _sy are kept as
+	# separate variables so the ~40 call sites below don't need editing.
+	var scale_val: float = min(_vp.x / 1920.0, _vp.y / 1080.0)
+	_sx = scale_val
+	_sy = scale_val
 
 	_foliage_shader = load("res://shaders/foliage_sway.gdshader")
 
@@ -995,14 +1001,14 @@ func _build_ui() -> void:
 	var title_label := Label.new()
 	title_label.text = "Village Restoration"
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_label.add_theme_font_size_override("font_size", int(12.0 * _sy))
+	title_label.add_theme_font_size_override("font_size", int(18.0 * _sy))
 	title_label.add_theme_color_override("font_color", Color("#E8C547"))
 	title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(title_label)
 
 	# Progress bar container
 	var bar_bg := ColorRect.new()
-	bar_bg.custom_minimum_size = Vector2(180 * _sx, 10 * _sy)
+	bar_bg.custom_minimum_size = Vector2(260 * _sx, 15 * _sy)
 	bar_bg.color = Color(0.2, 0.15, 0.05, 0.6)
 	bar_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
@@ -1025,7 +1031,7 @@ func _build_ui() -> void:
 			unlocked_count += 1
 	count_label.text = "%d / %d buildings restored" % [unlocked_count, BUILDING_DATA.size()]
 	count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	count_label.add_theme_font_size_override("font_size", int(10.0 * _sy))
+	count_label.add_theme_font_size_override("font_size", int(15.0 * _sy))
 	count_label.add_theme_color_override("font_color", Color("#DEB887"))
 	count_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(count_label)
@@ -1344,6 +1350,11 @@ func _on_building_unlocked(building_id: String) -> void:
 		building_id,
 		"  |  Progress: %.0f%%" % GameManager.get_progress_percent()
 	)
+	# Sync the BuildingController's local flag so tapping it doesn't silently no-op.
+	if _building_controllers.has(building_id):
+		var bc: BuildingController = _building_controllers[building_id]
+		if not bc.is_unlocked:
+			bc.is_unlocked = true
 	AudioManager.play_sfx("building_unlock")
 	_update_progress_bar()
 
@@ -1395,7 +1406,7 @@ func _play_ending_sequence() -> void:
 		# Building name
 		var name_label := Label.new()
 		name_label.text = building_label
-		name_label.add_theme_font_size_override("font_size", int(22 * _sy))
+		name_label.add_theme_font_size_override("font_size", int(33 * _sy))
 		name_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		name_label.anchor_left = 0.2
@@ -1407,7 +1418,7 @@ func _play_ending_sequence() -> void:
 		# Keeper line
 		var line_label := Label.new()
 		line_label.text = keeper_line
-		line_label.add_theme_font_size_override("font_size", int(16 * _sy))
+		line_label.add_theme_font_size_override("font_size", int(24 * _sy))
 		line_label.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 		line_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		line_label.anchor_left = 0.15
@@ -1420,11 +1431,11 @@ func _play_ending_sequence() -> void:
 		# Color accent bar
 		var accent_bar := ColorRect.new()
 		accent_bar.color = building_color
-		accent_bar.custom_minimum_size = Vector2(120 * _sx, 4 * _sy)
+		accent_bar.custom_minimum_size = Vector2(180 * _sx, 6 * _sy)
 		accent_bar.anchor_left = 0.5
-		accent_bar.offset_left = -60 * _sx
+		accent_bar.offset_left = -90 * _sx
 		accent_bar.anchor_top = 0.42
-		accent_bar.size = Vector2(120 * _sx, 4 * _sy)
+		accent_bar.size = Vector2(180 * _sx, 6 * _sy)
 		accent_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		ending_canvas.add_child(accent_bar)
 
@@ -1456,7 +1467,7 @@ func _play_ending_sequence() -> void:
 	# ── 5. Title card ──
 	var title := Label.new()
 	title.text = "The End... for now."
-	title.add_theme_font_size_override("font_size", int(32 * _sy))
+	title.add_theme_font_size_override("font_size", int(48 * _sy))
 	title.add_theme_color_override("font_color", StyleFactory.GOLD)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.anchor_left = 0.1
@@ -1468,7 +1479,7 @@ func _play_ending_sequence() -> void:
 
 	var subtitle := Label.new()
 	subtitle.text = "Your reading journey continues..."
-	subtitle.add_theme_font_size_override("font_size", int(15 * _sy))
+	subtitle.add_theme_font_size_override("font_size", int(23 * _sy))
 	subtitle.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	subtitle.anchor_left = 0.1
@@ -1551,7 +1562,7 @@ func _show_walk_closer_hint() -> void:
 		return
 	var hint := Label.new()
 	hint.text = "Walk closer!"
-	hint.add_theme_font_size_override("font_size", int(18 * _sy))
+	hint.add_theme_font_size_override("font_size", int(27 * _sy))
 	hint.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint.position = Vector2(_vp.x * 0.5 - 80 * _sx, _vp.y * 0.5 - 60 * _sy)
@@ -1587,15 +1598,19 @@ func _build_quest_tracker() -> void:
 func _check_tutorial() -> void:
 	if GameManager.current_student.is_empty():
 		return
-	var student_id: String = GameManager.current_student.get("id", "")
-	if student_id.is_empty():
+	if not ApiClient.is_authenticated:
 		return
 	var no_buildings: bool = GameManager.unlocked_buildings.size() == 0
 	var tutorial_done: bool = GameManager.current_student.get("tutorial_done", 0) == 1
 	# If they have buildings unlocked but tutorial not marked done, just mark it
+	# server-side. We don't block the player on this — it's a reconciliation
+	# fix-up, not gameplay.
 	if not tutorial_done and GameManager.unlocked_buildings.size() > 0:
-		DatabaseManager.mark_tutorial_done(student_id)
 		GameManager.current_student["tutorial_done"] = 1
+		NetworkGate.run(
+			func(cb: Callable) -> void: ApiClient.patch_me({"tutorialDone": true}, cb),
+			func(_data: Dictionary) -> void: pass
+		)
 		return
 	if no_buildings and not tutorial_done:
 		_start_tutorial()

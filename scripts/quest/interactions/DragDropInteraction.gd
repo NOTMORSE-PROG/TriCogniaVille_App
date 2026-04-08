@@ -38,8 +38,9 @@ func _build_ui() -> void:
 
 	var vbox := VBoxContainer.new()
 	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	vbox.add_theme_constant_override("separation", int(12 * _sy))
+	# Do NOT set SIZE_EXPAND_FILL vertically — let content grow naturally so the
+	# parent QuestOverlay ScrollContainer can scroll to show the buttons.
+	vbox.add_theme_constant_override("separation", int(14 * _sy))
 	add_child(vbox)
 	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
@@ -48,7 +49,7 @@ func _build_ui() -> void:
 	if not instruction.is_empty():
 		var inst_label := Label.new()
 		inst_label.text = instruction
-		inst_label.add_theme_font_size_override("font_size", int(18 * _sy))
+		inst_label.add_theme_font_size_override("font_size", int(30 * _sy))
 		inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 		inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		inst_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -61,7 +62,7 @@ func _build_ui() -> void:
 	if mode == "syllable" and not word.is_empty():
 		var word_label := Label.new()
 		word_label.text = word
-		word_label.add_theme_font_size_override("font_size", int(28 * _sy))
+		word_label.add_theme_font_size_override("font_size", int(46 * _sy))
 		word_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 		word_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		word_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -73,7 +74,7 @@ func _build_ui() -> void:
 		if not hint.is_empty():
 			var hint_label := Label.new()
 			hint_label.text = hint
-			hint_label.add_theme_font_size_override("font_size", int(14 * _sy))
+			hint_label.add_theme_font_size_override("font_size", int(30 * _sy))
 			hint_label.add_theme_color_override("font_color", StyleFactory.SKY_BLUE)
 			hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -83,7 +84,7 @@ func _build_ui() -> void:
 	# Helper label
 	var helper := Label.new()
 	helper.text = "Tap a piece to place it, or drag it to the answer box"
-	helper.add_theme_font_size_override("font_size", int(12 * _sy))
+	helper.add_theme_font_size_override("font_size", int(22 * _sy))
 	helper.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	helper.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	helper.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -92,14 +93,14 @@ func _build_ui() -> void:
 	# Drop zone label
 	var drop_label := Label.new()
 	drop_label.text = "Your answer:"
-	drop_label.add_theme_font_size_override("font_size", int(14 * _sy))
+	drop_label.add_theme_font_size_override("font_size", int(24 * _sy))
 	drop_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	drop_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(drop_label)
 
 	# Drop zone card — full-width, taller, with internal padding
 	_drop_zone_container = _make_drop_zone_panel()
-	_drop_zone_container.custom_minimum_size = Vector2(0, int(90 * _sy))
+	_drop_zone_container.custom_minimum_size = Vector2(0, int(110 * _sy))
 	_drop_zone_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_drop_zone_container.mouse_filter = Control.MOUSE_FILTER_STOP
 	vbox.add_child(_drop_zone_container)
@@ -129,7 +130,7 @@ func _build_ui() -> void:
 	# Word bank label
 	var bank_label := Label.new()
 	bank_label.text = "Tap to place:"
-	bank_label.add_theme_font_size_override("font_size", int(14 * _sy))
+	bank_label.add_theme_font_size_override("font_size", int(24 * _sy))
 	bank_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	bank_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(bank_label)
@@ -137,7 +138,7 @@ func _build_ui() -> void:
 	# Word bank wrapped in a droppable panel so zone chips can be dragged back
 	var word_bank_panel := _WordBankPanel.new()
 	word_bank_panel._interaction = self
-	word_bank_panel.custom_minimum_size = Vector2(0, int(80 * _sy))
+	word_bank_panel.custom_minimum_size = Vector2(0, int(100 * _sy))
 	word_bank_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	word_bank_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	word_bank_panel.add_theme_stylebox_override(
@@ -178,8 +179,8 @@ func _build_ui() -> void:
 
 	_reset_btn = Button.new()
 	_reset_btn.text = "Reset"
-	_reset_btn.custom_minimum_size = Vector2(100 * _sx, 44 * _sy)
-	_reset_btn.add_theme_font_size_override("font_size", int(16 * _sy))
+	_reset_btn.custom_minimum_size = Vector2(180 * _sx, 72 * _sy)
+	_reset_btn.add_theme_font_size_override("font_size", int(28 * _sy))
 	_reset_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_reset_btn.add_theme_stylebox_override("normal", StyleFactory.make_secondary_button_normal())
 	_reset_btn.add_theme_stylebox_override("hover", StyleFactory.make_secondary_button_hover())
@@ -190,8 +191,8 @@ func _build_ui() -> void:
 	_check_btn = Button.new()
 	_check_btn.text = "Check"
 	_check_btn.disabled = true
-	_check_btn.custom_minimum_size = Vector2(100 * _sx, 44 * _sy)
-	_check_btn.add_theme_font_size_override("font_size", int(16 * _sy))
+	_check_btn.custom_minimum_size = Vector2(180 * _sx, 72 * _sy)
+	_check_btn.add_theme_font_size_override("font_size", int(28 * _sy))
 	_check_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_check_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
 	_check_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
@@ -213,13 +214,13 @@ func _build_ui() -> void:
 	fb_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	_feedback_icon = Label.new()
-	_feedback_icon.add_theme_font_size_override("font_size", int(18 * _sy))
+	_feedback_icon.add_theme_font_size_override("font_size", int(40 * _sy))
 	_feedback_icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_feedback_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fb_vbox.add_child(_feedback_icon)
 
 	_feedback_text = Label.new()
-	_feedback_text.add_theme_font_size_override("font_size", int(14 * _sy))
+	_feedback_text.add_theme_font_size_override("font_size", int(30 * _sy))
 	_feedback_text.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	_feedback_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_feedback_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -264,9 +265,9 @@ func _add_chip_to_bank(text: String) -> void:
 	chip.from_bank = true
 	chip.text = text
 	# Width fits content — only enforce minimum height
-	chip.custom_minimum_size = Vector2(0, int(48 * _sy))
+	chip.custom_minimum_size = Vector2(0, int(90 * _sy))
 	chip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	chip.add_theme_font_size_override("font_size", int(20 * _sy))
+	chip.add_theme_font_size_override("font_size", int(34 * _sy))
 	chip.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	chip.add_theme_stylebox_override("normal", _make_chip_style(StyleFactory.BG_SURFACE))
 	var hover_s := _make_chip_style(Color(0.14, 0.21, 0.36))
@@ -290,9 +291,9 @@ func _add_chip_to_zone(text: String) -> void:
 	chip.chip_text = text
 	chip.from_bank = false
 	chip.text = text
-	chip.custom_minimum_size = Vector2(0, int(44 * _sy))
+	chip.custom_minimum_size = Vector2(0, int(70 * _sy))
 	chip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	chip.add_theme_font_size_override("font_size", int(20 * _sy))
+	chip.add_theme_font_size_override("font_size", int(34 * _sy))
 	chip.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 
 	var placed_s := _make_chip_style(StyleFactory.BG_SURFACE)
@@ -519,6 +520,22 @@ func _show_feedback_result(correct: bool) -> void:
 	tw.tween_property(_feedback_panel, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(
 		Tween.EASE_OUT
 	)
+
+	call_deferred("_scroll_to_feedback")
+
+
+func _scroll_to_feedback() -> void:
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var node: Node = self
+	while node:
+		if node is ScrollContainer:
+			var sc: ScrollContainer = node
+			sc.ensure_control_visible(_feedback_panel)
+			await get_tree().process_frame
+			sc.scroll_vertical = int(sc.get_v_scroll_bar().max_value)
+			return
+		node = node.get_parent()
 
 
 func apply_hint(level: int) -> void:

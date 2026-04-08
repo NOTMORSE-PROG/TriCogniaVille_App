@@ -34,10 +34,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -240.0
-offset_top = -320.0
-offset_right = 240.0
-offset_bottom = 320.0
+offset_left = -360.0
+offset_top = -480.0
+offset_right = 360.0
+offset_bottom = 480.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
@@ -74,7 +74,7 @@ text = "✕"
 ; ── Loading section (shown while fetching) ────────────────────────────────────
 [node name="LoadingSection" type="CenterContainer" parent="Panel/Scroll/Content"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 80)
+custom_minimum_size = Vector2(0, 120)
 mouse_filter = 2
 
 [node name="LoadingLabel" type="Label" parent="Panel/Scroll/Content/LoadingSection"]
@@ -108,7 +108,7 @@ mouse_filter = 2
 
 [node name="AvatarControl" type="Control" parent="Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/AvatarCenter"]
 layout_mode = 2
-custom_minimum_size = Vector2(80, 80)
+custom_minimum_size = Vector2(120, 120)
 mouse_filter = 2
 
 [node name="NameLabel" type="Label" parent="Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox"]
@@ -253,15 +253,22 @@ layout_mode = 2
 mouse_filter = 2
 
 ; Styled via StyleFactory.make_progress_bg() in code
-[node name="XPBarBg" type="PanelContainer" parent="Panel/Scroll/Content/ProfileContent/XPSection"]
+[node name="XPBarBg" type="Panel" parent="Panel/Scroll/Content/ProfileContent/XPSection"]
 layout_mode = 2
-custom_minimum_size = Vector2(200, 12)
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(300, 18)
+clip_contents = true
 mouse_filter = 2
 
-; Width animated to fill target in code
+; Width animated to fill target in code — left-anchored so it clips at the right edge
 [node name="XPFill" type="ColorRect" parent="Panel/Scroll/Content/ProfileContent/XPSection/XPBarBg"]
-layout_mode = 2
-custom_minimum_size = Vector2(4, 12)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_right = 6.0
 color = Color(0.886, 0.725, 0.290, 1)
 mouse_filter = 2
 

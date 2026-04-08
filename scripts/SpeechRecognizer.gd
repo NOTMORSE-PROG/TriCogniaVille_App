@@ -13,7 +13,7 @@ signal recognition_unavailable
 signal listening_started
 signal listening_ended
 
-const MAX_LISTEN_SECONDS := 30.0
+var max_listen_seconds: float = 30.0
 
 var _plugin = null
 var _alternatives: Array = []
@@ -59,13 +59,13 @@ func start_recognition(language: String = "en-US") -> void:
 	_audio_base64 = ""
 	_plugin.startRecording(language)
 
-	# Safety: auto-stop after MAX_LISTEN_SECONDS
+	# Safety: auto-stop after max_listen_seconds
 	_cleanup_timer()
 	_timeout_timer = Timer.new()
 	add_child(_timeout_timer)
-	_timeout_timer.wait_time = MAX_LISTEN_SECONDS
+	_timeout_timer.wait_time = max_listen_seconds
 	_timeout_timer.one_shot = true
-	_timeout_timer.timeout.connect(stop_recognition)
+	_timeout_timer.timeout.connect(_on_safety_timeout)
 	_timeout_timer.start()
 
 	listening_started.emit()
@@ -128,3 +128,11 @@ func _on_plugin_error(reason: String) -> void:
 
 func _on_recording_completed(audio_b64: String) -> void:
 	_audio_base64 = audio_b64
+
+
+func _on_safety_timeout() -> void:
+	_cleanup_timer()
+	if _plugin != null:
+		_plugin.stopRecording()
+	listening_ended.emit()
+	recognition_error.emit("No response from speech engine. Please try again.")

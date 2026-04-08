@@ -149,10 +149,12 @@ func _skip_tutorial() -> void:
 
 
 func _finish_tutorial() -> void:
-	var student_id: String = GameManager.current_student.get("id", "")
-	if not student_id.is_empty():
-		DatabaseManager.mark_tutorial_done(student_id)
+	if ApiClient.is_authenticated:
 		GameManager.current_student["tutorial_done"] = 1
+		NetworkGate.run(
+			func(cb: Callable) -> void: ApiClient.patch_me({"tutorialDone": true}, cb),
+			func(_data: Dictionary) -> void: pass
+		)
 	print("[TutorialOverlay] Tutorial completed.")
 	tutorial_completed.emit()
 	queue_free()
@@ -181,7 +183,7 @@ func _show_welcome() -> void:
 
 	var card := PanelContainer.new()
 	card.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(16))
-	card.custom_minimum_size = Vector2(480 * _sx, 0)
+	card.custom_minimum_size = Vector2(700 * _sx, 0)
 	card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	vbox_wrap.add_child(card)
 
@@ -190,13 +192,20 @@ func _show_welcome() -> void:
 	bot_space.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox_wrap.add_child(bot_space)
 
+	var card_margin := MarginContainer.new()
+	card_margin.add_theme_constant_override("margin_left", int(40 * _sx))
+	card_margin.add_theme_constant_override("margin_right", int(40 * _sx))
+	card_margin.add_theme_constant_override("margin_top", int(32 * _sy))
+	card_margin.add_theme_constant_override("margin_bottom", int(32 * _sy))
+	card.add_child(card_margin)
+
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", int(14 * _sy))
-	card.add_child(vbox)
+	vbox.add_theme_constant_override("separation", int(22 * _sy))
+	card_margin.add_child(vbox)
 
 	var title := Label.new()
 	title.text = "Welcome to your village! 🏡"
-	title.add_theme_font_size_override("font_size", int(22 * _sy))
+	title.add_theme_font_size_override("font_size", int(48 * _sy))
 	title.add_theme_color_override("font_color", StyleFactory.GOLD)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -204,7 +213,7 @@ func _show_welcome() -> void:
 
 	var desc := Label.new()
 	desc.text = "Your village has lost its voice. Complete reading quests to restore each building, one by one!"
-	desc.add_theme_font_size_override("font_size", int(16 * _sy))
+	desc.add_theme_font_size_override("font_size", int(34 * _sy))
 	desc.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -213,7 +222,7 @@ func _show_welcome() -> void:
 
 	var btn_row := HBoxContainer.new()
 	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	btn_row.add_theme_constant_override("separation", int(16 * _sx))
+	btn_row.add_theme_constant_override("separation", int(24 * _sx))
 	vbox.add_child(btn_row)
 
 	var skip_btn := _make_skip_button()
@@ -380,7 +389,7 @@ func _show_post_quest() -> void:
 
 	var card := PanelContainer.new()
 	card.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(16))
-	card.custom_minimum_size = Vector2(480 * _sx, 0)
+	card.custom_minimum_size = Vector2(700 * _sx, 0)
 	card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	vbox_wrap.add_child(card)
 
@@ -389,13 +398,20 @@ func _show_post_quest() -> void:
 	bot_space.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox_wrap.add_child(bot_space)
 
+	var card_margin := MarginContainer.new()
+	card_margin.add_theme_constant_override("margin_left", int(40 * _sx))
+	card_margin.add_theme_constant_override("margin_right", int(40 * _sx))
+	card_margin.add_theme_constant_override("margin_top", int(32 * _sy))
+	card_margin.add_theme_constant_override("margin_bottom", int(32 * _sy))
+	card.add_child(card_margin)
+
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", int(12 * _sy))
-	card.add_child(vbox)
+	vbox.add_theme_constant_override("separation", int(20 * _sy))
+	card_margin.add_child(vbox)
 
 	var title := Label.new()
 	title.text = "You unlocked your first building!"
-	title.add_theme_font_size_override("font_size", int(20 * _sy))
+	title.add_theme_font_size_override("font_size", int(44 * _sy))
 	title.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -403,7 +419,7 @@ func _show_post_quest() -> void:
 
 	var desc := Label.new()
 	desc.text = "Check the quest tracker on the right to see what's next. Keep restoring buildings to bring your village back to life!"
-	desc.add_theme_font_size_override("font_size", int(15 * _sy))
+	desc.add_theme_font_size_override("font_size", int(32 * _sy))
 	desc.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -429,6 +445,18 @@ func _make_dim_overlay(blocks_input: bool, alpha: float = 0.45) -> ColorRect:
 	var dim := ColorRect.new()
 	dim.color = Color(0, 0, 0, alpha)
 	dim.mouse_filter = Control.MOUSE_FILTER_STOP if blocks_input else Control.MOUSE_FILTER_IGNORE
+	# Tapping outside the tutorial card advances the step.
+	# Prevents the blocking dim from silently swallowing building taps (Godot 4:
+	# MOUSE_FILTER_STOP calls accept_event() which suppresses Area2D.input_event).
+	if blocks_input:
+		dim.gui_input.connect(
+			func(event: InputEvent) -> void:
+				if not _transitioning and (
+					(event is InputEventMouseButton and event.pressed)
+					or (event is InputEventScreenTouch and event.pressed)
+				):
+					_advance_step()
+		)
 	# add_child FIRST, THEN set anchors (required — Godot needs parent in tree)
 	add_child(dim)
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -475,7 +503,7 @@ func _make_message_panel(
 	style.border_width_top = 2
 	style.border_color = StyleFactory.SKY_BLUE
 	panel.add_theme_stylebox_override("panel", style)
-	panel.custom_minimum_size = Vector2(460 * _sx, 0)
+	panel.custom_minimum_size = Vector2(660 * _sx, 0)
 	panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	vbox_wrap.add_child(panel)
@@ -490,9 +518,16 @@ func _make_message_panel(
 	vbox_wrap.add_child(bot_space)
 
 	# Panel content
+	var panel_margin := MarginContainer.new()
+	panel_margin.add_theme_constant_override("margin_left", int(36 * _sx))
+	panel_margin.add_theme_constant_override("margin_right", int(36 * _sx))
+	panel_margin.add_theme_constant_override("margin_top", int(28 * _sy))
+	panel_margin.add_theme_constant_override("margin_bottom", int(28 * _sy))
+	panel.add_child(panel_margin)
+
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", int(8 * _sy))
-	panel.add_child(vbox)
+	vbox.add_theme_constant_override("separation", int(16 * _sy))
+	panel_margin.add_child(vbox)
 
 	if show_skip:
 		var skip_row := HBoxContainer.new()
@@ -503,7 +538,7 @@ func _make_message_panel(
 
 	var title := Label.new()
 	title.text = title_text
-	title.add_theme_font_size_override("font_size", int(20 * _sy))
+	title.add_theme_font_size_override("font_size", int(44 * _sy))
 	title.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -511,7 +546,7 @@ func _make_message_panel(
 
 	var desc := Label.new()
 	desc.text = desc_text
-	desc.add_theme_font_size_override("font_size", int(14 * _sy))
+	desc.add_theme_font_size_override("font_size", int(32 * _sy))
 	desc.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -521,7 +556,7 @@ func _make_message_panel(
 	if next_callback.is_valid():
 		var btn_row := HBoxContainer.new()
 		btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
-		btn_row.add_theme_constant_override("separation", int(12 * _sx))
+		btn_row.add_theme_constant_override("separation", int(18 * _sx))
 		vbox.add_child(btn_row)
 		var next_btn := _make_primary_button("Next →")
 		next_btn.pressed.connect(next_callback)
@@ -534,8 +569,8 @@ func _make_message_panel(
 func _make_primary_button(text: String) -> Button:
 	var btn := Button.new()
 	btn.text = text
-	btn.custom_minimum_size = Vector2(140 * _sx, 46 * _sy)
-	btn.add_theme_font_size_override("font_size", int(17 * _sy))
+	btn.custom_minimum_size = Vector2(300 * _sx, 90 * _sy)
+	btn.add_theme_font_size_override("font_size", int(36 * _sy))
 	btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
 	btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
@@ -547,8 +582,8 @@ func _make_primary_button(text: String) -> Button:
 func _make_skip_button() -> Button:
 	var btn := Button.new()
 	btn.text = "Skip Tutorial"
-	btn.custom_minimum_size = Vector2(100 * _sx, 32 * _sy)
-	btn.add_theme_font_size_override("font_size", int(12 * _sy))
+	btn.custom_minimum_size = Vector2(220 * _sx, 68 * _sy)
+	btn.add_theme_font_size_override("font_size", int(26 * _sy))
 	btn.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	btn.add_theme_stylebox_override("normal", StyleFactory.make_secondary_button_normal())
 	btn.add_theme_stylebox_override("hover", StyleFactory.make_secondary_button_hover())

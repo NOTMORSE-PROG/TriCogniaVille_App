@@ -53,6 +53,12 @@ func setup(id: String, label: String, color: Color, unlocked: bool, sx: float, s
 		"school":
 			_bw = 180.0
 			_bh = 260.0
+		"inn":
+			_bw = 180.0
+			_bh = 250.0
+		"chapel":
+			_bw = 190.0
+			_bh = 290.0
 		"library":
 			_bw = 160.0
 			_bh = 290.0
@@ -338,9 +344,9 @@ func _build_name_label() -> void:
 	var shadow_label := Label.new()
 	shadow_label.text = building_label
 	shadow_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	shadow_label.add_theme_font_size_override("font_size", int(14.0 * _sy))
+	shadow_label.add_theme_font_size_override("font_size", int(21.0 * _sy))
 	shadow_label.add_theme_color_override("font_color", Color(0, 0, 0, 0.5))
-	shadow_label.size = Vector2(_bw * 1.6, 28.0 * _sy)
+	shadow_label.size = Vector2(_bw * 1.6, 42.0 * _sy)
 	shadow_label.position = Vector2(1.0 * _sx, 1.0 * _sy)
 	shadow_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	container.add_child(shadow_label)
@@ -349,9 +355,9 @@ func _build_name_label() -> void:
 	_name_label = Label.new()
 	_name_label.text = building_label
 	_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_name_label.add_theme_font_size_override("font_size", int(14.0 * _sy))
+	_name_label.add_theme_font_size_override("font_size", int(21.0 * _sy))
 	_name_label.add_theme_color_override("font_color", Color("#FFF8E7"))
-	_name_label.size = Vector2(_bw * 1.6, 28.0 * _sy)
+	_name_label.size = Vector2(_bw * 1.6, 42.0 * _sy)
 	_name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_name_label.name = "NameLabel"
 	container.add_child(_name_label)
@@ -471,7 +477,7 @@ func unlock() -> void:
 	if is_unlocked:
 		return
 	is_unlocked = true
-	GameManager.record_unlock(building_id)
+	GameManager.register_unlocked_building(building_id)
 
 	# 1. Padlock exit: scale up + fade out → free
 	var lock_tween := create_tween()

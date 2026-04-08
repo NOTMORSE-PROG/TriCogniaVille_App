@@ -478,7 +478,7 @@ const DIALOGUES: Dictionary = {
 					"speaker": "Lumi",
 					"mood": "hopeful",
 					"text":
-					"Two buildings down! But the Library is still dark... its books hold so much meaning, if only someone could understand them again.",
+					"Two buildings down! The Inn is next — Taro the Innkeeper says a strange silence has stolen all the signs from his walls.",
 					"choices": [],
 				},
 			],
@@ -493,7 +493,7 @@ const DIALOGUES: Dictionary = {
 				{
 					"speaker": "Lumi",
 					"mood": "hopeful",
-					"text": "Two places fixed! The Library is next — the books need your help!",
+					"text": "Two places fixed! The Inn is next — Taro says the signs have gone quiet!",
 					"choices": [],
 				},
 			],
@@ -510,7 +510,7 @@ const DIALOGUES: Dictionary = {
 					"speaker": "Lumi",
 					"mood": "hopeful",
 					"text":
-					"Two buildings reclaimed from the silence! The Library still stands dark — its thousands of books hold immeasurable meaning, if only someone could illuminate their words again.",
+					"Two buildings reclaimed from the silence! The Inn awaits — Taro the Innkeeper reports that every sign, every menu, every note on his walls has been swallowed by the quiet. He needs a reader who understands how words should sound.",
 					"choices": [],
 				},
 			],
@@ -544,6 +544,574 @@ const DIALOGUES: Dictionary = {
 					"mood": "encouraging",
 					"text":
 					"The syllables resist, but your grasp of their patterns is sharpening with every attempt. The Teacher sees your resolve — return with renewed focus and the words will yield.",
+					"choices": [],
+				},
+			],
+		},
+	},
+	# ─── INN (Punctuation, Week 3) ───────────────────────────────────────────
+	"inn":
+	{
+		"intro":
+		{
+			"default":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "worried",
+					"text":
+					"Ah, a traveller! Thank the stars. Every sign in my inn has gone blank — I can't even read my own menu anymore.",
+					"choices": [],
+				},
+				{
+					"speaker": "Taro",
+					"mood": "serious",
+					"text":
+					"The marks that tell people when to pause, when to stop, when to ask — they've all faded. Without them, nobody knows how to read anything aloud.",
+					"choices": [],
+				},
+				{
+					"speaker": "Lumi",
+					"mood": "encouraging",
+					"text":
+					"The punctuation is gone, {username}! Commas, periods, question marks — they give words their shape and sound. Help Taro restore them!",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "worried",
+					"text": "Hello! My signs are all blank. I can't read them!",
+					"choices": [],
+				},
+				{
+					"speaker": "Lumi",
+					"mood": "encouraging",
+					"text": "Help Taro! Commas, periods, and question marks are missing. We need to bring them back!",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "worried",
+					"text":
+					"A visitor — I'm relieved! Every inscription in this inn has been stripped bare. The punctuation is gone, and without it, meaning dissolves into noise.",
+					"choices": [],
+				},
+				{
+					"speaker": "Taro",
+					"mood": "serious",
+					"text":
+					"Commas that regulate the breath, periods that signal completion, question marks that lift the voice into inquiry — all erased. The inn's guests can no longer follow a single sentence.",
+					"choices": [],
+				},
+				{
+					"speaker": "Lumi",
+					"mood": "encouraging",
+					"text":
+					"Punctuation is the music of the written word, {username}. Without it, even the most beautiful sentence becomes a shapeless monotone. Restore the marks!",
+					"choices": [],
+				},
+			],
+		},
+		"lore_1":
+		{
+			"default":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "serious",
+					"text":
+					"This inn has stood for three generations. Travellers would read the menu aloud, debate the prices, ask questions across the table. Now — silence.",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "serious",
+					"text": "This inn is very old. People used to read here and talk. Now it is quiet.",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "serious",
+					"text":
+					"Three generations of innkeepers — my grandmother, my father, and now I — have welcomed travellers who read the menu with laughter and purpose. The silence is the worst thing I have ever known.",
+					"choices": [],
+				},
+			],
+		},
+		"stage_tutorial":
+		{
+			"default":
+			[
+				{
+					"speaker": "Lumi",
+					"mood": "encouraging",
+					"text":
+					"Let's learn the basics! A comma = brief pause. A period = full stop. A question mark = voice goes up. An exclamation = read with feeling!",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Lumi",
+					"mood": "encouraging",
+					"text":
+					"Commas make you pause. Periods make you stop. Question marks make your voice go up. Let's try!",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Lumi",
+					"mood": "encouraging",
+					"text":
+					"Each punctuation mark is a precise instruction: the comma regulates juncture, the period signals terminal pitch fall, the question mark demands a rising intonation contour. Study each one.",
+					"choices": [],
+				},
+			],
+		},
+		"stage_practice":
+		{
+			"default":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "hopeful",
+					"text":
+					"The first signs are showing a little colour again! Keep practising — read each sentence and think about what the mark tells you.",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "hopeful",
+					"text": "The signs are coming back a little! Keep going — you can do it!",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "hopeful",
+					"text":
+					"The ink is returning — faint at first, but unmistakably present. Each correctly read sentence restores another mark. Press on, {username}.",
+					"choices": [],
+				},
+			],
+		},
+		"stage_mission":
+		{
+			"default":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "serious",
+					"text":
+					"This is it — the full menu, every sign, every notice. Read each one aloud and show what every mark means. Luminara is counting on you!",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "serious",
+					"text":
+					"Now read all the signs! Show what each comma, period, question mark, and exclamation mark means!",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "serious",
+					"text":
+					"The full mission begins. Every sentence in this inn demands your complete attention to prosodic cues — stress, intonation, juncture, and rate. Demonstrate mastery.",
+					"choices": [],
+				},
+			],
+		},
+		"outro_pass":
+		{
+			"default":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "joyful",
+					"text":
+					"The signs are shining! Every comma, every question mark — they're all back! My guests can read again!",
+					"choices": [],
+				},
+				{
+					"speaker": "Lumi",
+					"mood": "hopeful",
+					"text":
+					"Three buildings restored! The Chapel is next — Mira the Choirmaster says her singers have lost the ability to read fluently. They need your help!",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "joyful",
+					"text": "The signs are back! Everything is bright again! Thank you!",
+					"choices": [],
+				},
+				{
+					"speaker": "Lumi",
+					"mood": "hopeful",
+					"text": "Three done! The Chapel is next — Mira needs help with reading fluently!",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "joyful",
+					"text":
+					"Every inscription blazes with restored clarity! The commas breathe, the periods stand firm, the question marks soar — my inn speaks again!",
+					"choices": [],
+				},
+				{
+					"speaker": "Lumi",
+					"mood": "hopeful",
+					"text":
+					"Three buildings reclaimed! The Chapel awaits — Mira the Choirmaster has watched her singers lose all fluency, their voices fractured and halting. They need a reader who understands how words flow.",
+					"choices": [],
+				},
+			],
+		},
+		"outro_fail":
+		{
+			"default":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "encouraging",
+					"text":
+					"Some of the signs are trying to return — I can almost read them. Keep practising and try again! You'll get there.",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "encouraging",
+					"text": "Almost! A few signs came back. Try again — I believe in you!",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Taro",
+					"mood": "encouraging",
+					"text":
+					"The signs stir — a comma here, a period there — but not enough to hold. Revisit the punctuation rules and return. The inn will wait.",
+					"choices": [],
+				},
+			],
+		},
+	},
+	# ─── CHAPEL (Fluency, Week 4) ─────────────────────────────────────────────
+	"chapel":
+	{
+		"intro":
+		{
+			"default":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "worried",
+					"text":
+					"You must be the Readventurer! Please — my choir can't read a single line without stumbling. Every word comes out broken.",
+					"choices": [],
+				},
+				{
+					"speaker": "Mira",
+					"mood": "serious",
+					"text":
+					"Fluency is gone from this place. My singers used to glide through a passage like water — now every syllable fights them. Can you show them how it's done?",
+					"choices": [],
+				},
+				{
+					"speaker": "Lumi",
+					"mood": "encouraging",
+					"text":
+					"Fluent reading, {username}! Smooth, steady, with the right pauses — read the passage like a storyteller, not a machine!",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "worried",
+					"text":
+					"Hello! My singers can't read smoothly anymore. Every word is broken up. It sounds terrible!",
+					"choices": [],
+				},
+				{
+					"speaker": "Lumi",
+					"mood": "encouraging",
+					"text":
+					"Help Mira! Read the passage smoothly — not too fast, not too slow. Pause at the commas and stop at the periods!",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "worried",
+					"text":
+					"The Readventurer — at last. My choir once sang through passages with effortless, expressive fluency. Now every sentence fragments. The silence has stolen their prosodic instinct.",
+					"choices": [],
+				},
+				{
+					"speaker": "Mira",
+					"mood": "serious",
+					"text":
+					"Fluency is not mere speed — it is the fusion of accuracy, phrasing, rate, and expression. Without it, reading becomes recitation, and recitation becomes noise. Restore it.",
+					"choices": [],
+				},
+				{
+					"speaker": "Lumi",
+					"mood": "encouraging",
+					"text":
+					"Read the passage as a storyteller would, {username} — honour the punctuation, let the phrases breathe, match your pace to the meaning. That is fluency.",
+					"choices": [],
+				},
+			],
+		},
+		"lore_1":
+		{
+			"default":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "serious",
+					"text":
+					"This chapel has echoed with sung passages for as long as Luminara has stood. The choir was the village's voice — and now that voice is gone.",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "serious",
+					"text": "The chapel used to be full of singing and reading. Now it is quiet. Very sad.",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "serious",
+					"text":
+					"For generations, the chapel choir was the heartbeat of Luminara — their fluent reading of passages served as the model for every student in the village. To hear them stumble is to hear the village forget itself.",
+					"choices": [],
+				},
+			],
+		},
+		"stage_tutorial":
+		{
+			"default":
+			[
+				{
+					"speaker": "Lumi",
+					"mood": "encouraging",
+					"text":
+					"Fluency means reading smoothly and expressively — in natural phrases, with pauses at commas and stops at periods. Let's start simple!",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Lumi",
+					"mood": "encouraging",
+					"text": "Read smoothly! Not word by word. Read in groups, pause at commas, stop at periods. Let's try!",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Lumi",
+					"mood": "encouraging",
+					"text":
+					"Fluency operates at the intersection of automaticity, prosody, and comprehension. Read in syntactic phrases, honour the prosodic contour of each sentence, and let meaning guide your rate.",
+					"choices": [],
+				},
+			],
+		},
+		"stage_practice":
+		{
+			"default":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "hopeful",
+					"text":
+					"I heard a phrase — just one phrase — read smoothly just then! Keep going. The choir can feel it coming back.",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "hopeful",
+					"text": "That sounded smooth! The choir is starting to remember. Keep reading!",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "hopeful",
+					"text":
+					"A phrase — a genuine, fluent phrase — just rang through the chapel. The choir's eyes widened. They can hear the model again. Continue, {username}.",
+					"choices": [],
+				},
+			],
+		},
+		"stage_mission":
+		{
+			"default":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "serious",
+					"text":
+					"Now — the full passage. Read it all the way through, smoothly, with the right expression. The choir is listening. Show them what fluency sounds like.",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "serious",
+					"text": "Now read the whole passage! Smoothly, not too fast. The choir is watching you. You can do this!",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "serious",
+					"text":
+					"The complete passage awaits. Demonstrate full passage fluency — accurate, appropriately paced, prosodically expressive. The choir will measure every phrase. Prove mastery.",
+					"choices": [],
+				},
+			],
+		},
+		"outro_pass":
+		{
+			"default":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "joyful",
+					"text":
+					"They're singing! Every line, every phrase, every pause — exactly right! The chapel is alive again!",
+					"choices": [],
+				},
+				{
+					"speaker": "Lumi",
+					"mood": "hopeful",
+					"text":
+					"Four buildings restored! The Library is next — its books are full of meaning, but the Librarian says the words feel hollow. Time to fill them!",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "joyful",
+					"text": "The choir is singing smoothly again! The chapel sounds wonderful! Thank you!",
+					"choices": [],
+				},
+				{
+					"speaker": "Lumi",
+					"mood": "hopeful",
+					"text": "Four done! The Library is next — the books need your help!",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "joyful",
+					"text":
+					"The choir is singing again — not in fragments, not in halting syllables, but in complete, expressive, fluent phrases! Every voice is whole again! The chapel breathes!",
+					"choices": [],
+				},
+				{
+					"speaker": "Lumi",
+					"mood": "hopeful",
+					"text":
+					"Four buildings reclaimed! The Library awaits — the Librarian's volumes are present but meaningless, their vocabulary faded into shadow. You must illuminate what the words mean.",
+					"choices": [],
+				},
+			],
+		},
+		"outro_fail":
+		{
+			"default":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "encouraging",
+					"text":
+					"I heard some smooth phrases there — you're getting closer! Practice reading aloud every day and try again. The choir believes in you.",
+					"choices": [],
+				},
+			],
+			"l1":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "encouraging",
+					"text": "Some parts were smooth! Try again — you are getting better!",
+					"choices": [],
+				},
+			],
+			"l4":
+			[
+				{
+					"speaker": "Mira",
+					"mood": "encouraging",
+					"text":
+					"Phrases emerged with genuine fluency — but not enough to fully restore the choir's voice. Return to the passage, internalise its rhythm, and try once more.",
 					"choices": [],
 				},
 			],
@@ -669,7 +1237,7 @@ const DIALOGUES: Dictionary = {
 					"speaker": "Lumi",
 					"mood": "hopeful",
 					"text":
-					"Halfway there, {username}! The Well in the center of the village still only echoes fragments. It used to hold the village's greatest stories...",
+					"Five buildings restored, {username}! The Well in the center of the village still only echoes fragments. It used to hold the village's greatest stories...",
 					"choices": [],
 				},
 			],
@@ -684,7 +1252,7 @@ const DIALOGUES: Dictionary = {
 				{
 					"speaker": "Lumi",
 					"mood": "hopeful",
-					"text": "Half done! The Well is next — it holds the village's stories!",
+					"text": "Five done! The Well is next — it holds the village's stories!",
 					"choices": [],
 				},
 			],
@@ -701,7 +1269,7 @@ const DIALOGUES: Dictionary = {
 					"speaker": "Lumi",
 					"mood": "hopeful",
 					"text":
-					"The midpoint, {username} — and what a milestone! The Well at the village centre still echoes only in fragments; it once resonated with the greatest stories Luminara ever told...",
+					"Five buildings reclaimed — and what a milestone, {username}! The Well at the village centre still echoes only in fragments; it once resonated with the greatest stories Luminara ever told...",
 					"choices": [],
 				},
 			],
@@ -860,7 +1428,7 @@ const DIALOGUES: Dictionary = {
 					"speaker": "Lumi",
 					"mood": "hopeful",
 					"text":
-					"Four buildings restored! The Market is next — the Merchant's signs have faded, and no one can trade anymore. You'll need to read between the lines...",
+					"Six buildings restored! The Market is next — the Merchant's signs have faded, and no one can trade anymore. You'll need to read between the lines...",
 					"choices": [],
 				},
 			],
@@ -875,7 +1443,7 @@ const DIALOGUES: Dictionary = {
 				{
 					"speaker": "Lumi",
 					"mood": "hopeful",
-					"text": "Four places fixed! The Market is next — the signs there have faded!",
+					"text": "Six places fixed! The Market is next — the signs there have faded!",
 					"choices": [],
 				},
 			],
@@ -892,7 +1460,7 @@ const DIALOGUES: Dictionary = {
 					"speaker": "Lumi",
 					"mood": "hopeful",
 					"text":
-					"Four buildings reclaimed! The Market awaits — the Merchant's once-clever signs have faded to blank canvas, and the village cannot trade. You'll need to read what the text leaves unsaid.",
+					"Six buildings reclaimed! The Market awaits — the Merchant's once-clever signs have faded to blank canvas, and the village cannot trade. You'll need to read what the text leaves unsaid.",
 					"choices": [],
 				},
 			],
@@ -1328,6 +1896,18 @@ const ENDING_MONTAGE: Array[Dictionary] = [
 		"label": "School",
 		"line": "The Teacher's words ring clear through the halls.",
 		"color": "#5B9BD5"
+	},
+	{
+		"building": "inn",
+		"label": "The Inn",
+		"line": "Taro the Innkeeper hangs his signs back with a proud smile.",
+		"color": "#C07B3A"
+	},
+	{
+		"building": "chapel",
+		"label": "The Chapel",
+		"line": "Mira leads the choir in a fluent, soaring verse once more.",
+		"color": "#9AA8BF"
 	},
 	{
 		"building": "library",

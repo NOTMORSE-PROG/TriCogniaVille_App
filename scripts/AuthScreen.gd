@@ -21,14 +21,14 @@ var _loading_view: VBoxContainer
 
 # ── Form inputs ───────────────────────────────────────────────────────────────
 var _signin_email: LineEdit
-var _signin_password: LineEdit
+var _signin_password: Control
 var _signin_error: Label
 var _signin_button: Button
 
 var _signup_name: LineEdit
 var _signup_email: LineEdit
-var _signup_password: LineEdit
-var _signup_confirm: LineEdit
+var _signup_password: Control
+var _signup_confirm: Control
 var _signup_error: Label
 var _signup_button: Button
 
@@ -89,41 +89,41 @@ func _build_landing_view() -> void:
 	_landing_view = VBoxContainer.new()
 	_landing_view.name = "LandingView"
 	_landing_view.alignment = BoxContainer.ALIGNMENT_CENTER
-	_landing_view.add_theme_constant_override("separation", 16)
+	_landing_view.add_theme_constant_override("separation", 24)
 	_card_margin.add_child(_landing_view)
 
 	var welcome_label := Label.new()
 	welcome_label.text = "Welcome!"
 	welcome_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	welcome_label.add_theme_font_size_override("font_size", 32)
+	welcome_label.add_theme_font_size_override("font_size", 48)
 	welcome_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_landing_view.add_child(welcome_label)
 
 	var desc_label := Label.new()
 	desc_label.text = "Sign in to start your reading adventure"
 	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc_label.add_theme_font_size_override("font_size", 20)
+	desc_label.add_theme_font_size_override("font_size", 30)
 	desc_label.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_landing_view.add_child(desc_label)
 
-	_landing_view.add_child(_make_spacer(20))
+	_landing_view.add_child(_make_spacer(30))
 
 	var signin_btn := Button.new()
 	signin_btn.text = "Sign In"
-	signin_btn.custom_minimum_size = Vector2(0, 56)
+	signin_btn.custom_minimum_size = Vector2(0, 84)
 	_style_primary_button(signin_btn)
 	signin_btn.pressed.connect(func(): _switch_view(View.SIGN_IN))
 	_landing_view.add_child(signin_btn)
 
 	var signup_btn := Button.new()
 	signup_btn.text = "Create Account"
-	signup_btn.custom_minimum_size = Vector2(0, 56)
+	signup_btn.custom_minimum_size = Vector2(0, 84)
 	_style_secondary_button(signup_btn)
 	signup_btn.pressed.connect(func(): _switch_view(View.SIGN_UP))
 	_landing_view.add_child(signup_btn)
 
-	_landing_view.add_child(_make_spacer(8))
+	_landing_view.add_child(_make_spacer(12))
 
 	var or_label := Label.new()
 	or_label.text = "─── or ───"
@@ -133,7 +133,7 @@ func _build_landing_view() -> void:
 
 	var google_btn := Button.new()
 	google_btn.text = "Sign in with Google"
-	google_btn.custom_minimum_size = Vector2(0, 56)
+	google_btn.custom_minimum_size = Vector2(0, 84)
 	_style_google_button(google_btn)
 	google_btn.pressed.connect(_on_google_signin)
 	_landing_view.add_child(google_btn)
@@ -143,13 +143,13 @@ func _build_signin_view() -> void:
 	_signin_view = VBoxContainer.new()
 	_signin_view.name = "SignInView"
 	_signin_view.alignment = BoxContainer.ALIGNMENT_CENTER
-	_signin_view.add_theme_constant_override("separation", 12)
+	_signin_view.add_theme_constant_override("separation", 18)
 	_card_margin.add_child(_signin_view)
 
 	var title := Label.new()
 	title.text = "Sign In"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_font_size_override("font_size", 42)
 	title.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_signin_view.add_child(title)
 
@@ -158,7 +158,7 @@ func _build_signin_view() -> void:
 	_signin_email = _make_input("Email address")
 	_signin_view.add_child(_signin_email)
 
-	_signin_password = _make_input("Password", true)
+	_signin_password = _make_password_input("Password")
 	_signin_view.add_child(_signin_password)
 
 	_signin_error = _make_error_label()
@@ -166,7 +166,7 @@ func _build_signin_view() -> void:
 
 	_signin_button = Button.new()
 	_signin_button.text = "Sign In"
-	_signin_button.custom_minimum_size = Vector2(0, 56)
+	_signin_button.custom_minimum_size = Vector2(0, 84)
 	_style_primary_button(_signin_button)
 	_signin_button.pressed.connect(_on_signin_pressed)
 	_signin_view.add_child(_signin_button)
@@ -180,13 +180,13 @@ func _build_signup_view() -> void:
 	_signup_view = VBoxContainer.new()
 	_signup_view.name = "SignUpView"
 	_signup_view.alignment = BoxContainer.ALIGNMENT_CENTER
-	_signup_view.add_theme_constant_override("separation", 10)
+	_signup_view.add_theme_constant_override("separation", 16)
 	_card_margin.add_child(_signup_view)
 
 	var title := Label.new()
 	title.text = "Create Account"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_font_size_override("font_size", 42)
 	title.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_signup_view.add_child(title)
 
@@ -198,10 +198,10 @@ func _build_signup_view() -> void:
 	_signup_email = _make_input("Email address")
 	_signup_view.add_child(_signup_email)
 
-	_signup_password = _make_input("Password (min 6 chars)", true)
+	_signup_password = _make_password_input("Password (min 6 chars)")
 	_signup_view.add_child(_signup_password)
 
-	_signup_confirm = _make_input("Confirm password", true)
+	_signup_confirm = _make_password_input("Confirm password")
 	_signup_view.add_child(_signup_confirm)
 
 	_signup_error = _make_error_label()
@@ -209,7 +209,7 @@ func _build_signup_view() -> void:
 
 	_signup_button = Button.new()
 	_signup_button.text = "Create Account"
-	_signup_button.custom_minimum_size = Vector2(0, 56)
+	_signup_button.custom_minimum_size = Vector2(0, 84)
 	_style_primary_button(_signup_button)
 	_signup_button.pressed.connect(_on_signup_pressed)
 	_signup_view.add_child(_signup_button)
@@ -223,13 +223,13 @@ func _build_loading_view() -> void:
 	_loading_view = VBoxContainer.new()
 	_loading_view.name = "LoadingView"
 	_loading_view.alignment = BoxContainer.ALIGNMENT_CENTER
-	_loading_view.add_theme_constant_override("separation", 16)
+	_loading_view.add_theme_constant_override("separation", 24)
 	_card_margin.add_child(_loading_view)
 
 	_loading_label = Label.new()
 	_loading_label.text = "Signing in..."
 	_loading_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_loading_label.add_theme_font_size_override("font_size", 24)
+	_loading_label.add_theme_font_size_override("font_size", 36)
 	_loading_label.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	_loading_view.add_child(_loading_label)
 
@@ -246,9 +246,9 @@ func _build_loading_view() -> void:
 func _make_input(placeholder: String, secret: bool = false) -> LineEdit:
 	var input := LineEdit.new()
 	input.placeholder_text = placeholder
-	input.custom_minimum_size = Vector2(0, 52)
+	input.custom_minimum_size = Vector2(0, 78)
 	input.secret = secret
-	input.add_theme_font_size_override("font_size", 22)
+	input.add_theme_font_size_override("font_size", 33)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(1, 1, 1, 0.08)
 	style.border_color = Color(1, 1, 1, 0.15)
@@ -269,9 +269,41 @@ func _make_input(placeholder: String, secret: bool = false) -> LineEdit:
 	return input
 
 
+func _make_password_input(placeholder: String) -> Control:
+	var wrapper := HBoxContainer.new()
+	wrapper.add_theme_constant_override("separation", 6)
+
+	# Reuse the proven _make_input helper so the field style and sizing are identical.
+	var input := _make_input(placeholder, true)
+	input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var toggle := Button.new()
+	toggle.text = "👁"
+	toggle.toggle_mode = true
+	toggle.custom_minimum_size = Vector2(78, 78)
+	toggle.focus_mode = Control.FOCUS_NONE
+	_style_secondary_button(toggle)
+
+	toggle.toggled.connect(
+		func(pressed: bool) -> void:
+			input.secret = not pressed
+			toggle.text = "🙈" if pressed else "👁"
+	)
+
+	wrapper.add_child(input)
+	wrapper.add_child(toggle)
+
+	wrapper.set_meta("line_edit", input)
+	return wrapper
+
+
+func _pwd_text(wrapper: Control) -> String:
+	return (wrapper.get_meta("line_edit") as LineEdit).text
+
+
 func _make_error_label() -> Label:
 	var lbl := Label.new()
-	lbl.add_theme_font_size_override("font_size", 18)
+	lbl.add_theme_font_size_override("font_size", 27)
 	lbl.add_theme_color_override("font_color", Color(0.95, 0.3, 0.3))
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -282,7 +314,7 @@ func _make_error_label() -> Label:
 func _make_back_button() -> Button:
 	var btn := Button.new()
 	btn.text = "← Back"
-	btn.custom_minimum_size = Vector2(0, 40)
+	btn.custom_minimum_size = Vector2(0, 60)
 	var transparent := StyleBoxFlat.new()
 	transparent.bg_color = Color(0, 0, 0, 0)
 	btn.add_theme_stylebox_override("normal", transparent)
@@ -340,9 +372,7 @@ func _style_google_button(btn: Button) -> void:
 
 
 func _style_title() -> void:
-	var font := ThemeBuilder.load_font("res://assets/fonts/Nunito-Variable.ttf")
-	if font:
-		$BrandingLayer/SubtitleLabel.add_theme_font_override("font", font)
+	pass
 
 
 func _animate_entrance() -> void:
@@ -432,7 +462,7 @@ func _switch_view(new_view: View) -> void:
 
 func _on_signin_pressed() -> void:
 	var email := _signin_email.text.strip_edges()
-	var password := _signin_password.text
+	var password := _pwd_text(_signin_password)
 
 	if email.is_empty() or password.is_empty():
 		_signin_error.text = "Please fill in all fields."
@@ -463,8 +493,8 @@ func _on_signin_pressed() -> void:
 func _on_signup_pressed() -> void:
 	var player_name := _signup_name.text.strip_edges()
 	var email := _signup_email.text.strip_edges()
-	var password := _signup_password.text
-	var confirm := _signup_confirm.text
+	var password := _pwd_text(_signup_password)
+	var confirm := _pwd_text(_signup_confirm)
 
 	if player_name.is_empty() or email.is_empty() or password.is_empty():
 		_signup_error.text = "Please fill in all fields."
@@ -588,16 +618,17 @@ func _proceed_to_game() -> void:
 		_google_poll_timer.queue_free()
 		_google_poll_timer = null
 
-	# Set GameManager state from ApiClient
-	var student := ApiClient.current_student
-	if not student.is_empty():
-		GameManager.set_current_student(student)
-
-	# Check onboarding
-	var onboarding_done = student.get("onboardingDone", false)
-	if onboarding_done is int:
-		onboarding_done = onboarding_done != 0
-	if not onboarding_done:
-		get_tree().change_scene_to_file("res://scenes/OnboardingScreen.tscn")
-	else:
-		get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	# Hydrate the full profile (student + unlocked buildings + story progress
+	# + recent quests) in one round trip. NetworkGate blocks until success.
+	NetworkGate.run(
+		func(cb: Callable) -> void: ApiClient.fetch_profile(cb),
+		func(data: Dictionary) -> void:
+			if data.has("error"):
+				return  # User cancelled the modal — stay on AuthScreen
+			GameManager.hydrate_from_profile(data)
+			var onboarded: bool = bool(data.get("onboardingDone", false))
+			if not onboarded:
+				get_tree().change_scene_to_file("res://scenes/OnboardingScreen.tscn")
+			else:
+				get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	)

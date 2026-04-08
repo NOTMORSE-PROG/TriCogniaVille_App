@@ -117,7 +117,7 @@ func _build_layout() -> void:
 	header_hbox.add_child(_header_container)
 
 	_building_label = Label.new()
-	_building_label.add_theme_font_size_override("font_size", int(28 * _sy))
+	_building_label.add_theme_font_size_override("font_size", int(44 * _sy))
 	_building_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_building_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_header_container.add_child(_building_label)
@@ -128,13 +128,13 @@ func _build_layout() -> void:
 	_header_container.add_child(sub_hbox)
 
 	_topic_label = Label.new()
-	_topic_label.add_theme_font_size_override("font_size", int(18 * _sy))
+	_topic_label.add_theme_font_size_override("font_size", int(28 * _sy))
 	_topic_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 	_topic_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	sub_hbox.add_child(_topic_label)
 
 	_stage_label = Label.new()
-	_stage_label.add_theme_font_size_override("font_size", int(18 * _sy))
+	_stage_label.add_theme_font_size_override("font_size", int(28 * _sy))
 	_stage_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	_stage_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	sub_hbox.add_child(_stage_label)
@@ -148,7 +148,7 @@ func _build_layout() -> void:
 	_stage_dots = []
 	for i in 3:
 		var dot := Panel.new()
-		dot.custom_minimum_size = Vector2(16 * _sx, 8 * _sy)
+		dot.custom_minimum_size = Vector2(26 * _sx, 14 * _sy)
 		var dot_style := StyleBoxFlat.new()
 		dot_style.bg_color = StyleFactory.PIN_EMPTY
 		dot_style.corner_radius_top_left = 4
@@ -164,8 +164,8 @@ func _build_layout() -> void:
 	# Close button
 	_close_btn = Button.new()
 	_close_btn.text = "X"
-	_close_btn.custom_minimum_size = Vector2(44 * _sx, 44 * _sy)
-	_close_btn.add_theme_font_size_override("font_size", int(16 * _sy))
+	_close_btn.custom_minimum_size = Vector2(68 * _sx, 68 * _sy)
+	_close_btn.add_theme_font_size_override("font_size", int(28 * _sy))
 	_close_btn.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	_close_btn.add_theme_stylebox_override("normal", StyleFactory.make_secondary_button_normal())
 	_close_btn.add_theme_stylebox_override("hover", StyleFactory.make_secondary_button_hover())
@@ -175,7 +175,7 @@ func _build_layout() -> void:
 
 	# ── Stage Banner ──
 	_stage_banner = PanelContainer.new()
-	_stage_banner.custom_minimum_size = Vector2(0, 48 * _sy)
+	_stage_banner.custom_minimum_size = Vector2(0, 74 * _sy)
 	_stage_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var banner_style := StyleBoxFlat.new()
 	banner_style.bg_color = StyleFactory.STAGE_TUTORIAL_BG
@@ -201,21 +201,21 @@ func _build_layout() -> void:
 
 	_stage_banner_icon = Label.new()
 	_stage_banner_icon.text = "LEARN"
-	_stage_banner_icon.add_theme_font_size_override("font_size", int(12 * _sy))
+	_stage_banner_icon.add_theme_font_size_override("font_size", int(22 * _sy))
 	_stage_banner_icon.add_theme_color_override("font_color", StyleFactory.STAGE_TUTORIAL_ACCENT)
 	_stage_banner_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	banner_hbox.add_child(_stage_banner_icon)
 
 	_stage_banner_label = Label.new()
 	_stage_banner_label.text = "TUTORIAL MODE"
-	_stage_banner_label.add_theme_font_size_override("font_size", int(20 * _sy))
+	_stage_banner_label.add_theme_font_size_override("font_size", int(32 * _sy))
 	_stage_banner_label.add_theme_color_override("font_color", Color.WHITE)
 	_stage_banner_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	banner_hbox.add_child(_stage_banner_label)
 
 	_stage_banner_desc = Label.new()
 	_stage_banner_desc.text = "Guided learning — no score"
-	_stage_banner_desc.add_theme_font_size_override("font_size", int(12 * _sy))
+	_stage_banner_desc.add_theme_font_size_override("font_size", int(22 * _sy))
 	_stage_banner_desc.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	_stage_banner_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	banner_hbox.add_child(_stage_banner_desc)
@@ -231,7 +231,7 @@ func _build_layout() -> void:
 	_mission_progress_bar.min_value = 0.0
 	_mission_progress_bar.max_value = 10.0
 	_mission_progress_bar.value = 0.0
-	_mission_progress_bar.custom_minimum_size = Vector2(0, 10 * _sy)
+	_mission_progress_bar.custom_minimum_size = Vector2(0, 16 * _sy)
 	_mission_progress_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_mission_progress_bar.add_theme_stylebox_override("background", StyleFactory.make_progress_bg())
 	var progress_fill := StyleFactory.make_progress_fill()
@@ -241,8 +241,8 @@ func _build_layout() -> void:
 	_progress_container.add_child(_mission_progress_bar)
 
 	_running_score_label = Label.new()
-	_running_score_label.text = "0/0 correct"
-	_running_score_label.add_theme_font_size_override("font_size", int(13 * _sy))
+	_running_score_label.text = "Score: 0 / 0"
+	_running_score_label.add_theme_font_size_override("font_size", int(20 * _sy))
 	_running_score_label.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
 	_running_score_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_progress_container.add_child(_running_score_label)
@@ -264,7 +264,7 @@ func _build_layout() -> void:
 	_hint_nudge_label = Label.new()
 	_hint_nudge_label.text = ""
 	_hint_nudge_label.visible = false
-	_hint_nudge_label.add_theme_font_size_override("font_size", int(14 * _sy))
+	_hint_nudge_label.add_theme_font_size_override("font_size", int(22 * _sy))
 	_hint_nudge_label.add_theme_color_override("font_color", StyleFactory.SKY_BLUE)
 	_hint_nudge_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hint_nudge_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -279,7 +279,7 @@ func _build_layout() -> void:
 	main_vbox.add_child(_bottom_bar)
 
 	_counter_label = Label.new()
-	_counter_label.add_theme_font_size_override("font_size", int(14 * _sy))
+	_counter_label.add_theme_font_size_override("font_size", int(22 * _sy))
 	_counter_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	_counter_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_counter_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -288,8 +288,8 @@ func _build_layout() -> void:
 	_next_btn = Button.new()
 	_next_btn.text = "Next"
 	_next_btn.visible = false
-	_next_btn.custom_minimum_size = Vector2(140 * _sx, 48 * _sy)
-	_next_btn.add_theme_font_size_override("font_size", int(18 * _sy))
+	_next_btn.custom_minimum_size = Vector2(220 * _sx, 76 * _sy)
+	_next_btn.add_theme_font_size_override("font_size", int(28 * _sy))
 	_next_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_next_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
 	_next_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
@@ -342,7 +342,7 @@ func _on_stage_changed(stage: String) -> void:
 		var questions := QuestManager.get_current_questions()
 		_mission_progress_bar.max_value = float(questions.size())
 		_mission_progress_bar.value = 0.0
-		_running_score_label.text = "0/0 correct"
+		_running_score_label.text = "Score: 0 / %d" % questions.size()
 
 	_load_current_question()
 
@@ -469,6 +469,21 @@ func _load_current_question() -> void:
 				func(score: int) -> void: QuestManager.submit_fluency_score(score)
 			)
 			_interaction_node = fl
+		"punctuation_read":
+			var pr_script := load(
+				"res://scripts/quest/interactions/PunctuationReadInteraction.gd"
+			)
+			if pr_script == null:
+				push_error("[QuestOverlay] Failed to load PunctuationReadInteraction script")
+				_transitioning = false
+				return
+			var pr: Node = pr_script.new()
+			_question_container.add_child(pr)
+			pr.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			pr.size_flags_vertical = Control.SIZE_EXPAND_FILL
+			pr.setup(question, show_hints, _sx, _sy)
+			pr.answer_submitted.connect(_on_answer_submitted)
+			_interaction_node = pr
 
 	if is_instance_valid(_interaction_node):
 		UIAnimations.fade_in_up(self, _interaction_node)
@@ -525,7 +540,8 @@ func _on_answer_submitted(correct: bool) -> void:
 		var total := QuestManager.get_mission_total()
 		var score := QuestManager.get_mission_score()
 		_mission_progress_bar.value = float(total)
-		_running_score_label.text = "%d/%d correct" % [score, total]
+		var total_q: int = QuestManager.get_current_questions().size()
+		_running_score_label.text = "Score: %d / %d" % [score, total_q]
 		if score > 0:
 			_running_score_label.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
 		# Tween the progress bar
@@ -591,10 +607,111 @@ func _on_next_pressed() -> void:
 		_load_current_question()
 	else:
 		# End of stage
-		if QuestManager.get_current_stage() == "mission":
+		var stage := QuestManager.get_current_stage()
+		if stage == "mission":
 			QuestManager.advance_stage()  # triggers finish
+		elif stage == "practice":
+			# End of guided portion — ask the player before entering the graded mission
+			_show_post_tutorial_modal()
 		else:
 			QuestManager.advance_stage()
+
+
+func _show_post_tutorial_modal() -> void:
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.6)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(dim)
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	var center := CenterContainer.new()
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(center)
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	var card := PanelContainer.new()
+	var card_style := StyleFactory.make_glass_card(16)
+	card_style.border_width_top = 4
+	card_style.border_color = StyleFactory.SUCCESS_GREEN
+	card.add_theme_stylebox_override("panel", card_style)
+	card.custom_minimum_size = Vector2(640 * _sx, 0)
+	card.mouse_filter = Control.MOUSE_FILTER_STOP
+	center.add_child(card)
+
+	var card_margin := MarginContainer.new()
+	card_margin.add_theme_constant_override("margin_left", int(40 * _sx))
+	card_margin.add_theme_constant_override("margin_right", int(40 * _sx))
+	card_margin.add_theme_constant_override("margin_top", int(36 * _sy))
+	card_margin.add_theme_constant_override("margin_bottom", int(36 * _sy))
+	card.add_child(card_margin)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", int(20 * _sy))
+	card_margin.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "Tutorial Complete!"
+	title.add_theme_font_size_override("font_size", int(48 * _sy))
+	title.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+
+	var desc := Label.new()
+	desc.text = "Ready to take on the main challenge?"
+	desc.add_theme_font_size_override("font_size", int(32 * _sy))
+	desc.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
+	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(desc)
+
+	var btn_row := VBoxContainer.new()
+	btn_row.add_theme_constant_override("separation", int(14 * _sy))
+	vbox.add_child(btn_row)
+
+	var continue_btn := Button.new()
+	continue_btn.text = "Start the Challenge"
+	continue_btn.custom_minimum_size = Vector2(520 * _sx, 96 * _sy)
+	continue_btn.add_theme_font_size_override("font_size", int(36 * _sy))
+	continue_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
+	continue_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
+	continue_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
+	continue_btn.add_theme_stylebox_override("pressed", StyleFactory.make_primary_button_pressed())
+	btn_row.add_child(continue_btn)
+
+	var back_btn := Button.new()
+	back_btn.text = "Go Back"
+	back_btn.custom_minimum_size = Vector2(520 * _sx, 84 * _sy)
+	back_btn.add_theme_font_size_override("font_size", int(30 * _sy))
+	back_btn.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+	back_btn.add_theme_stylebox_override("normal", StyleFactory.make_secondary_button_normal())
+	back_btn.add_theme_stylebox_override("hover", StyleFactory.make_secondary_button_hover())
+	back_btn.add_theme_stylebox_override("pressed", StyleFactory.make_secondary_button_pressed())
+	btn_row.add_child(back_btn)
+
+	UIAnimations.panel_in(self, card)
+
+	continue_btn.pressed.connect(
+		func() -> void:
+			AudioManager.play_sfx("button_tap")
+			dim.queue_free()
+			center.queue_free()
+			# Advance through any empty intermediate stages until we reach mission
+			QuestManager.advance_stage()
+			while (
+				QuestManager.get_current_stage() != "mission"
+				and QuestManager.get_current_stage() != ""
+				and QuestManager.get_current_questions().is_empty()
+			):
+				QuestManager.advance_stage()
+	)
+
+	back_btn.pressed.connect(
+		func() -> void:
+			AudioManager.play_sfx("button_tap")
+			dim.queue_free()
+			center.queue_free()
+			QuestManager.abandon_quest()
+	)
 
 
 func _reload_current_question() -> void:
@@ -711,7 +828,7 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 
 		if score >= total - 3:
 			message.text = "Almost there! You need 7 correct to pass."
-		elif score >= total / 2:
+		elif score >= int(total / 2.0):
 			message.text = "Good effort! Review the questions and try again."
 		else:
 			message.text = "Keep practicing — you'll get it!"
@@ -805,6 +922,72 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 			preview.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 			preview.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			row.add_child(preview)
+
+	# ── Reflection Panel (dynamic strength/growth — inn + chapel only) ──
+	var quest_data := QuestManager.get_current_quest_data()
+	var quest_id: String = quest_data.get("quest_id", "")
+	if quest_id in ["week3_punctuation", "week4_fluency"] and question_results.size() > 0:
+		var reflection := ReflectionEngine.generate_reflection(quest_id, question_results)
+		var strength: String = reflection.get("strength", "")
+		var growth: String = reflection.get("growth", "")
+
+		if not strength.is_empty() or not growth.is_empty():
+			var ref_card := PanelContainer.new()
+			var ref_style := StyleFactory.make_elevated_card(StyleFactory.BG_CARD, 14, 1)
+			ref_style.border_width_left = 3
+			ref_style.border_color = StyleFactory.GOLD
+			ref_card.add_theme_stylebox_override("panel", ref_style)
+			ref_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			vbox.add_child(ref_card)
+
+			var ref_vbox := VBoxContainer.new()
+			ref_vbox.add_theme_constant_override("separation", int(6 * _sy))
+			ref_card.add_child(ref_vbox)
+
+			var ref_title := Label.new()
+			ref_title.text = "\u2728 Your Reflection"
+			ref_title.add_theme_font_size_override("font_size", int(16 * _sy))
+			ref_title.add_theme_color_override("font_color", StyleFactory.GOLD)
+			ref_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			ref_vbox.add_child(ref_title)
+
+			if not strength.is_empty():
+				var s_row := HBoxContainer.new()
+				s_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				ref_vbox.add_child(s_row)
+				var s_icon := Label.new()
+				s_icon.text = "\u2b50"
+				s_icon.add_theme_font_size_override("font_size", int(16 * _sy))
+				s_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				s_row.add_child(s_icon)
+				var s_lbl := Label.new()
+				s_lbl.text = strength
+				s_lbl.add_theme_font_size_override("font_size", int(15 * _sy))
+				s_lbl.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
+				s_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+				s_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				s_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				s_row.add_child(s_lbl)
+
+			if not growth.is_empty():
+				var g_row := HBoxContainer.new()
+				g_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				ref_vbox.add_child(g_row)
+				var g_icon := Label.new()
+				g_icon.text = "\U0001f331"
+				g_icon.add_theme_font_size_override("font_size", int(16 * _sy))
+				g_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				g_row.add_child(g_icon)
+				var g_lbl := Label.new()
+				g_lbl.text = growth
+				g_lbl.add_theme_font_size_override("font_size", int(15 * _sy))
+				g_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
+				g_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+				g_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+				g_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				g_row.add_child(g_lbl)
+
+			UIAnimations.fade_in_up(self, ref_card, 0.5)
 
 	# ── Action Buttons ──
 	var btn_row := HBoxContainer.new()
@@ -923,8 +1106,8 @@ func _show_tutorial_demo(question: Dictionary) -> void:
 
 
 func _show_story_toast(text: String, stage: String) -> void:
-	var theme := StyleFactory.get_stage_theme(stage)
-	var mood_color: Color = theme.get("accent", StyleFactory.GOLD)
+	var stage_theme := StyleFactory.get_stage_theme(stage)
+	var mood_color: Color = stage_theme.get("accent", StyleFactory.GOLD)
 
 	# Build a small toast card
 	var toast := PanelContainer.new()
@@ -975,8 +1158,8 @@ func _show_story_toast(text: String, stage: String) -> void:
 
 
 func _update_stage_banner(stage: String) -> void:
-	var theme := StyleFactory.get_stage_theme(stage)
-	if theme.get("label", "").is_empty():
+	var stage_theme := StyleFactory.get_stage_theme(stage)
+	if stage_theme.get("label", "").is_empty():
 		return
 
 	# Animate banner transition
@@ -986,27 +1169,27 @@ func _update_stage_banner(stage: String) -> void:
 		func() -> void:
 			# Update banner style
 			var banner_style := StyleBoxFlat.new()
-			banner_style.bg_color = theme["bg"]
+			banner_style.bg_color = stage_theme["bg"]
 			banner_style.corner_radius_top_left = int(10 * _sx)
 			banner_style.corner_radius_top_right = int(10 * _sx)
 			banner_style.corner_radius_bottom_left = int(10 * _sx)
 			banner_style.corner_radius_bottom_right = int(10 * _sx)
 			banner_style.border_width_top = 2
 			banner_style.border_width_bottom = 2
-			banner_style.border_color = theme["accent"]
+			banner_style.border_color = stage_theme["accent"]
 			banner_style.content_margin_left = int(16 * _sx)
 			banner_style.content_margin_right = int(16 * _sx)
 			banner_style.content_margin_top = int(6 * _sy)
 			banner_style.content_margin_bottom = int(6 * _sy)
 			_stage_banner.add_theme_stylebox_override("panel", banner_style)
 
-			_stage_banner_icon.text = theme["icon"]
-			_stage_banner_icon.add_theme_color_override("font_color", theme["accent"])
-			_stage_banner_label.text = theme["label"]
-			_stage_banner_desc.text = theme["desc"]
+			_stage_banner_icon.text = stage_theme["icon"]
+			_stage_banner_icon.add_theme_color_override("font_color", stage_theme["accent"])
+			_stage_banner_label.text = stage_theme["label"]
+			_stage_banner_desc.text = stage_theme["desc"]
 
 			# Tint the background overlay slightly
-			var bg_tint := Color(theme["bg"].r, theme["bg"].g, theme["bg"].b, 0.88)
+			var bg_tint := Color(stage_theme["bg"].r, stage_theme["bg"].g, stage_theme["bg"].b, 0.88)
 			_bg.color = bg_tint
 	)
 	(
@@ -1047,7 +1230,7 @@ func _hide_overlay() -> void:
 	)
 
 
-func _set_tracker_visible(show: bool) -> void:
+func _set_tracker_visible(visible_state: bool) -> void:
 	var tracker := get_parent().get_node_or_null("QuestTracker")
 	if is_instance_valid(tracker):
-		tracker.visible = show
+		tracker.visible = visible_state

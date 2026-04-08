@@ -62,7 +62,7 @@ func _build_ui() -> void:
 	logo.texture = logo_texture
 	logo.expand_mode = TextureRect.EXPAND_KEEP_SIZE
 	logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	logo.custom_minimum_size = Vector2(280, 150)
+	logo.custom_minimum_size = Vector2(420, 225)
 	logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	logo.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	col.add_child(logo)
@@ -70,7 +70,7 @@ func _build_ui() -> void:
 	# ── Loading dots ───────────────────────────────────────────────────────────
 	_dots_label = Label.new()
 	_dots_label.text = "."
-	_dots_label.add_theme_font_size_override("font_size", 28)
+	_dots_label.add_theme_font_size_override("font_size", 42)
 	_dots_label.add_theme_color_override("font_color", Color(0.392, 0.769, 0.910))  # SKY_BLUE
 	_dots_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_dots_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -133,16 +133,19 @@ func _change_scene(logged_in: bool) -> void:
 		get_tree().change_scene_to_file("res://scenes/AuthScreen.tscn")
 		return
 
-	# Mirror AuthScreen._proceed_to_game() logic
-	var student: Dictionary = ApiClient.current_student
-	if not student.is_empty():
-		GameManager.set_current_student(student)
-
-	var onboarding_done: Variant = student.get("onboardingDone", false)
-	if onboarding_done is int:
-		onboarding_done = (onboarding_done as int) != 0
-
-	if not onboarding_done:
-		get_tree().change_scene_to_file("res://scenes/OnboardingScreen.tscn")
-	else:
-		get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	# Hydrate full profile (student + unlocked buildings + story progress)
+	# from the backend in one round trip. NetworkGate blocks the modal
+	# until the call succeeds, so we never enter Main with stale state.
+	NetworkGate.run(
+		func(cb: Callable) -> void: ApiClient.fetch_profile(cb),
+		func(data: Dictionary) -> void:
+			if data.has("error"):
+				get_tree().change_scene_to_file("res://scenes/AuthScreen.tscn")
+				return
+			GameManager.hydrate_from_profile(data)
+			var onboarded: bool = bool(data.get("onboardingDone", false))
+			if not onboarded:
+				get_tree().change_scene_to_file("res://scenes/OnboardingScreen.tscn")
+			else:
+				get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	)

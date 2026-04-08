@@ -107,15 +107,22 @@ func _build_ui() -> void:
 	var style := StyleFactory.make_glass_card(14)
 	style.bg_color = Color(0.05, 0.08, 0.16, 0.95)
 	_card.add_theme_stylebox_override("panel", style)
-	_card.custom_minimum_size = Vector2(440 * _sx, 0)
+	_card.custom_minimum_size = Vector2(640 * _sx, 0)
 	_card.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_card.mouse_filter = Control.MOUSE_FILTER_STOP
 	center.add_child(_card)
 
-	# Card content
+	# Card content with internal padding
+	var card_margin := MarginContainer.new()
+	card_margin.add_theme_constant_override("margin_left", int(36 * _sx))
+	card_margin.add_theme_constant_override("margin_right", int(36 * _sx))
+	card_margin.add_theme_constant_override("margin_top", int(28 * _sy))
+	card_margin.add_theme_constant_override("margin_bottom", int(28 * _sy))
+	_card.add_child(card_margin)
+
 	var content := VBoxContainer.new()
-	content.add_theme_constant_override("separation", int(12 * _sy))
-	_card.add_child(content)
+	content.add_theme_constant_override("separation", int(20 * _sy))
+	card_margin.add_child(content)
 
 	# Top row: step counter + skip button
 	var top_row := HBoxContainer.new()
@@ -123,7 +130,7 @@ func _build_ui() -> void:
 	content.add_child(top_row)
 
 	_step_counter = Label.new()
-	_step_counter.add_theme_font_size_override("font_size", int(12 * _sy))
+	_step_counter.add_theme_font_size_override("font_size", int(28 * _sy))
 	_step_counter.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	_step_counter.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_step_counter.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -131,8 +138,8 @@ func _build_ui() -> void:
 
 	_skip_btn = Button.new()
 	_skip_btn.text = "Skip Demo"
-	_skip_btn.custom_minimum_size = Vector2(90 * _sx, 28 * _sy)
-	_skip_btn.add_theme_font_size_override("font_size", int(12 * _sy))
+	_skip_btn.custom_minimum_size = Vector2(200 * _sx, 64 * _sy)
+	_skip_btn.add_theme_font_size_override("font_size", int(26 * _sy))
 	_skip_btn.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	_skip_btn.add_theme_stylebox_override("normal", StyleFactory.make_secondary_button_normal())
 	_skip_btn.add_theme_stylebox_override("hover", StyleFactory.make_secondary_button_hover())
@@ -142,7 +149,7 @@ func _build_ui() -> void:
 
 	# Title
 	_title_label = Label.new()
-	_title_label.add_theme_font_size_override("font_size", int(20 * _sy))
+	_title_label.add_theme_font_size_override("font_size", int(46 * _sy))
 	_title_label.add_theme_color_override("font_color", StyleFactory.STAGE_TUTORIAL_ACCENT)
 	_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_title_label.custom_minimum_size = Vector2(1, 0)
@@ -152,7 +159,7 @@ func _build_ui() -> void:
 
 	# Description — custom_minimum_size.x = 1 prevents autowrap from inflating card width
 	_desc_label = Label.new()
-	_desc_label.add_theme_font_size_override("font_size", int(15 * _sy))
+	_desc_label.add_theme_font_size_override("font_size", int(34 * _sy))
 	_desc_label.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	_desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -166,8 +173,8 @@ func _build_ui() -> void:
 	content.add_child(btn_center)
 
 	_next_btn = Button.new()
-	_next_btn.custom_minimum_size = Vector2(160 * _sx, 48 * _sy)
-	_next_btn.add_theme_font_size_override("font_size", int(17 * _sy))
+	_next_btn.custom_minimum_size = Vector2(340 * _sx, 100 * _sy)
+	_next_btn.add_theme_font_size_override("font_size", int(38 * _sy))
 	_next_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_next_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
 	_next_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())

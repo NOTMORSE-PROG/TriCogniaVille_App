@@ -56,32 +56,32 @@ func set_player_ref(player: Node2D) -> void:
 
 
 func _build_layout() -> void:
-	# Outer positioning — top-right
+	# Outer positioning — top-right with breathing room from edge
 	anchor_left = 1.0
 	anchor_right = 1.0
 	anchor_top = 0.0
 	anchor_bottom = 0.0
-	offset_left = -310.0 * _sx
-	offset_right = 0.0
-	offset_top = 60.0 * _sy  # below progress bar
-	offset_bottom = 460.0 * _sy  # prevent growing off-screen
+	offset_left = -480.0 * _sx
+	offset_right = -16.0 * _sx
+	offset_top = 70.0 * _sy  # below progress bar
+	offset_bottom = 600.0 * _sy  # prevent growing off-screen
 
 	# Main panel
 	_panel = PanelContainer.new()
 	var style: StyleBoxFlat = StyleFactory.make_glass_card(12)
 	style.bg_color = Color(0.06, 0.10, 0.20, 0.65)
 	# Override the 32px default margins from make_glass_card — too wide for a side panel
-	style.content_margin_left = 10.0 * _sx
-	style.content_margin_right = 10.0 * _sx
-	style.content_margin_top = 10.0 * _sy
-	style.content_margin_bottom = 10.0 * _sy
+	style.content_margin_left = 16.0 * _sx
+	style.content_margin_right = 16.0 * _sx
+	style.content_margin_top = 14.0 * _sy
+	style.content_margin_bottom = 14.0 * _sy
 	_panel.add_theme_stylebox_override("panel", style)
-	_panel.custom_minimum_size = Vector2(280 * _sx, 0)
+	_panel.custom_minimum_size = Vector2(460 * _sx, 0)
 	_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	add_child(_panel)
 
 	_panel_vbox = VBoxContainer.new()
-	_panel_vbox.add_theme_constant_override("separation", int(6 * _sy))
+	_panel_vbox.add_theme_constant_override("separation", int(10 * _sy))
 	_panel_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_panel_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_panel.add_child(_panel_vbox)
@@ -93,7 +93,7 @@ func _build_layout() -> void:
 	_panel_vbox.add_child(header_row)
 
 	_building_header = Label.new()
-	_building_header.add_theme_font_size_override("font_size", int(14 * _sy))
+	_building_header.add_theme_font_size_override("font_size", int(34 * _sy))
 	_building_header.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_building_header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_building_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -102,8 +102,8 @@ func _build_layout() -> void:
 	# Toggle button — inside panel header, right-aligned
 	_toggle_btn = Button.new()
 	_toggle_btn.text = "▼"
-	_toggle_btn.custom_minimum_size = Vector2(32 * _sx, 28 * _sy)
-	_toggle_btn.add_theme_font_size_override("font_size", int(16 * _sy))
+	_toggle_btn.custom_minimum_size = Vector2(60 * _sx, 54 * _sy)
+	_toggle_btn.add_theme_font_size_override("font_size", int(30 * _sy))
 	_toggle_btn.add_theme_color_override("font_color", StyleFactory.GOLD)
 	var tbtn_normal := StyleBoxFlat.new()
 	tbtn_normal.bg_color = Color(0.15, 0.30, 0.55, 0.85)
@@ -129,13 +129,13 @@ func _build_layout() -> void:
 
 	# Collapsible content: topic, separator, checklist, completion
 	_collapsible_content = VBoxContainer.new()
-	_collapsible_content.add_theme_constant_override("separation", int(6 * _sy))
+	_collapsible_content.add_theme_constant_override("separation", int(10 * _sy))
 	_collapsible_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_collapsible_content.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_panel_vbox.add_child(_collapsible_content)
 
 	_topic_header = Label.new()
-	_topic_header.add_theme_font_size_override("font_size", int(11 * _sy))
+	_topic_header.add_theme_font_size_override("font_size", int(26 * _sy))
 	_topic_header.add_theme_color_override("font_color", StyleFactory.GOLD)
 	_topic_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_collapsible_content.add_child(_topic_header)
@@ -148,7 +148,7 @@ func _build_layout() -> void:
 
 	# Checklist
 	_checklist_vbox = VBoxContainer.new()
-	_checklist_vbox.add_theme_constant_override("separation", int(6 * _sy))
+	_checklist_vbox.add_theme_constant_override("separation", int(10 * _sy))
 	_checklist_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_checklist_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_collapsible_content.add_child(_checklist_vbox)
@@ -302,14 +302,14 @@ func _find_building_node(building_id: String) -> Node:
 
 func _make_checklist_row(text: String, completed: bool) -> HBoxContainer:
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", int(6 * _sx))
+	row.add_theme_constant_override("separation", int(10 * _sx))
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	# Checkbox
 	var checkbox := Panel.new()
 	checkbox.name = "Checkbox"
-	checkbox.custom_minimum_size = Vector2(18 * _sx, 18 * _sy)
+	checkbox.custom_minimum_size = Vector2(28 * _sx, 28 * _sy)
 	checkbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_style_checkbox(checkbox, completed)
 	row.add_child(checkbox)
@@ -318,7 +318,7 @@ func _make_checklist_row(text: String, completed: bool) -> HBoxContainer:
 	var lbl := Label.new()
 	lbl.name = "Label"
 	lbl.text = text
-	lbl.add_theme_font_size_override("font_size", int(12 * _sy))
+	lbl.add_theme_font_size_override("font_size", int(24 * _sy))
 	lbl.add_theme_color_override(
 		"font_color", StyleFactory.SUCCESS_GREEN if completed else StyleFactory.TEXT_SECONDARY
 	)
@@ -353,7 +353,7 @@ func _style_checkbox(checkbox: Panel, completed: bool) -> void:
 		# Checkmark
 		var check_lbl := Label.new()
 		check_lbl.text = "✓"
-		check_lbl.add_theme_font_size_override("font_size", int(12 * _sy))
+		check_lbl.add_theme_font_size_override("font_size", int(20 * _sy))
 		check_lbl.add_theme_color_override("font_color", Color.WHITE)
 		check_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		check_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER

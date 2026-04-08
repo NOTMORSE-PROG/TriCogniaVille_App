@@ -1,7 +1,8 @@
 extends Node
 ## StoryManager — AutoLoad singleton for "The Fading Words of Luminara."
 ## Tracks which story dialogues have been seen per student and per building.
-## All progress persisted immediately to SQLite via DatabaseManager.
+## State is hydrated from /api/v1/profile at boot; each mark_*_seen sends an
+## immediate POST /api/v1/story-progress through NetworkGate.
 
 # ── Runtime State ─────────────────────────────────────────────────────────────
 
@@ -19,37 +20,35 @@ func _ready() -> void:
 # ── Progress Loading ──────────────────────────────────────────────────────────
 
 
-func load_progress(student_id: String) -> void:
+## Hydrate from a /api/v1/profile response. The `storyProgress` array contains
+## one row per (studentId, buildingId) — buildingId "" carries the global
+## prologue/ending flags, matching the old SQLite layout.
+func hydrate_from_profile(profile: Dictionary) -> void:
 	_progress.clear()
 	_prologue_seen = false
 	_ending_seen = false
 	_loaded = false
 
-	if student_id.is_empty():
-		return
-
-	var rows: Array = DatabaseManager.get_story_progress(student_id)
-	for row in rows:
-		var bid: String = row.get("building_id", "")
+	for row in profile.get("storyProgress", []):
+		if not row is Dictionary:
+			continue
+		var bid: String = str(row.get("buildingId", ""))
 		if bid.is_empty():
-			# Global flags row
-			_prologue_seen = row.get("prologue_seen", 0) == 1
-			_ending_seen = row.get("ending_seen", 0) == 1
+			_prologue_seen = bool(row.get("prologueSeen", false))
+			_ending_seen = bool(row.get("endingSeen", false))
 		else:
 			_progress[bid] = {
-				"intro_seen": row.get("intro_seen", 0) == 1,
-				"outro_seen": row.get("outro_seen", 0) == 1,
+				"intro_seen": bool(row.get("introSeen", false)),
+				"outro_seen": bool(row.get("outroSeen", false)),
 			}
 
 	_loaded = true
 	print(
-		"[StoryManager] Loaded progress for student: ",
-		student_id,
-		" | Prologue seen: ",
+		"[StoryManager] Hydrated story progress | prologue=",
 		_prologue_seen,
-		" | Ending seen: ",
+		" ending=",
 		_ending_seen,
-		" | Buildings with story: ",
+		" buildings=",
 		_progress.size()
 	)
 
@@ -81,35 +80,44 @@ func should_show_ending() -> bool:
 
 
 func mark_prologue_seen() -> void:
+	if _prologue_seen:
+		return
 	_prologue_seen = true
-	var sid := _get_student_id()
-	if not sid.is_empty():
-		DatabaseManager.mark_story_seen(sid, "", "prologue_seen")
+	_post_flag("", "prologueSeen")
 
 
 func mark_intro_seen(building_id: String) -> void:
 	if not _progress.has(building_id):
 		_progress[building_id] = {"intro_seen": false, "outro_seen": false}
+	if _progress[building_id].get("intro_seen", false):
+		return
 	_progress[building_id]["intro_seen"] = true
-	var sid := _get_student_id()
-	if not sid.is_empty():
-		DatabaseManager.mark_story_seen(sid, building_id, "intro_seen")
+	_post_flag(building_id, "introSeen")
 
 
 func mark_outro_seen(building_id: String) -> void:
 	if not _progress.has(building_id):
 		_progress[building_id] = {"intro_seen": false, "outro_seen": false}
+	if _progress[building_id].get("outro_seen", false):
+		return
 	_progress[building_id]["outro_seen"] = true
-	var sid := _get_student_id()
-	if not sid.is_empty():
-		DatabaseManager.mark_story_seen(sid, building_id, "outro_seen")
+	_post_flag(building_id, "outroSeen")
 
 
 func mark_ending_seen() -> void:
+	if _ending_seen:
+		return
 	_ending_seen = true
-	var sid := _get_student_id()
-	if not sid.is_empty():
-		DatabaseManager.mark_story_seen(sid, "", "ending_seen")
+	_post_flag("", "endingSeen")
+
+
+func _post_flag(building_id: String, flag: String) -> void:
+	if not ApiClient.is_authenticated:
+		return
+	NetworkGate.run(
+		func(cb: Callable) -> void: ApiClient.record_story_flag(building_id, flag, cb),
+		func(_data: Dictionary) -> void: pass
+	)
 
 
 # ── Dialogue Retrieval ─────────────────────────────────────────────���──────────

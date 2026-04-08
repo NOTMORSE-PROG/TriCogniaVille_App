@@ -29,9 +29,8 @@ driver/enable_input=true
 [autoload]
 
 GameManager="*res://scripts/GameManager.gd"
-DatabaseManager="*res://scripts/DatabaseManager.gd"
 ApiClient="*res://scripts/ApiClient.gd"
-SyncManager="*res://scripts/SyncManager.gd"
+NetworkGate="*res://scripts/NetworkGate.gd"
 QuestManager="*res://scripts/quest/QuestManager.gd"
 AudioManager="*res://scripts/AudioManager.gd"
 StoryManager="*res://scripts/story/StoryManager.gd"
@@ -41,12 +40,12 @@ StoryManager="*res://scripts/story/StoryManager.gd"
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/stretch/aspect="keep_height"
 window/handheld/orientation=4
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/SpeechPlugin/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg")
+enabled=PackedStringArray("res://addons/SpeechPlugin/plugin.cfg")
 
 [input_devices]
 

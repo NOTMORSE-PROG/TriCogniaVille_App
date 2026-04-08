@@ -98,7 +98,7 @@ func _build_ui() -> void:
 	var instruction: String = _question.get("instruction", "Read this aloud clearly.")
 	var inst_label := Label.new()
 	inst_label.text = instruction
-	inst_label.add_theme_font_size_override("font_size", int(18 * _sy))
+	inst_label.add_theme_font_size_override("font_size", int(34 * _sy))
 	inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	inst_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -116,7 +116,7 @@ func _build_ui() -> void:
 	if not word.is_empty():
 		var word_label := Label.new()
 		word_label.text = word
-		word_label.add_theme_font_size_override("font_size", int(40 * _sy))
+		word_label.add_theme_font_size_override("font_size", int(64 * _sy))
 		word_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 		word_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		word_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -127,9 +127,9 @@ func _build_ui() -> void:
 		passage_label.fit_content = true
 		passage_label.bbcode_enabled = false
 		passage_label.scroll_active = false
-		passage_label.add_theme_font_size_override("normal_font_size", int(18 * _sy))
+		passage_label.add_theme_font_size_override("normal_font_size", int(32 * _sy))
 		passage_label.add_theme_color_override("default_color", StyleFactory.TEXT_PRIMARY)
-		passage_label.custom_minimum_size = Vector2(0, 80 * _sy)
+		passage_label.custom_minimum_size = Vector2(0, 120 * _sy)
 		passage_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(passage_label)
 
@@ -137,7 +137,7 @@ func _build_ui() -> void:
 
 	# ── Attempt counter ────────────────────────────────────────────────────────
 	_attempt_label = Label.new()
-	_attempt_label.add_theme_font_size_override("font_size", int(13 * _sy))
+	_attempt_label.add_theme_font_size_override("font_size", int(20 * _sy))
 	_attempt_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	_attempt_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_attempt_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -148,11 +148,11 @@ func _build_ui() -> void:
 	_status_panel = PanelContainer.new()
 	_status_panel.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(12))
 	_status_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_status_panel.custom_minimum_size = Vector2(0, 56 * _sy)
+	_status_panel.custom_minimum_size = Vector2(0, 84 * _sy)
 
 	_status_label = Label.new()
 	_status_label.text = "Tap the microphone when ready to read."
-	_status_label.add_theme_font_size_override("font_size", int(14 * _sy))
+	_status_label.add_theme_font_size_override("font_size", int(28 * _sy))
 	_status_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -170,8 +170,8 @@ func _build_ui() -> void:
 
 	_record_btn = Button.new()
 	_record_btn.text = "Tap to Speak"
-	_record_btn.custom_minimum_size = Vector2(180 * _sx, 52 * _sy)
-	_record_btn.add_theme_font_size_override("font_size", int(17 * _sy))
+	_record_btn.custom_minimum_size = Vector2(280 * _sx, 100 * _sy)
+	_record_btn.add_theme_font_size_override("font_size", int(28 * _sy))
 	_record_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_record_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
 	_record_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
@@ -183,8 +183,8 @@ func _build_ui() -> void:
 	_stop_btn = Button.new()
 	_stop_btn.text = "Stop"
 	_stop_btn.visible = false
-	_stop_btn.custom_minimum_size = Vector2(100 * _sx, 52 * _sy)
-	_stop_btn.add_theme_font_size_override("font_size", int(17 * _sy))
+	_stop_btn.custom_minimum_size = Vector2(160 * _sx, 100 * _sy)
+	_stop_btn.add_theme_font_size_override("font_size", int(28 * _sy))
 	_stop_btn.add_theme_color_override("font_color", Color.WHITE)
 	var stop_style := StyleFactory.make_primary_button_normal()
 	stop_style.bg_color = Color(0.8, 0.2, 0.2, 1.0)
@@ -208,7 +208,7 @@ func _build_ui() -> void:
 	_score_bar.min_value = 0
 	_score_bar.max_value = 100
 	_score_bar.value = 0
-	_score_bar.custom_minimum_size = Vector2(0, 10 * _sy)
+	_score_bar.custom_minimum_size = Vector2(0, 16 * _sy)
 	_score_bar.add_theme_stylebox_override("background", StyleFactory.make_progress_bg())
 	_score_bar.add_theme_stylebox_override("fill", StyleFactory.make_progress_fill())
 	_score_bar.show_percentage = false
@@ -216,14 +216,14 @@ func _build_ui() -> void:
 
 	# Score label
 	_score_label = Label.new()
-	_score_label.add_theme_font_size_override("font_size", int(22 * _sy))
+	_score_label.add_theme_font_size_override("font_size", int(34 * _sy))
 	_score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_score_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	result_vbox.add_child(_score_label)
 
 	# Summary feedback
 	_summary_label = Label.new()
-	_summary_label.add_theme_font_size_override("font_size", int(16 * _sy))
+	_summary_label.add_theme_font_size_override("font_size", int(24 * _sy))
 	_summary_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_summary_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_summary_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -232,7 +232,7 @@ func _build_ui() -> void:
 
 	# Detailed feedback (error guidance)
 	_detail_label = Label.new()
-	_detail_label.add_theme_font_size_override("font_size", int(14 * _sy))
+	_detail_label.add_theme_font_size_override("font_size", int(22 * _sy))
 	_detail_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	_detail_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_detail_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -241,7 +241,7 @@ func _build_ui() -> void:
 
 	# Encouragement
 	_encourage_label = Label.new()
-	_encourage_label.add_theme_font_size_override("font_size", int(14 * _sy))
+	_encourage_label.add_theme_font_size_override("font_size", int(22 * _sy))
 	_encourage_label.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
 	_encourage_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_encourage_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -250,7 +250,7 @@ func _build_ui() -> void:
 	# Teacher flag notice
 	_flag_label = Label.new()
 	_flag_label.text = "This reading has been saved for your teacher to review."
-	_flag_label.add_theme_font_size_override("font_size", int(13 * _sy))
+	_flag_label.add_theme_font_size_override("font_size", int(20 * _sy))
 	_flag_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 1.0))
 	_flag_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_flag_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -271,8 +271,8 @@ func _build_ui() -> void:
 
 	_try_again_btn = Button.new()
 	_try_again_btn.text = "Try Again"
-	_try_again_btn.custom_minimum_size = Vector2(130 * _sx, 48 * _sy)
-	_try_again_btn.add_theme_font_size_override("font_size", int(16 * _sy))
+	_try_again_btn.custom_minimum_size = Vector2(200 * _sx, 76 * _sy)
+	_try_again_btn.add_theme_font_size_override("font_size", int(26 * _sy))
 	_try_again_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_try_again_btn.add_theme_stylebox_override("normal", StyleFactory.make_glass_card(10))
 	_try_again_btn.add_theme_stylebox_override("hover", StyleFactory.make_glass_card(10))
@@ -282,8 +282,8 @@ func _build_ui() -> void:
 
 	_continue_btn = Button.new()
 	_continue_btn.text = "Continue"
-	_continue_btn.custom_minimum_size = Vector2(160 * _sx, 48 * _sy)
-	_continue_btn.add_theme_font_size_override("font_size", int(16 * _sy))
+	_continue_btn.custom_minimum_size = Vector2(240 * _sx, 76 * _sy)
+	_continue_btn.add_theme_font_size_override("font_size", int(26 * _sy))
 	_continue_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_continue_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
 	_continue_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
@@ -408,6 +408,15 @@ func _on_record_pressed() -> void:
 	AudioManager.play_sfx("button_tap")
 	_set_state(State.LISTENING)
 	_recognizer.start_recognition("en-US")
+	# Safety net: if recognition never completes within 40s, reset gracefully
+	await get_tree().create_timer(40.0).timeout
+	if not is_instance_valid(self):
+		return
+	if _state == State.LISTENING or _state == State.PROCESSING:
+		_set_state(State.IDLE)
+		if is_instance_valid(_status_label):
+			_status_label.text = "Speech recognition timed out. Please try again."
+			_status_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 1.0))
 
 
 func _on_stop_pressed() -> void:
@@ -457,6 +466,8 @@ func _on_transcript_ready(text: String, confidence: float) -> void:
 		_submit_assessment(_current_result, text, confidence, "")
 
 	await get_tree().create_timer(0.4).timeout
+	if not is_instance_valid(self):
+		return
 	_set_state(State.RESULT)
 
 	if _current_result.get("correct", false):
@@ -526,7 +537,7 @@ func _build_fallback_ui() -> void:
 	_fallback_progress.min_value = 0.0
 	_fallback_progress.max_value = FALLBACK_MIN_TIME
 	_fallback_progress.value = 0.0
-	_fallback_progress.custom_minimum_size = Vector2(0, 8 * _sy)
+	_fallback_progress.custom_minimum_size = Vector2(0, 14 * _sy)
 	_fallback_progress.add_theme_stylebox_override("background", StyleFactory.make_progress_bg())
 	_fallback_progress.add_theme_stylebox_override("fill", StyleFactory.make_progress_fill())
 	_fallback_progress.show_percentage = false
@@ -546,8 +557,8 @@ func _build_fallback_ui() -> void:
 	_confirm_btn = Button.new()
 	_confirm_btn.text = "I finished reading"
 	_confirm_btn.disabled = true
-	_confirm_btn.custom_minimum_size = Vector2(220 * _sx, 52 * _sy)
-	_confirm_btn.add_theme_font_size_override("font_size", int(18 * _sy))
+	_confirm_btn.custom_minimum_size = Vector2(330 * _sx, 84 * _sy)
+	_confirm_btn.add_theme_font_size_override("font_size", int(28 * _sy))
 	_confirm_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_confirm_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
 	_confirm_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())

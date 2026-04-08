@@ -42,7 +42,7 @@ func _build_ui() -> void:
 	if not instruction.is_empty():
 		var inst_label := Label.new()
 		inst_label.text = instruction
-		inst_label.add_theme_font_size_override("font_size", int(18 * _sy))
+		inst_label.add_theme_font_size_override("font_size", int(40 * _sy))
 		inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 		inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		inst_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -54,7 +54,7 @@ func _build_ui() -> void:
 	if not word.is_empty():
 		var word_label := Label.new()
 		word_label.text = word
-		word_label.add_theme_font_size_override("font_size", int(28 * _sy))
+		word_label.add_theme_font_size_override("font_size", int(60 * _sy))
 		word_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 		word_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		word_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -83,8 +83,8 @@ func _build_ui() -> void:
 
 		var btn := Button.new()
 		btn.text = seg_text
-		btn.custom_minimum_size = Vector2(maxf(56 * _sx, seg_text.length() * 22 * _sx), 56 * _sy)
-		btn.add_theme_font_size_override("font_size", int(26 * _sy))
+		btn.custom_minimum_size = Vector2(maxf(110 * _sx, seg_text.length() * 42 * _sx), 130 * _sy)
+		btn.add_theme_font_size_override("font_size", int(50 * _sy))
 		btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 		btn.add_theme_stylebox_override(
 			"normal", StyleFactory.make_elevated_card(StyleFactory.BG_SURFACE, 10, 1)
@@ -117,13 +117,13 @@ func _build_ui() -> void:
 	fb_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	_feedback_icon = Label.new()
-	_feedback_icon.add_theme_font_size_override("font_size", int(18 * _sy))
+	_feedback_icon.add_theme_font_size_override("font_size", int(40 * _sy))
 	_feedback_icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_feedback_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fb_vbox.add_child(_feedback_icon)
 
 	_feedback_text = Label.new()
-	_feedback_text.add_theme_font_size_override("font_size", int(14 * _sy))
+	_feedback_text.add_theme_font_size_override("font_size", int(30 * _sy))
 	_feedback_text.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	_feedback_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_feedback_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -247,6 +247,22 @@ func _show_feedback_panel(correct: bool) -> void:
 	tw.tween_property(_feedback_panel, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(
 		Tween.EASE_OUT
 	)
+
+	call_deferred("_scroll_to_feedback")
+
+
+func _scroll_to_feedback() -> void:
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var node: Node = self
+	while node:
+		if node is ScrollContainer:
+			var sc: ScrollContainer = node
+			sc.ensure_control_visible(_feedback_panel)
+			await get_tree().process_frame
+			sc.scroll_vertical = int(sc.get_v_scroll_bar().max_value)
+			return
+		node = node.get_parent()
 
 
 func _pulse_hint(btn: Button) -> void:
