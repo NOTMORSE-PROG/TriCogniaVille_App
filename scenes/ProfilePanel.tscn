@@ -34,226 +34,233 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -360.0
-offset_top = -480.0
-offset_right = 360.0
-offset_bottom = 480.0
+offset_left = -960.0
+offset_top = -540.0
+offset_right = 960.0
+offset_bottom = 540.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
 
-[node name="Scroll" type="ScrollContainer" parent="Panel"]
-layout_mode = 2
-horizontal_scroll_mode = 0
-mouse_filter = 0
-
-[node name="Content" type="VBoxContainer" parent="Panel/Scroll"]
+[node name="OuterVBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 12
+size_flags_vertical = 3
+theme_override_constants/separation = 0
 
-; ── Close row (always visible) ────────────────────────────────────────────────
-[node name="CloseRow" type="HBoxContainer" parent="Panel/Scroll/Content"]
+; ── Close row — outside scroll so it always receives input ───────────────────
+[node name="CloseRow" type="HBoxContainer" parent="Panel/OuterVBox"]
 layout_mode = 2
-mouse_filter = 2
+mouse_filter = 0
 
-[node name="Title" type="Label" parent="Panel/Scroll/Content/CloseRow"]
+[node name="Title" type="Label" parent="Panel/OuterVBox/CloseRow"]
 layout_mode = 2
 text = "PLAYER PROFILE"
 mouse_filter = 2
 
-[node name="Spacer" type="Control" parent="Panel/Scroll/Content/CloseRow"]
+[node name="Spacer" type="Control" parent="Panel/OuterVBox/CloseRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="CloseBtn" type="Button" parent="Panel/Scroll/Content/CloseRow"]
+[node name="CloseBtn" type="Button" parent="Panel/OuterVBox/CloseRow"]
 layout_mode = 2
 text = "✕"
 
+[node name="Scroll" type="ScrollContainer" parent="Panel/OuterVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+mouse_filter = 0
+
+[node name="Content" type="VBoxContainer" parent="Panel/OuterVBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
 ; ── Loading section (shown while fetching) ────────────────────────────────────
-[node name="LoadingSection" type="CenterContainer" parent="Panel/Scroll/Content"]
+[node name="LoadingSection" type="CenterContainer" parent="Panel/OuterVBox/Scroll/Content"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 120)
 mouse_filter = 2
 
-[node name="LoadingLabel" type="Label" parent="Panel/Scroll/Content/LoadingSection"]
+[node name="LoadingLabel" type="Label" parent="Panel/OuterVBox/Scroll/Content/LoadingSection"]
 layout_mode = 2
 text = "Loading profile..."
 horizontal_alignment = 1
 mouse_filter = 2
 
 ; ── Profile content (shown when data arrives) ─────────────────────────────────
-[node name="ProfileContent" type="VBoxContainer" parent="Panel/Scroll/Content"]
+[node name="ProfileContent" type="VBoxContainer" parent="Panel/OuterVBox/Scroll/Content"]
 layout_mode = 2
 visible = false
 theme_override_constants/separation = 12
 mouse_filter = 2
 
 ; ── Header banner ─────────────────────────────────────────────────────────────
-[node name="HeaderBanner" type="PanelContainer" parent="Panel/Scroll/Content/ProfileContent"]
+[node name="HeaderBanner" type="PanelContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="HeaderVBox" type="VBoxContainer" parent="Panel/Scroll/Content/ProfileContent/HeaderBanner"]
+[node name="HeaderVBox" type="VBoxContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner"]
 layout_mode = 2
 alignment = 1
 theme_override_constants/separation = 6
 mouse_filter = 2
 
 ; Hex avatar drawn entirely in code via _draw_avatar()
-[node name="AvatarCenter" type="CenterContainer" parent="Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox"]
+[node name="AvatarCenter" type="CenterContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="AvatarControl" type="Control" parent="Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/AvatarCenter"]
+[node name="AvatarControl" type="Control" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/AvatarCenter"]
 layout_mode = 2
-custom_minimum_size = Vector2(120, 120)
+custom_minimum_size = Vector2(140, 140)
 mouse_filter = 2
 
-[node name="NameLabel" type="Label" parent="Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox"]
+[node name="NameLabel" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox"]
 layout_mode = 2
 horizontal_alignment = 1
 mouse_filter = 2
 
 ; Level pill + @username row
-[node name="SubRow" type="HBoxContainer" parent="Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox"]
+[node name="SubRow" type="HBoxContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox"]
 layout_mode = 2
 alignment = 1
 theme_override_constants/separation = 10
 mouse_filter = 2
 
-[node name="LevelPill" type="PanelContainer" parent="Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/SubRow"]
+[node name="LevelPill" type="PanelContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/SubRow"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="LevelLabel" type="Label" parent="Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/SubRow/LevelPill"]
+[node name="LevelLabel" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/SubRow/LevelPill"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="UsernameLabel" type="Label" parent="Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/SubRow"]
+[node name="UsernameLabel" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/SubRow"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="RLLabel" type="Label" parent="Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox"]
+[node name="RLLabel" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox"]
 layout_mode = 2
 horizontal_alignment = 1
 mouse_filter = 2
 
 ; ── Stats card ────────────────────────────────────────────────────────────────
-[node name="StatsCard" type="PanelContainer" parent="Panel/Scroll/Content/ProfileContent"]
+[node name="StatsCard" type="PanelContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="StatsCol" type="VBoxContainer" parent="Panel/Scroll/Content/ProfileContent/StatsCard"]
+[node name="StatsCol" type="VBoxContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard"]
 layout_mode = 2
 theme_override_constants/separation = 2
 mouse_filter = 2
 
-[node name="StatsTitle" type="Label" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol"]
+[node name="StatsTitle" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol"]
 layout_mode = 2
 horizontal_alignment = 1
 text = "STATS"
 mouse_filter = 2
 
-[node name="QuestRow" type="HBoxContainer" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol"]
+[node name="QuestRow" type="HBoxContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol"]
 layout_mode = 2
 theme_override_constants/separation = 8
 mouse_filter = 2
 
-[node name="QuestIcon" type="Label" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol/QuestRow"]
+[node name="QuestIcon" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol/QuestRow"]
 layout_mode = 2
 text = "📚"
 mouse_filter = 2
 
-[node name="QuestName" type="Label" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol/QuestRow"]
+[node name="QuestName" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol/QuestRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Quests Passed"
 mouse_filter = 2
 
-[node name="QuestValue" type="Label" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol/QuestRow"]
+[node name="QuestValue" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol/QuestRow"]
 layout_mode = 2
 horizontal_alignment = 2
 text = "-"
 mouse_filter = 2
 
-[node name="Sep1" type="HSeparator" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol"]
+[node name="Sep1" type="HSeparator" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol"]
 layout_mode = 2
 
-[node name="BuildingRow" type="HBoxContainer" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol"]
+[node name="BuildingRow" type="HBoxContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol"]
 layout_mode = 2
 theme_override_constants/separation = 8
 mouse_filter = 2
 
-[node name="BuildingIcon" type="Label" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol/BuildingRow"]
+[node name="BuildingIcon" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol/BuildingRow"]
 layout_mode = 2
 text = "🏠"
 mouse_filter = 2
 
-[node name="BuildingName" type="Label" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol/BuildingRow"]
+[node name="BuildingName" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol/BuildingRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Buildings"
 mouse_filter = 2
 
-[node name="BuildingValue" type="Label" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol/BuildingRow"]
+[node name="BuildingValue" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol/BuildingRow"]
 layout_mode = 2
 horizontal_alignment = 2
 text = "-"
 mouse_filter = 2
 
-[node name="Sep2" type="HSeparator" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol"]
+[node name="Sep2" type="HSeparator" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol"]
 layout_mode = 2
 
-[node name="StreakRow" type="HBoxContainer" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol"]
+[node name="StreakRow" type="HBoxContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol"]
 layout_mode = 2
 theme_override_constants/separation = 8
 mouse_filter = 2
 
-[node name="StreakIcon" type="Label" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol/StreakRow"]
+[node name="StreakIcon" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol/StreakRow"]
 layout_mode = 2
 text = "🔥"
 mouse_filter = 2
 
-[node name="StreakName" type="Label" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol/StreakRow"]
+[node name="StreakName" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol/StreakRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Streak"
 mouse_filter = 2
 
-[node name="StreakValue" type="Label" parent="Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol/StreakRow"]
+[node name="StreakValue" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol/StreakRow"]
 layout_mode = 2
 horizontal_alignment = 2
 text = "-"
 mouse_filter = 2
 
 ; ── XP section ────────────────────────────────────────────────────────────────
-[node name="XPSection" type="VBoxContainer" parent="Panel/Scroll/Content/ProfileContent"]
+[node name="XPSection" type="VBoxContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent"]
 layout_mode = 2
 theme_override_constants/separation = 6
 mouse_filter = 2
 
-[node name="XPTitleRow" type="HBoxContainer" parent="Panel/Scroll/Content/ProfileContent/XPSection"]
+[node name="XPTitleRow" type="HBoxContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/XPSection"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="XPTitle" type="Label" parent="Panel/Scroll/Content/ProfileContent/XPSection/XPTitleRow"]
+[node name="XPTitle" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/XPSection/XPTitleRow"]
 layout_mode = 2
 text = "XP Progress"
 mouse_filter = 2
 
-[node name="XPSpacer" type="Control" parent="Panel/Scroll/Content/ProfileContent/XPSection/XPTitleRow"]
+[node name="XPSpacer" type="Control" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/XPSection/XPTitleRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="XPTotal" type="Label" parent="Panel/Scroll/Content/ProfileContent/XPSection/XPTitleRow"]
+[node name="XPTotal" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/XPSection/XPTitleRow"]
 layout_mode = 2
 mouse_filter = 2
 
 ; Styled via StyleFactory.make_progress_bg() in code
-[node name="XPBarBg" type="Panel" parent="Panel/Scroll/Content/ProfileContent/XPSection"]
+[node name="XPBarBg" type="Panel" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/XPSection"]
 layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(300, 18)
@@ -261,7 +268,7 @@ clip_contents = true
 mouse_filter = 2
 
 ; Width animated to fill target in code — left-anchored so it clips at the right edge
-[node name="XPFill" type="ColorRect" parent="Panel/Scroll/Content/ProfileContent/XPSection/XPBarBg"]
+[node name="XPFill" type="ColorRect" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/XPSection/XPBarBg"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.0
@@ -272,53 +279,53 @@ offset_right = 6.0
 color = Color(0.886, 0.725, 0.290, 1)
 mouse_filter = 2
 
-[node name="XPSubLabel" type="Label" parent="Panel/Scroll/Content/ProfileContent/XPSection"]
+[node name="XPSubLabel" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/XPSection"]
 layout_mode = 2
 mouse_filter = 2
 
 ; ── Divider ───────────────────────────────────────────────────────────────────
-[node name="Sep3" type="HSeparator" parent="Panel/Scroll/Content/ProfileContent"]
+[node name="Sep3" type="HSeparator" parent="Panel/OuterVBox/Scroll/Content/ProfileContent"]
 layout_mode = 2
 
 ; ── Badges section ────────────────────────────────────────────────────────────
-[node name="BadgesSection" type="VBoxContainer" parent="Panel/Scroll/Content/ProfileContent"]
+[node name="BadgesSection" type="VBoxContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent"]
 layout_mode = 2
 theme_override_constants/separation = 10
 mouse_filter = 2
 
-[node name="BadgesTitleRow" type="HBoxContainer" parent="Panel/Scroll/Content/ProfileContent/BadgesSection"]
+[node name="BadgesTitleRow" type="HBoxContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/BadgesSection"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="BadgesTitle" type="Label" parent="Panel/Scroll/Content/ProfileContent/BadgesSection/BadgesTitleRow"]
+[node name="BadgesTitle" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/BadgesSection/BadgesTitleRow"]
 layout_mode = 2
 text = "Badge Collection"
 mouse_filter = 2
 
-[node name="BadgesSpacer" type="Control" parent="Panel/Scroll/Content/ProfileContent/BadgesSection/BadgesTitleRow"]
+[node name="BadgesSpacer" type="Control" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/BadgesSection/BadgesTitleRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="BadgesCount" type="Label" parent="Panel/Scroll/Content/ProfileContent/BadgesSection/BadgesTitleRow"]
+[node name="BadgesCount" type="Label" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/BadgesSection/BadgesTitleRow"]
 layout_mode = 2
 mouse_filter = 2
 
 ; Badge category groups added here dynamically in code
-[node name="BadgesContainer" type="VBoxContainer" parent="Panel/Scroll/Content/ProfileContent/BadgesSection"]
+[node name="BadgesContainer" type="VBoxContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/BadgesSection"]
 layout_mode = 2
 theme_override_constants/separation = 10
 mouse_filter = 2
 
 ; ── Divider ───────────────────────────────────────────────────────────────────
-[node name="Sep4" type="HSeparator" parent="Panel/Scroll/Content/ProfileContent"]
+[node name="Sep4" type="HSeparator" parent="Panel/OuterVBox/Scroll/Content/ProfileContent"]
 layout_mode = 2
 
 ; ── Logout ────────────────────────────────────────────────────────────────────
-[node name="LogoutSection" type="CenterContainer" parent="Panel/Scroll/Content/ProfileContent"]
+[node name="LogoutSection" type="CenterContainer" parent="Panel/OuterVBox/Scroll/Content/ProfileContent"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="LogoutBtn" type="Button" parent="Panel/Scroll/Content/ProfileContent/LogoutSection"]
+[node name="LogoutBtn" type="Button" parent="Panel/OuterVBox/Scroll/Content/ProfileContent/LogoutSection"]
 layout_mode = 2
 text = "Sign Out"

@@ -57,6 +57,13 @@ jobs:
           unzip -q Godot_v4.6.1-stable_export_templates.tpz -d /tmp/tpz
           mv /tmp/tpz/templates/* ~/.local/share/godot/export_templates/4.6.1.stable/
 
+      - name: Build Speech plugin AAR
+        run: |
+          cd _plugin_build
+          chmod +x gradlew
+          ./gradlew :plugin:assembleRelease
+          cp plugin/build/outputs/aar/SpeechPlugin-release.aar ../addons/SpeechPlugin/bin/release/SpeechPlugin-release.aar
+
       - name: Install Android build template
         run: |
           mkdir -p android/build

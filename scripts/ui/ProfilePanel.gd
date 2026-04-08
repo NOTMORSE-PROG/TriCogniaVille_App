@@ -33,51 +33,51 @@ var _dot_count: int = 0
 @onready var _blocker: ColorRect = $Blocker
 @onready var _panel: PanelContainer = $Panel
 @warning_ignore("unused_private_class_variable")
-@onready var _scroll: ScrollContainer = $Panel/Scroll
-@onready var _content: VBoxContainer = $Panel/Scroll/Content
-@onready var _close_btn: Button = $Panel/Scroll/Content/CloseRow/CloseBtn
-@onready var _title_lbl: Label = $Panel/Scroll/Content/CloseRow/Title
-@onready var _loading_section: CenterContainer = $Panel/Scroll/Content/LoadingSection
-@onready var _loading_lbl: Label = $Panel/Scroll/Content/LoadingSection/LoadingLabel
-@onready var _profile_content: VBoxContainer = $Panel/Scroll/Content/ProfileContent
+@onready var _scroll: ScrollContainer = $Panel/OuterVBox/Scroll
+@onready var _content: VBoxContainer = $Panel/OuterVBox/Scroll/Content
+@onready var _close_btn: Button = $Panel/OuterVBox/CloseRow/CloseBtn
+@onready var _title_lbl: Label = $Panel/OuterVBox/CloseRow/Title
+@onready var _loading_section: CenterContainer = $Panel/OuterVBox/Scroll/Content/LoadingSection
+@onready var _loading_lbl: Label = $Panel/OuterVBox/Scroll/Content/LoadingSection/LoadingLabel
+@onready var _profile_content: VBoxContainer = $Panel/OuterVBox/Scroll/Content/ProfileContent
 
 # Header
-@onready var _header_banner: PanelContainer = $Panel/Scroll/Content/ProfileContent/HeaderBanner
+@onready var _header_banner: PanelContainer = $Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner
 @onready
-var _avatar_ctrl: Control = $Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/AvatarCenter/AvatarControl
+var _avatar_ctrl: Control = $Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/AvatarCenter/AvatarControl
 @onready
-var _name_lbl: Label = $Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/NameLabel
+var _name_lbl: Label = $Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/NameLabel
 @onready
-var _level_pill: PanelContainer = $Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/SubRow/LevelPill
+var _level_pill: PanelContainer = $Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/SubRow/LevelPill
 @onready
-var _level_lbl: Label = $Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/SubRow/LevelPill/LevelLabel
+var _level_lbl: Label = $Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/SubRow/LevelPill/LevelLabel
 @onready
-var _username_lbl: Label = $Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/SubRow/UsernameLabel
-@onready var _rl_lbl: Label = $Panel/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/RLLabel
+var _username_lbl: Label = $Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/SubRow/UsernameLabel
+@onready var _rl_lbl: Label = $Panel/OuterVBox/Scroll/Content/ProfileContent/HeaderBanner/HeaderVBox/RLLabel
 
 # Stats
-@onready var _stats_card: PanelContainer = $Panel/Scroll/Content/ProfileContent/StatsCard
+@onready var _stats_card: PanelContainer = $Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard
 @onready
-var _quest_val: Label = $Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol/QuestRow/QuestValue
+var _quest_val: Label = $Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol/QuestRow/QuestValue
 @onready
-var _building_val: Label = $Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol/BuildingRow/BuildingValue
+var _building_val: Label = $Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol/BuildingRow/BuildingValue
 @onready
-var _streak_val: Label = $Panel/Scroll/Content/ProfileContent/StatsCard/StatsCol/StreakRow/StreakValue
+var _streak_val: Label = $Panel/OuterVBox/Scroll/Content/ProfileContent/StatsCard/StatsCol/StreakRow/StreakValue
 
 # XP
-@onready var _xp_total_lbl: Label = $Panel/Scroll/Content/ProfileContent/XPSection/XPTitleRow/XPTotal
-@onready var _xp_bar_bg: Panel = $Panel/Scroll/Content/ProfileContent/XPSection/XPBarBg
-@onready var _xp_fill: ColorRect = $Panel/Scroll/Content/ProfileContent/XPSection/XPBarBg/XPFill
-@onready var _xp_sub_lbl: Label = $Panel/Scroll/Content/ProfileContent/XPSection/XPSubLabel
+@onready var _xp_total_lbl: Label = $Panel/OuterVBox/Scroll/Content/ProfileContent/XPSection/XPTitleRow/XPTotal
+@onready var _xp_bar_bg: Panel = $Panel/OuterVBox/Scroll/Content/ProfileContent/XPSection/XPBarBg
+@onready var _xp_fill: ColorRect = $Panel/OuterVBox/Scroll/Content/ProfileContent/XPSection/XPBarBg/XPFill
+@onready var _xp_sub_lbl: Label = $Panel/OuterVBox/Scroll/Content/ProfileContent/XPSection/XPSubLabel
 
 # Badges
 @onready
-var _badges_count: Label = $Panel/Scroll/Content/ProfileContent/BadgesSection/BadgesTitleRow/BadgesCount
+var _badges_count: Label = $Panel/OuterVBox/Scroll/Content/ProfileContent/BadgesSection/BadgesTitleRow/BadgesCount
 @onready
-var _badges_box: VBoxContainer = $Panel/Scroll/Content/ProfileContent/BadgesSection/BadgesContainer
+var _badges_box: VBoxContainer = $Panel/OuterVBox/Scroll/Content/ProfileContent/BadgesSection/BadgesContainer
 
 # Logout
-@onready var _logout_btn: Button = $Panel/Scroll/Content/ProfileContent/LogoutSection/LogoutBtn
+@onready var _logout_btn: Button = $Panel/OuterVBox/Scroll/Content/ProfileContent/LogoutSection/LogoutBtn
 
 # =============================================================================
 # SETUP
@@ -104,14 +104,24 @@ func _style_nodes() -> void:
 	# Close button
 	_title_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	var cb := StyleBoxFlat.new()
-	cb.bg_color = Color(1, 1, 1, 0.05)
+	cb.bg_color = Color(1, 1, 1, 0.08)
 	cb.set_corner_radius_all(8)
+	cb.border_width_top = 1
+	cb.border_width_bottom = 1
+	cb.border_width_left = 1
+	cb.border_width_right = 1
+	cb.border_color = Color(1, 1, 1, 0.2)
 	var cb_h := cb.duplicate() as StyleBoxFlat
-	cb_h.bg_color = Color(1, 1, 1, 0.1)
+	cb_h.bg_color = Color(1, 1, 1, 0.18)
+	cb_h.border_color = StyleFactory.GOLD
+	var cb_p := cb.duplicate() as StyleBoxFlat
+	cb_p.bg_color = StyleFactory.TEXT_ERROR.darkened(0.3)
+	cb_p.border_color = StyleFactory.TEXT_ERROR
 	_close_btn.add_theme_stylebox_override("normal", cb)
 	_close_btn.add_theme_stylebox_override("hover", cb_h)
-	_close_btn.add_theme_stylebox_override("pressed", cb)
+	_close_btn.add_theme_stylebox_override("pressed", cb_p)
 	_close_btn.add_theme_color_override("font_color", StyleFactory.GOLD)
+	_close_btn.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	# Header banner dark background
 	var banner_style := StyleBoxFlat.new()
@@ -169,37 +179,41 @@ func setup(sx: float, sy: float) -> void:
 
 func _apply_scale() -> void:
 	var vp := get_viewport().get_visible_rect().size
-	var card_w: float = min(480.0 * _sx, vp.x * 0.92)
-	var card_h: float = vp.y * 0.88
-	# Position the anchored Panel as a centered card of explicit size.
-	# (anchors_preset=8 keeps it centered via the offsets below.)
+	# Centered modal — 88% wide, 86% tall
+	var card_w: float = vp.x * 0.88
+	var card_h: float = vp.y * 0.86
 	_panel.offset_left = -card_w * 0.5
 	_panel.offset_right = card_w * 0.5
 	_panel.offset_top = -card_h * 0.5
 	_panel.offset_bottom = card_h * 0.5
-	_close_btn.custom_minimum_size = Vector2(32.0 * _sx, 32.0 * _sy)
-	_logout_btn.custom_minimum_size = Vector2(140.0 * _sx, 44.0 * _sy)
-	_avatar_ctrl.custom_minimum_size = Vector2(80.0 * _sx, 80.0 * _sy)
-	_xp_bar_bg.custom_minimum_size.x = minf(400.0 * _sx, vp.x * 0.78)
+	_close_btn.custom_minimum_size = Vector2(56.0 * _sx, 56.0 * _sy)
+	_logout_btn.custom_minimum_size = Vector2(200.0 * _sx, 66.0 * _sy)
+	_avatar_ctrl.custom_minimum_size = Vector2(140.0 * _sx, 140.0 * _sy)
+	_xp_bar_bg.custom_minimum_size.x = vp.x * 0.82
 
-	_title_lbl.add_theme_font_size_override("font_size", int(14 * _sy))
-	_close_btn.add_theme_font_size_override("font_size", int(16 * _sy))
-	_logout_btn.add_theme_font_size_override("font_size", int(14 * _sy))
-	_name_lbl.add_theme_font_size_override("font_size", int(20 * _sy))
-	_rl_lbl.add_theme_font_size_override("font_size", int(13 * _sy))
-	_level_lbl.add_theme_font_size_override("font_size", int(11 * _sy))
-	_username_lbl.add_theme_font_size_override("font_size", int(12 * _sy))
-	_xp_total_lbl.add_theme_font_size_override("font_size", int(12 * _sy))
-	_xp_sub_lbl.add_theme_font_size_override("font_size", int(11 * _sy))
-	_badges_count.add_theme_font_size_override("font_size", int(12 * _sy))
+	_title_lbl.add_theme_font_size_override("font_size", int(22 * _sy))
+	_close_btn.add_theme_font_size_override("font_size", int(26 * _sy))
+	_logout_btn.add_theme_font_size_override("font_size", int(22 * _sy))
+	_name_lbl.add_theme_font_size_override("font_size", int(34 * _sy))
+	_rl_lbl.add_theme_font_size_override("font_size", int(22 * _sy))
+	_level_lbl.add_theme_font_size_override("font_size", int(18 * _sy))
+	_username_lbl.add_theme_font_size_override("font_size", int(20 * _sy))
+	_xp_total_lbl.add_theme_font_size_override("font_size", int(20 * _sy))
+	_xp_sub_lbl.add_theme_font_size_override("font_size", int(18 * _sy))
+	_badges_count.add_theme_font_size_override("font_size", int(20 * _sy))
 
-	_content.add_theme_constant_override("separation", int(12 * _sy))
+	_content.add_theme_constant_override("separation", int(20 * _sy))
 	var card_style := _panel.get_theme_stylebox("panel") as StyleBoxFlat
 	if card_style:
-		card_style.content_margin_left = 18.0 * _sx
-		card_style.content_margin_right = 18.0 * _sx
-		card_style.content_margin_top = 14.0 * _sy
-		card_style.content_margin_bottom = 18.0 * _sy
+		# Remove corner rounding for a flat box look
+		card_style.corner_radius_top_left = 0
+		card_style.corner_radius_top_right = 0
+		card_style.corner_radius_bottom_left = 0
+		card_style.corner_radius_bottom_right = 0
+		card_style.content_margin_left = 28.0 * _sx
+		card_style.content_margin_right = 28.0 * _sx
+		card_style.content_margin_top = 24.0 * _sy
+		card_style.content_margin_bottom = 28.0 * _sy
 
 
 # =============================================================================
@@ -391,7 +405,7 @@ func _populate_xp(level_data: Dictionary, total_xp: int) -> void:
 	var bar_width := _xp_bar_bg.size.x
 	if bar_width <= 0.0:
 		bar_width = _xp_bar_bg.custom_minimum_size.x
-	var fill_target := max(bar_width * pct, 4.0)
+	var fill_target: float = maxf(bar_width * pct, 4.0)
 	(
 		_xp_fill
 		. create_tween()
@@ -428,7 +442,7 @@ func _populate_badges(badges: Array) -> void:
 
 		var cat_lbl := Label.new()
 		cat_lbl.text = CATEGORY_LABELS.get(cat, cat.capitalize())
-		cat_lbl.add_theme_font_size_override("font_size", int(11 * _sy))
+		cat_lbl.add_theme_font_size_override("font_size", int(20 * _sy))
 		cat_lbl.add_theme_color_override("font_color", _get_category_color(cat))
 		cat_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		cat_vbox.add_child(cat_lbl)
@@ -446,8 +460,8 @@ func _populate_badges(badges: Array) -> void:
 
 func _make_badge_tile(badge: Dictionary, category: String) -> PanelContainer:
 	var is_earned: bool = badge.get("earned", false)
-	var tile_w := int(82 * _sx)
-	var tile_h := int(92 * _sy)
+	var tile_w := int(120 * _sx)
+	var tile_h := int(136 * _sy)
 
 	var tile := PanelContainer.new()
 	tile.custom_minimum_size = Vector2(tile_w, tile_h)
@@ -485,14 +499,14 @@ func _make_badge_tile(badge: Dictionary, category: String) -> PanelContainer:
 
 	var icon_lbl := Label.new()
 	icon_lbl.text = badge.get("icon", "?") if is_earned else "🔒"
-	icon_lbl.add_theme_font_size_override("font_size", int(24 * _sy))
+	icon_lbl.add_theme_font_size_override("font_size", int(38 * _sy))
 	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	col.add_child(icon_lbl)
 
 	var name_lbl := Label.new()
 	name_lbl.text = badge.get("name", "")
-	name_lbl.add_theme_font_size_override("font_size", int(9 * _sy))
+	name_lbl.add_theme_font_size_override("font_size", int(16 * _sy))
 	name_lbl.add_theme_color_override(
 		"font_color", StyleFactory.TEXT_SECONDARY if is_earned else StyleFactory.TEXT_MUTED
 	)
@@ -530,7 +544,7 @@ func _show_error_state() -> void:
 
 	var err_lbl := Label.new()
 	err_lbl.text = "Could not load full profile"
-	err_lbl.add_theme_font_size_override("font_size", int(14 * _sy))
+	err_lbl.add_theme_font_size_override("font_size", int(22 * _sy))
 	err_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_ERROR)
 	err_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	err_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -538,7 +552,7 @@ func _show_error_state() -> void:
 
 	var hint_lbl := Label.new()
 	hint_lbl.text = "Badges require an internet connection"
-	hint_lbl.add_theme_font_size_override("font_size", int(12 * _sy))
+	hint_lbl.add_theme_font_size_override("font_size", int(20 * _sy))
 	hint_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	hint_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -550,7 +564,7 @@ func _show_error_state() -> void:
 	var retry_btn := Button.new()
 	retry_btn.text = "Retry"
 	retry_btn.custom_minimum_size = Vector2(100 * _sx, 40 * _sy)
-	retry_btn.add_theme_font_size_override("font_size", int(14 * _sy))
+	retry_btn.add_theme_font_size_override("font_size", int(22 * _sy))
 	retry_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	retry_btn.add_theme_stylebox_override("normal", StyleFactory.make_secondary_button_normal())
 	retry_btn.add_theme_stylebox_override("hover", StyleFactory.make_secondary_button_hover())

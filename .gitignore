@@ -12,8 +12,11 @@ android/build/
 # Godot keystore credentials (Godot 4.3+ — secrets live here, not in export_presets.cfg)
 .godot/export_credentials.cfg
 
-# Plugin build artifacts
-_plugin_build/
+# Plugin build artifacts (build outputs only — source is tracked)
+_plugin_build/.gradle/
+_plugin_build/build/
+_plugin_build/plugin/build/
+_plugin_build/local.properties
 
 # Claude Code Game Studios (AI framework — not game source)
 .claude/
