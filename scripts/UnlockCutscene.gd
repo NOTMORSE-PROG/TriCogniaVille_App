@@ -55,7 +55,7 @@ var _tex_spark: Texture2D
 var _tex_flame: Texture2D
 
 # ─── Injected references ────────────────────────────────────────────────────
-var _bc: Node2D  # BuildingController
+var _bc: BuildingController
 var _building_id: String
 var _building_label: String
 var _building_color: Color
@@ -71,6 +71,8 @@ var _sy: float
 var _original_cam_offset: Vector2
 var _original_cam_smooth_speed: float
 var _banner_layer: CanvasLayer
+var _spotlight: ColorRect
+var _spotlight_mat: ShaderMaterial
 
 
 func _init() -> void:
@@ -80,7 +82,7 @@ func _init() -> void:
 
 func setup(
 	vp: Vector2, sx: float, sy: float,
-	building_controller: Node2D, camera: Camera2D,
+	building_controller: BuildingController, camera: Camera2D,
 	player: Node2D, ysort: Node2D, town_livener: Node2D
 ) -> void:
 	_vp = vp
