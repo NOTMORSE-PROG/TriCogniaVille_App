@@ -1489,7 +1489,7 @@ const _CHAPEL_MISSION := [
 	},
 	{
 		"type": "mcq",
-		"question": "What tone fits 'Each footstep felt slow and deliberate'?",
+		"question": "What tone fits 'Each footstep felt slow and deliberate, as if the village itself was listening'?",
 		"options":
 		["Excited and fast", "Calm and measured", "Loud and urgent", "High-pitched and light"],
 		"correct_index": 1,
@@ -2147,15 +2147,6 @@ const _CHAPEL_MISSION_L1 := [
 		"correct_index": 0,
 		"feedback_correct": "Right! Stop at each period.",
 		"feedback_wrong": "You stop at the periods, not at every word.",
-	},
-	{
-		"type": "mcq",
-		"instruction": "Think about smooth reading.",
-		"question": "What is smooth reading?",
-		"options": ["reading without stopping at every word", "reading very fast"],
-		"correct_index": 0,
-		"feedback_correct": "Right! Smooth reading means not stopping at every word.",
-		"feedback_wrong": "Smooth reading is reading without stopping at every word.",
 	},
 ]
 
@@ -3298,8 +3289,8 @@ const _CHAPEL_MISSION_L2 := [
 	},
 	{
 		"type": "mcq",
-		"instruction": "Answer based on how the passage should be read.",
-		"question": "Where should you pause in the first sentence?",
+		"instruction": "Think about the first sentence.",
+		"question": "In 'The small dog ran across the yard.' — where should you pause?",
 		"options": ["After 'small'", "After 'dog'"],
 		"correct_index": 1,
 		"feedback_correct": "Right! Pause after 'dog' to group the phrase naturally.",
@@ -3326,7 +3317,7 @@ const _CHAPEL_MISSION_L2 := [
 	{
 		"type": "mcq",
 		"instruction": "Think about emphasis.",
-		"question": "What words should you emphasize?",
+		"question": "In 'It looked happy and full of energy.' — what words should you emphasize?",
 		"options": ["'happy and full of energy'", "'the boy'"],
 		"correct_index": 0,
 		"feedback_correct": "Right! The feeling words 'happy and full of energy' deserve emphasis.",
@@ -3344,7 +3335,7 @@ const _CHAPEL_MISSION_L2 := [
 	{
 		"type": "mcq",
 		"instruction": "Think about pacing.",
-		"question": "Where should you slow down?",
+		"question": "In 'The boy watched and smiled.' — where should you slow down?",
 		"options": ["'watched and smiled'", "'the boy'"],
 		"correct_index": 0,
 		"feedback_correct": "Right! Slow down at 'watched and smiled' — it's the ending moment.",
@@ -3371,20 +3362,11 @@ const _CHAPEL_MISSION_L2 := [
 	{
 		"type": "mcq",
 		"instruction": "Think about pausing.",
-		"question": "In the last sentence, where should you pause?",
+		"question": "In 'The boy watched and smiled.' — where should you pause?",
 		"options": ["Pause after 'watched'", "No pause needed"],
 		"correct_index": 0,
 		"feedback_correct": "Right! A brief pause after 'watched' makes it flow naturally.",
 		"feedback_wrong": "Pause briefly after 'watched' before 'and smiled.'",
-	},
-	{
-		"type": "mcq",
-		"instruction": "Think about good reading.",
-		"question": "What does good reading sound like?",
-		"options": ["Smooth flow with pauses", "Word by word"],
-		"correct_index": 0,
-		"feedback_correct": "Right! Good reading has smooth flow with natural pauses.",
-		"feedback_wrong": "Good reading flows smoothly with pauses — not word by word.",
 	},
 ]
 
@@ -4846,7 +4828,7 @@ const _CHAPEL_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Consider expression and voice quality.",
-		"question": "How should the em-dash in 'elegant curves intertwined with angular marks that suggested both urgency and beauty' affect your reading?",
+		"question": "How should the em-dash affect your reading in: 'The script was unlike anything he had seen — elegant curves intertwined with angular marks that suggested both urgency and beauty'?",
 		"options":
 		[
 			"Skip over it quickly",

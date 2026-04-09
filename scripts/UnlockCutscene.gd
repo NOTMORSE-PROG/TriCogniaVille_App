@@ -92,9 +92,9 @@ func play() -> void:
 	_original_cam_offset = _camera.offset
 	_original_cam_smooth_speed = _camera.position_smoothing_speed
 
-	# Phase 1: Camera pan to building (0.8s)
+	# Phase 1: Camera pan to building (0.5s)
 	_phase_camera_pan()
-	await get_tree().create_timer(0.8).timeout
+	await get_tree().create_timer(0.5).timeout
 
 	# Phase 2: Padlock fade + color reveal + SFX
 	_phase_padlock_fade()
@@ -146,7 +146,7 @@ func _phase_camera_pan() -> void:
 
 	_camera.position_smoothing_speed = 20.0
 	var tw := create_tween()
-	tw.tween_property(_camera, "offset", target_offset, 0.8).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(_camera, "offset", target_offset, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 
 
 func _phase_padlock_fade() -> void:
@@ -271,7 +271,7 @@ func _phase_tour(highlights: Array[Dictionary]) -> void:
 		target_offset = final_pos - _player.global_position
 
 		var pan_tw := create_tween()
-		pan_tw.tween_property(_camera, "offset", target_offset, 0.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+		pan_tw.tween_property(_camera, "offset", target_offset, 0.4).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 		await pan_tw.finished
 
 		# Hold on highlight

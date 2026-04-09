@@ -66,7 +66,6 @@ func _ready() -> void:
 	_spawn_buildings()
 	_build_ui()  # must come before _spawn_player (player needs joystick ref)
 	_spawn_player()
-	_build_ambient_particles()
 	_build_town_livener()
 	_connect_signals()
 	_build_quest_tracker()
@@ -1119,29 +1118,6 @@ func _spawn_player() -> void:
 	col.position = Vector2(0.0, -16.0 * _sy)
 	player.add_child(col)
 
-	# ── Footstep dust particles ──
-	var foot_dust := CPUParticles2D.new()
-	foot_dust.name = "FootDust"
-	foot_dust.emitting = false
-	foot_dust.one_shot = false
-	foot_dust.amount = 4
-	foot_dust.lifetime = 0.4
-	foot_dust.explosiveness = 0.3
-	foot_dust.spread = 60.0
-	foot_dust.direction = Vector2(0, 1)
-	foot_dust.gravity = Vector2(0, -15)
-	foot_dust.initial_velocity_min = 8.0
-	foot_dust.initial_velocity_max = 18.0
-	foot_dust.scale_amount_min = 1.5
-	foot_dust.scale_amount_max = 3.0
-	foot_dust.color = Color(0.76, 0.65, 0.45, 0.35)
-	foot_dust.position = Vector2(0, -2 * _sy)
-	var fd_grad := Gradient.new()
-	fd_grad.set_color(0, Color(0.76, 0.65, 0.45, 0.4))
-	fd_grad.set_color(1, Color(0.76, 0.65, 0.45, 0.0))
-	foot_dust.color_ramp = fd_grad
-	player.add_child(foot_dust)
-
 	# ── Camera (child of player → auto-follows) ──
 	var cam := Camera2D.new()
 	cam.position_smoothing_enabled = true
@@ -1159,94 +1135,6 @@ func _spawn_player() -> void:
 	_ysort.add_child(player)
 	player.position = Vector2(_vp.x * 0.50, _vp.y * 0.80)
 
-
-# ═════════════════════════════════════════════════════════════════════════════
-# AMBIENT PARTICLES — butterflies, floating leaves, dust motes
-# ═════════════════════════════════════════════════════════════════════════════
-func _build_ambient_particles() -> void:
-	# ── Butterflies — gentle drifting across the village ──
-	var butterflies := CPUParticles2D.new()
-	butterflies.name = "Butterflies"
-	butterflies.emitting = true
-	butterflies.one_shot = false
-	butterflies.amount = 6
-	butterflies.lifetime = 10.0
-	butterflies.explosiveness = 0.0
-	butterflies.spread = 180.0
-	butterflies.gravity = Vector2(0, -8)
-	butterflies.initial_velocity_min = 12.0
-	butterflies.initial_velocity_max = 28.0
-	butterflies.angular_velocity_min = -30.0
-	butterflies.angular_velocity_max = 30.0
-	butterflies.scale_amount_min = 3.0
-	butterflies.scale_amount_max = 5.0
-	butterflies.color = Color(1.0, 1.0, 0.85, 0.7)
-	butterflies.position = Vector2(_vp.x * 0.5, _vp.y * 0.5)
-	butterflies.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-	butterflies.emission_rect_extents = Vector2(_vp.x * 0.4, _vp.y * 0.3)
-	butterflies.z_index = 2
-	# Color gradient: white → yellow → light blue
-	var b_grad := Gradient.new()
-	b_grad.set_color(0, Color(1.0, 1.0, 0.8, 0.6))
-	b_grad.add_point(0.5, Color(1.0, 0.95, 0.5, 0.7))
-	b_grad.set_color(1, Color(0.7, 0.9, 1.0, 0.0))
-	butterflies.color_ramp = b_grad
-	add_child(butterflies)
-
-	# ── Floating leaves — gentle diagonal drift ──
-	var leaves := CPUParticles2D.new()
-	leaves.name = "FloatingLeaves"
-	leaves.emitting = true
-	leaves.one_shot = false
-	leaves.amount = 5
-	leaves.lifetime = 7.0
-	leaves.explosiveness = 0.0
-	leaves.spread = 30.0
-	leaves.direction = Vector2(1.0, 1.5).normalized()
-	leaves.gravity = Vector2(15, 22)
-	leaves.initial_velocity_min = 8.0
-	leaves.initial_velocity_max = 18.0
-	leaves.angular_velocity_min = -60.0
-	leaves.angular_velocity_max = 60.0
-	leaves.scale_amount_min = 2.5
-	leaves.scale_amount_max = 5.0
-	leaves.position = Vector2(_vp.x * 0.3, _vp.y * 0.1)
-	leaves.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-	leaves.emission_rect_extents = Vector2(_vp.x * 0.4, _vp.y * 0.1)
-	leaves.z_index = 3
-	var l_grad := Gradient.new()
-	l_grad.set_color(0, Color(0.78, 0.47, 0.12, 0.5))
-	l_grad.add_point(0.3, Color(0.85, 0.55, 0.15, 0.6))
-	l_grad.add_point(0.7, Color(0.70, 0.40, 0.10, 0.4))
-	l_grad.set_color(1, Color(0.60, 0.35, 0.08, 0.0))
-	leaves.color_ramp = l_grad
-	add_child(leaves)
-
-	# ── Path dust motes — warm gold particles at crossroads ──
-	var dust := CPUParticles2D.new()
-	dust.name = "PathDust"
-	dust.emitting = true
-	dust.one_shot = false
-	dust.amount = 10
-	dust.lifetime = 4.0
-	dust.explosiveness = 0.0
-	dust.spread = 180.0
-	dust.gravity = Vector2(0, -6)
-	dust.initial_velocity_min = 3.0
-	dust.initial_velocity_max = 8.0
-	dust.scale_amount_min = 1.5
-	dust.scale_amount_max = 3.0
-	dust.position = Vector2(_vp.x * 0.50, _vp.y * 0.61)
-	dust.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-	dust.emission_rect_extents = Vector2(_vp.x * 0.06, _vp.y * 0.04)
-	dust.z_index = 1
-	var d_grad := Gradient.new()
-	d_grad.set_color(0, Color(1.0, 0.88, 0.5, 0.0))
-	d_grad.add_point(0.3, Color(1.0, 0.85, 0.45, 0.22))
-	d_grad.add_point(0.7, Color(1.0, 0.82, 0.40, 0.18))
-	d_grad.set_color(1, Color(1.0, 0.80, 0.35, 0.0))
-	dust.color_ramp = d_grad
-	add_child(dust)
 
 
 # ═════════════════════════════════════════════════════════════════════════════

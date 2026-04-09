@@ -7,6 +7,7 @@ var _tutorial_demo_shown: bool = false
 var _sx: float = 1.0
 var _sy: float = 1.0
 var _transitioning: bool = false
+var _current_building_id: String = ""
 
 # UI containers
 var _bg: ColorRect
@@ -312,6 +313,7 @@ func _build_layout() -> void:
 
 
 func _on_quest_started(building_id: String) -> void:
+	_current_building_id = building_id
 	var quest := QuestManager.get_current_quest_data()
 	_building_label.text = QuestData.get_building_label(building_id)
 	_topic_label.text = quest.get("topic", "")
@@ -828,7 +830,8 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 		score_label.add_theme_color_override("font_color", StyleFactory.TEXT_ERROR)
 
 		if score >= total - 3:
-			message.text = "Almost there! You need 7 correct to pass."
+			var pass_needed := 18 if _current_building_id == "bakery" else 7
+			message.text = "Almost there! You need %d correct to pass." % pass_needed
 		elif score >= int(total / 2.0):
 			message.text = "Good effort! Review the questions and try again."
 		else:
@@ -1196,6 +1199,8 @@ func _update_stage_banner(stage: String) -> void:
 			_stage_banner_icon.add_theme_color_override("font_color", stage_theme["accent"])
 			_stage_banner_label.text = stage_theme["label"]
 			_stage_banner_desc.text = stage_theme["desc"]
+			if stage == "mission" and _current_building_id == "bakery":
+				_stage_banner_desc.text = "Scored assessment — 18/21 to pass"
 
 			# Tint the background overlay slightly
 			var bg_tint := Color(stage_theme["bg"].r, stage_theme["bg"].g, stage_theme["bg"].b, 0.88)

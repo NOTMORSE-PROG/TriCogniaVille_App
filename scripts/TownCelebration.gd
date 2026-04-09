@@ -25,11 +25,7 @@ var _sy: float
 var _building_controllers: Dictionary
 var _glow_tweens: Array[Tween] = []
 var _music_player: AudioStreamPlayer
-var _first_wave: bool = true
 
-# Kenney particle textures
-var _tex_spark: Texture2D
-var _tex_star: Texture2D
 
 
 func _init() -> void:
@@ -43,143 +39,18 @@ func start(vp: Vector2, sx: float, sy: float, building_controllers: Dictionary) 
 	_sy = sy
 	_building_controllers = building_controllers
 
-	# Preload particle textures
-	if ResourceLoader.exists("res://assets/particles/kenney/spark_05.png"):
-		_tex_spark = load("res://assets/particles/kenney/spark_05.png")
-	if ResourceLoader.exists("res://assets/particles/kenney/star_06.png"):
-		_tex_star = load("res://assets/particles/kenney/star_06.png")
-
 	_run_sequence()
 
 
 func _run_sequence() -> void:
-	# ── 1. Fireworks (t=0) + audio sting ────────────────────────────────────────
-	_launch_fireworks()
-	AudioManager.play_sfx("building_unlock")
+	# ── 1. Golden glow on all buildings ────────────────────────────────────────
+	_apply_golden_glow()
 
-	# ── 2. Golden glow on all buildings (t=0.8s) ───────────────────────────────
-	get_tree().create_timer(0.8).timeout.connect(_apply_golden_glow)
+	# ── 2. Congratulations overlay (t=1s) ──────────────────────────────────────
+	get_tree().create_timer(1.0).timeout.connect(_show_overlay)
 
-	# ── 3. Confetti rain (t=1s) ────────────────────────────────────────────────
-	get_tree().create_timer(1.0).timeout.connect(_launch_confetti)
-
-	# ── 4. Congratulations overlay (t=2.5s) ────────────────────────────────────
-	get_tree().create_timer(2.5).timeout.connect(_show_overlay)
-
-	# ── 5. Celebration music ───────────────────────────────────────────────────
+	# ── 3. Celebration music ───────────────────────────────────────────────────
 	_play_celebration_music()
-
-
-func _launch_fireworks() -> void:
-	var positions := [
-		Vector2(_vp.x * 0.22, _vp.y * 0.25),
-		Vector2(_vp.x * 0.50, _vp.y * 0.18),
-		Vector2(_vp.x * 0.78, _vp.y * 0.25),
-		Vector2(_vp.x * 0.38, _vp.y * 0.20),
-	]
-	for i in positions.size():
-		var fw_color: Color = BUILDING_COLORS[i % BUILDING_COLORS.size()]
-		var delay := float(i) * 0.6
-		get_tree().create_timer(delay).timeout.connect(
-			func() -> void: _spawn_firework(positions[i], fw_color)
-		)
-	# Repeat burst wave at t=3s (no screen flash for this wave)
-	get_tree().create_timer(3.0).timeout.connect(func() -> void:
-		_first_wave = false
-		for i in 3:
-			var fw_color2: Color = BUILDING_COLORS[(i + 2) % BUILDING_COLORS.size()]
-			get_tree().create_timer(float(i) * 0.5).timeout.connect(
-				func() -> void: _spawn_firework(positions[i % positions.size()], fw_color2)
-			)
-	)
-
-
-func _spawn_firework(pos: Vector2, color: Color) -> void:
-	var fw := CPUParticles2D.new()
-	fw.emitting = false
-	fw.one_shot = true
-	fw.explosiveness = 0.95
-	fw.amount = 28
-	fw.lifetime = 1.8
-	fw.spread = 180.0
-	fw.gravity = Vector2(0, 200)
-	fw.initial_velocity_min = 160.0
-	fw.initial_velocity_max = 300.0
-	fw.scale_amount_min = 3.5
-	fw.scale_amount_max = 7.0
-	fw.color = color
-	fw.position = pos
-	if _tex_spark:
-		fw.texture = _tex_spark
-	# Color gradient: bright burst fading to transparent
-	var grad := Gradient.new()
-	grad.set_color(0, Color(color.r, color.g, color.b, 1.0))
-	grad.add_point(0.3, Color(1.0, 1.0, 0.8, 0.9))
-	grad.set_color(1, Color(color.r, color.g, color.b, 0.0))
-	fw.color_ramp = grad
-	add_child(fw)
-	fw.emitting = true
-
-	# White flash burst at explosion center
-	var flash := CPUParticles2D.new()
-	flash.emitting = false
-	flash.one_shot = true
-	flash.explosiveness = 1.0
-	flash.amount = 8
-	flash.lifetime = 0.4
-	flash.spread = 180.0
-	flash.gravity = Vector2(0, 0)
-	flash.initial_velocity_min = 20.0
-	flash.initial_velocity_max = 60.0
-	flash.scale_amount_min = 4.0
-	flash.scale_amount_max = 10.0
-	flash.color = Color(1.0, 1.0, 0.9, 0.9)
-	flash.position = pos
-	add_child(flash)
-	flash.emitting = true
-
-	# Subtle gold screen flash (first wave only)
-	if _first_wave:
-		UIAnimations.flash_screen(self, Color(0.886, 0.725, 0.290, 0.06), 0.3)
-
-
-func _launch_confetti() -> void:
-	var confetti := CPUParticles2D.new()
-	confetti.name = "ConfettiRain"
-	confetti.emitting = true
-	confetti.one_shot = false
-	confetti.amount = 45
-	confetti.lifetime = 5.0
-	confetti.explosiveness = 0.0
-	confetti.spread = 180.0
-	confetti.direction = Vector2(0, 1)
-	confetti.gravity = Vector2(20, 60)
-	confetti.initial_velocity_min = 40.0
-	confetti.initial_velocity_max = 90.0
-	confetti.angular_velocity_min = -120.0
-	confetti.angular_velocity_max = 120.0
-	confetti.scale_amount_min = 3.0
-	confetti.scale_amount_max = 8.0
-	confetti.position = Vector2(_vp.x * 0.5, -10)
-	confetti.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-	confetti.emission_rect_extents = Vector2(_vp.x * 0.5, 5)
-	if _tex_star:
-		confetti.texture = _tex_star
-	# Multi-color gradient cycling through celebration palette
-	var grad := Gradient.new()
-	grad.set_color(0, Color(0.886, 0.725, 0.290, 0.9))   # gold
-	grad.add_point(0.2, Color(0.914, 0.388, 0.431, 0.9)) # coral
-	grad.add_point(0.4, Color(0.392, 0.769, 0.910, 0.9)) # sky blue
-	grad.add_point(0.6, Color(0.357, 0.851, 0.635, 0.9)) # green
-	grad.add_point(0.8, Color(0.698, 0.533, 0.886, 0.9)) # lavender
-	grad.set_color(1, Color(1.0, 1.0, 1.0, 0.0))
-	confetti.color_ramp = grad
-	add_child(confetti)
-	# Stop emitting after 7s but let existing particles finish
-	get_tree().create_timer(7.0).timeout.connect(func() -> void:
-		if is_instance_valid(confetti):
-			confetti.emitting = false
-	)
 
 
 func _apply_golden_glow() -> void:

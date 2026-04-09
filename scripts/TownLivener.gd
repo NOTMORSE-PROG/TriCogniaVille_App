@@ -24,13 +24,6 @@ const AMBIENT_LAYERS := {
 
 var cutscene_active: bool = false
 
-# ─── Particle textures (Kenney CC0) ─────────────────────────────────────────
-var _tex_circle: Texture2D
-var _tex_star: Texture2D
-var _tex_flame: Texture2D
-var _tex_spark: Texture2D
-var _tex_light: Texture2D
-
 # ─── Scale / viewport ────────────────────────────────────────────────────────
 var _vp: Vector2
 var _sx: float
@@ -60,13 +53,6 @@ func setup(vp: Vector2, sx: float, sy: float, building_controllers: Dictionary) 
 	_building_controllers = building_controllers
 	# Grab parent YSort so NPCs can be added as direct children for proper depth
 	_ysort_ref = get_parent() as Node2D
-
-	# Preload particle textures
-	_tex_circle = _safe_load("res://assets/particles/kenney/circle_05.png")
-	_tex_star = _safe_load("res://assets/particles/kenney/star_06.png")
-	_tex_flame = _safe_load("res://assets/particles/kenney/flame_02.png")
-	_tex_spark = _safe_load("res://assets/particles/kenney/spark_05.png")
-	_tex_light = _safe_load("res://assets/particles/kenney/light_01.png")
 
 	# Connect to live unlock signals
 	if not GameManager.building_unlocked.is_connected(_on_building_unlocked):
@@ -179,33 +165,6 @@ func _build_tier_1(root: Node2D) -> Array[Dictionary]:
 	_add_flowers(root, Vector2(_vp.x * 0.42, _vp.y * 0.72))
 	_add_flowers(root, Vector2(_vp.x * 0.65, _vp.y * 0.75))
 
-	# Bird silhouettes drifting across the upper sky
-	var birds := CPUParticles2D.new()
-	birds.name = "BirdSilhouettes"
-	birds.emitting = true
-	birds.one_shot = false
-	birds.amount = 4
-	birds.lifetime = 9.0
-	birds.explosiveness = 0.0
-	birds.spread = 20.0
-	birds.direction = Vector2(1.0, 0.15)
-	birds.gravity = Vector2(0, -4)
-	birds.initial_velocity_min = 14.0
-	birds.initial_velocity_max = 22.0
-	birds.angular_velocity_min = -8.0
-	birds.angular_velocity_max = 8.0
-	birds.scale_amount_min = 3.0
-	birds.scale_amount_max = 5.0
-	birds.position = Vector2(_vp.x * 0.0, _vp.y * 0.12)
-	birds.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-	birds.emission_rect_extents = Vector2(_vp.x * 0.05, _vp.y * 0.06)
-	birds.z_index = 5
-	var b_grad := Gradient.new()
-	b_grad.set_color(0, Color(0.18, 0.18, 0.22, 0.55))
-	b_grad.set_color(1, Color(0.15, 0.15, 0.20, 0.0))
-	birds.color_ramp = b_grad
-	root.add_child(birds)
-
 	# ── NEW: Waving flagpole near town hall ──
 	var th_pos := Vector2(_vp.x * 0.50, _vp.y * 0.34)
 	_add_flagpole(root, th_pos + Vector2(70 * _sx, 20 * _sy), Color("#E8C547"))
@@ -285,7 +244,7 @@ func _build_tier_2(root: Node2D) -> Array[Dictionary]:
 
 # ═════════════════════════════════════════════════════════════════════════════
 # TIER 3 — Inn: Travelers Arrive
-# Lamp glows + chimney smoke + barrels + wagon + hanging sign + horse +
+# Lamp glows + barrels + wagon + hanging sign + horse +
 # crates + traveler NPC + campfire + outdoor table + hitching post + more lamps
 # ═════════════════════════════════════════════════════════════════════════════
 func _build_tier_3(root: Node2D) -> Array[Dictionary]:
@@ -313,10 +272,6 @@ func _build_tier_3(root: Node2D) -> Array[Dictionary]:
 	var traveler_pos := inn_pos + Vector2(65 * _sx, 70 * _sy)
 	_add_idle_npc(root, traveler_pos, Color(1.0, 0.82, 0.78))
 
-	# ── NEW: Campfire with fire particles ──
-	var fire_pos := Vector2(_vp.x * 0.40, _vp.y * 0.62)
-	_add_campfire(root, fire_pos)
-
 	# ── NEW: Outdoor dining table ──
 	_add_outdoor_table(root, inn_pos + Vector2(30 * _sx, 50 * _sy))
 
@@ -324,7 +279,6 @@ func _build_tier_3(root: Node2D) -> Array[Dictionary]:
 	_add_hitching_post(root, wagon_pos + Vector2(35 * _sx, -10 * _sy))
 
 	return [
-		{"pos": fire_pos, "label": "A warm campfire!"},
 		{"pos": horse_pos, "label": "Travelers have arrived!"},
 		{"pos": traveler_pos, "label": "A weary traveler rests."},
 	]
@@ -441,57 +395,6 @@ func _build_tier_5(root: Node2D) -> Array[Dictionary]:
 func _build_tier_6(root: Node2D) -> Array[Dictionary]:
 	var well_pos := Vector2(_vp.x * 0.50, _vp.y * 0.58)
 
-	# Well water sparkle particles
-	var sparkles := CPUParticles2D.new()
-	sparkles.name = "WellSparkles"
-	sparkles.emitting = true
-	sparkles.one_shot = false
-	sparkles.amount = 6
-	sparkles.lifetime = 1.8
-	sparkles.explosiveness = 0.0
-	sparkles.spread = 25.0
-	sparkles.direction = Vector2(0, -1)
-	sparkles.gravity = Vector2(0, 30)
-	sparkles.initial_velocity_min = 12.0
-	sparkles.initial_velocity_max = 22.0
-	sparkles.scale_amount_min = 1.5
-	sparkles.scale_amount_max = 3.5
-	sparkles.position = well_pos + Vector2(0, -40 * _sy)
-	sparkles.z_index = 4
-	if _tex_star:
-		sparkles.texture = _tex_star
-	var sp_grad := Gradient.new()
-	sp_grad.set_color(0, Color(0.6, 0.88, 1.0, 0.8))
-	sp_grad.set_color(1, Color(0.8, 0.96, 1.0, 0.0))
-	sparkles.color_ramp = sp_grad
-	root.add_child(sparkles)
-
-	# Fountain water droplets
-	var fountain := CPUParticles2D.new()
-	fountain.name = "FountainDroplets"
-	fountain.emitting = true
-	fountain.one_shot = false
-	fountain.amount = 8
-	fountain.lifetime = 1.4
-	fountain.explosiveness = 0.0
-	fountain.spread = 40.0
-	fountain.direction = Vector2(0, -1)
-	fountain.gravity = Vector2(0, 120)
-	fountain.initial_velocity_min = 30.0
-	fountain.initial_velocity_max = 55.0
-	fountain.scale_amount_min = 2.0
-	fountain.scale_amount_max = 4.0
-	fountain.position = Vector2(_vp.x * 0.50, _vp.y * 0.65)
-	fountain.z_index = 3
-	if _tex_circle:
-		fountain.texture = _tex_circle
-	var f_grad := Gradient.new()
-	f_grad.set_color(0, Color(0.5, 0.80, 1.0, 0.75))
-	f_grad.add_point(0.5, Color(0.65, 0.90, 1.0, 0.55))
-	f_grad.set_color(1, Color(0.7, 0.92, 1.0, 0.0))
-	fountain.color_ramp = f_grad
-	root.add_child(fountain)
-
 	# Path pebbles
 	for i in range(7):
 		var px := _vp.x * (0.30 + i * 0.06)
@@ -601,9 +504,6 @@ func _build_tier_7(root: Node2D) -> Array[Dictionary]:
 	# ── NEW: Bunting garlands between stalls ──
 	_add_bunting(root, Vector2(_vp.x * 0.10, _vp.y * 0.70), Vector2(_vp.x * 0.26, _vp.y * 0.72))
 
-	# ── NEW: Torch posts at market entrance ──
-	_add_torch_post(root, market_pos + Vector2(-60 * _sx, 30 * _sy))
-	_add_torch_post(root, market_pos + Vector2(80 * _sx, 30 * _sy))
 
 	return [
 		{"pos": signpost_pos, "label": "Signs for every building!"},
@@ -739,35 +639,6 @@ func _cheer_single_npc(npc: Node2D, start_delay: float) -> void:
 		scale_tw.tween_property(npc, "scale", Vector2(1.0, 1.18), 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		scale_tw.tween_property(npc, "scale", orig_scale, 0.25).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 
-		# Tiny sparkle particles above NPC
-		var sparkles := CPUParticles2D.new()
-		sparkles.emitting = true
-		sparkles.one_shot = true
-		sparkles.explosiveness = 0.7
-		sparkles.amount = 4
-		sparkles.lifetime = 1.0
-		sparkles.spread = 60.0
-		sparkles.direction = Vector2(0, -1)
-		sparkles.gravity = Vector2(0, -10)
-		sparkles.initial_velocity_min = 15.0
-		sparkles.initial_velocity_max = 35.0
-		sparkles.scale_amount_min = 1.5
-		sparkles.scale_amount_max = 3.5
-		sparkles.position = npc.global_position + Vector2(0, -35 * _sy)
-		sparkles.z_index = 12
-		if _tex_star:
-			sparkles.texture = _tex_star
-		var sg := Gradient.new()
-		sg.set_color(0, Color(1.0, 0.9, 0.4, 0.85))
-		sg.set_color(1, Color(1.0, 0.85, 0.3, 0.0))
-		sparkles.color_ramp = sg
-		add_child(sparkles)
-
-		# Cleanup sparkles
-		get_tree().create_timer(1.5).timeout.connect(func() -> void:
-			if is_instance_valid(sparkles):
-				sparkles.queue_free()
-		)
 	)
 
 
@@ -1259,7 +1130,7 @@ func _add_crate_stack(root: Node2D, pos: Vector2) -> void:
 	root.add_child(group)
 
 
-## Campfire with fire glow particles
+## Campfire (fire pit + stones, no particles)
 func _add_campfire(root: Node2D, pos: Vector2) -> void:
 	var group := Node2D.new()
 	group.position = pos
@@ -1272,31 +1143,6 @@ func _add_campfire(root: Node2D, pos: Vector2) -> void:
 		var sx_off := cos(angle) * sr
 		var sy_off := sin(angle) * sr * 0.6
 		group.add_child(_make_circle_panel(Vector2(sx_off - 4 * _sx, sy_off - 4 * _sy), 8 * _sx, Color("#6B6B73")))
-	# Fire particles
-	var fire := CPUParticles2D.new()
-	fire.name = "CampfireFire"
-	fire.emitting = true
-	fire.one_shot = false
-	fire.amount = 8
-	fire.lifetime = 1.2
-	fire.explosiveness = 0.0
-	fire.spread = 25.0
-	fire.direction = Vector2(0, -1)
-	fire.gravity = Vector2(0, -30)
-	fire.initial_velocity_min = 10.0
-	fire.initial_velocity_max = 25.0
-	fire.scale_amount_min = 2.0
-	fire.scale_amount_max = 5.0
-	fire.position = Vector2(0, -10 * _sy)
-	fire.z_index = 4
-	if _tex_flame:
-		fire.texture = _tex_flame
-	var fg := Gradient.new()
-	fg.set_color(0, Color(1.0, 0.8, 0.2, 0.85))
-	fg.add_point(0.4, Color(1.0, 0.5, 0.1, 0.7))
-	fg.set_color(1, Color(0.8, 0.2, 0.05, 0.0))
-	fire.color_ramp = fg
-	group.add_child(fire)
 	root.add_child(group)
 
 
@@ -1701,7 +1547,7 @@ func _add_basket_prop(root: Node2D, pos: Vector2) -> void:
 	root.add_child(group)
 
 
-## Torch post with fire particles
+## Torch post (post + cup, no fire particles)
 func _add_torch_post(root: Node2D, pos: Vector2) -> void:
 	var group := Node2D.new()
 	group.position = pos
@@ -1709,29 +1555,6 @@ func _add_torch_post(root: Node2D, pos: Vector2) -> void:
 	_add_rect(group, Vector2(-2 * _sx, -40 * _sy), Vector2(4 * _sx, 42 * _sy), Color("#5C3D11"))
 	# Torch cup
 	_add_rect(group, Vector2(-5 * _sx, -44 * _sy), Vector2(10 * _sx, 6 * _sy), Color("#4A2E0C"))
-	# Fire particles
-	var fire := CPUParticles2D.new()
-	fire.emitting = true
-	fire.one_shot = false
-	fire.amount = 4
-	fire.lifetime = 0.8
-	fire.explosiveness = 0.0
-	fire.spread = 20.0
-	fire.direction = Vector2(0, -1)
-	fire.gravity = Vector2(0, -20)
-	fire.initial_velocity_min = 8.0
-	fire.initial_velocity_max = 18.0
-	fire.scale_amount_min = 1.5
-	fire.scale_amount_max = 3.5
-	fire.position = Vector2(0, -46 * _sy)
-	fire.z_index = 5
-	if _tex_flame:
-		fire.texture = _tex_flame
-	var fg := Gradient.new()
-	fg.set_color(0, Color(1.0, 0.8, 0.2, 0.8))
-	fg.set_color(1, Color(1.0, 0.3, 0.05, 0.0))
-	fire.color_ramp = fg
-	group.add_child(fire)
 	root.add_child(group)
 
 

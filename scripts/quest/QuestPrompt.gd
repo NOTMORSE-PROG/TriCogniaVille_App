@@ -245,7 +245,7 @@ func _build_prompt(
 
 		var ch_desc := Label.new()
 		ch_desc.text = (
-			"Go straight to the graded mission (10 questions)"
+			"Go straight to the graded mission"
 			if tutorial_done
 			else "Finish the tutorial to unlock the challenge"
 		)

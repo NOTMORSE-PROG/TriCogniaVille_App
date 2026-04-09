@@ -69,7 +69,7 @@ func _build_ui() -> void:
 		child.queue_free()
 
 	_recognizer = SpeechRecognizer.new()
-	_recognizer.MAX_LISTEN_SECONDS = MAX_LISTEN_SECONDS
+	_recognizer.max_listen_seconds = MAX_LISTEN_SECONDS
 	add_child(_recognizer)
 	_recognizer.transcript_ready.connect(_on_transcript_ready)
 	_recognizer.recognition_error.connect(_on_recognition_error)

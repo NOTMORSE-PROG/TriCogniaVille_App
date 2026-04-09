@@ -28,7 +28,6 @@ var _sprite: Sprite2D
 var _padlock: Node2D
 var _name_label: Label
 var _area: Area2D
-var _particles: CPUParticles2D
 
 
 
@@ -104,7 +103,6 @@ func _build_visuals() -> void:
 	_build_padlock()
 	_build_name_label()
 	_build_touch_area()
-	_build_particles()
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -380,30 +378,6 @@ func _build_touch_area() -> void:
 	add_child(_area)
 
 
-# ═════════════════════════════════════════════════════════════════════════════
-# PARTICLES
-# ═════════════════════════════════════════════════════════════════════════════
-func _build_particles() -> void:
-	# Confetti burst on unlock
-	_particles = CPUParticles2D.new()
-	_particles.emitting = false
-	_particles.one_shot = true
-	_particles.explosiveness = 0.95
-	_particles.amount = 32
-	_particles.lifetime = 1.6
-	_particles.spread = 170.0
-	_particles.gravity = Vector2(0, 220)
-	_particles.initial_velocity_min = 100.0
-	_particles.initial_velocity_max = 240.0
-	_particles.scale_amount_min = 3.0
-	_particles.scale_amount_max = 8.0
-	_particles.color = building_color
-	# Sprite is embedded 12% into ground → sprite center is at -_bh*0.38,
-	# so place confetti at ~60% up the visible building.
-	_particles.position = Vector2(0, -_bh * 0.58)
-	add_child(_particles)
-
-
 
 # ═════════════════════════════════════════════════════════════════════════════
 # STATE APPLICATION  (gray / color)
@@ -482,12 +456,6 @@ func unlock(cutscene_mode: bool = false) -> void:
 	bounce.tween_property(self, "scale", Vector2(1.08, 1.08), 0.18)
 	bounce.tween_property(self, "scale", Vector2(1.00, 1.00), 0.28)
 
-	# 4. Particle burst after reveal
-	var t := get_tree().create_timer(1.5)
-	t.timeout.connect(func() -> void:
-		if is_instance_valid(_particles):
-			_particles.emitting = true
-	)
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -500,10 +468,6 @@ func get_padlock() -> Node2D:
 
 func get_building_sprite() -> Sprite2D:
 	return _sprite
-
-
-func get_confetti_particles() -> CPUParticles2D:
-	return _particles
 
 
 ## World-space position of the building's visual center (above ground embedding).
