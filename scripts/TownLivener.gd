@@ -28,7 +28,6 @@ var cutscene_active: bool = false
 var _tex_circle: Texture2D
 var _tex_star: Texture2D
 var _tex_flame: Texture2D
-var _tex_smoke: Texture2D
 var _tex_spark: Texture2D
 var _tex_light: Texture2D
 
@@ -66,7 +65,6 @@ func setup(vp: Vector2, sx: float, sy: float, building_controllers: Dictionary) 
 	_tex_circle = _safe_load("res://assets/particles/kenney/circle_05.png")
 	_tex_star = _safe_load("res://assets/particles/kenney/star_06.png")
 	_tex_flame = _safe_load("res://assets/particles/kenney/flame_02.png")
-	_tex_smoke = _safe_load("res://assets/particles/kenney/smoke_08.png")
 	_tex_spark = _safe_load("res://assets/particles/kenney/spark_05.png")
 	_tex_light = _safe_load("res://assets/particles/kenney/light_01.png")
 
@@ -293,9 +291,6 @@ func _build_tier_2(root: Node2D) -> Array[Dictionary]:
 func _build_tier_3(root: Node2D) -> Array[Dictionary]:
 	# Inn position
 	var inn_pos := Vector2(_vp.x * 0.34, _vp.y * 0.50)
-
-	# Inn chimney smoke
-	_add_chimney_smoke(root, inn_pos + Vector2(-8 * _sx, -95 * _sy))
 
 	# Barrel cluster near inn
 	_add_barrel_cluster(root, Vector2(_vp.x * 0.26, _vp.y * 0.58))
@@ -818,29 +813,6 @@ func _add_flowers(root: Node2D, pos: Vector2) -> void:
 
 
 ## Warm glow pool beneath a lamp post
-## Chimney smoke (replicates BuildingController._make_smoke) with texture
-func _add_chimney_smoke(root: Node2D, pos: Vector2) -> void:
-	var s := CPUParticles2D.new()
-	s.emitting = true
-	s.one_shot = false
-	s.amount = 8
-	s.lifetime = 2.4
-	s.explosiveness = 0.0
-	s.spread = 16.0
-	s.gravity = Vector2(0, -18)
-	s.initial_velocity_min = 16.0
-	s.initial_velocity_max = 28.0
-	s.scale_amount_min = 2.0
-	s.scale_amount_max = 4.5
-	s.color = Color(0.82, 0.82, 0.82, 0.45)
-	s.direction = Vector2(0, -1)
-	s.position = pos
-	s.z_index = 5
-	if _tex_smoke:
-		s.texture = _tex_smoke
-	root.add_child(s)
-
-
 ## Small barrel cluster
 func _add_barrel_cluster(root: Node2D, pos: Vector2) -> void:
 	var group := Node2D.new()

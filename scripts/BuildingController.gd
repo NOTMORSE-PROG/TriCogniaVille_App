@@ -30,9 +30,6 @@ var _name_label: Label
 var _area: Area2D
 var _particles: CPUParticles2D
 
-# Smoke particles for bakery chimneys
-var _smoke1: CPUParticles2D
-var _smoke2: CPUParticles2D
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -406,34 +403,6 @@ func _build_particles() -> void:
 	_particles.position = Vector2(0, -_bh * 0.58)
 	add_child(_particles)
 
-	# Bakery smoke: positions derived from sprite pixel layout (56×64).
-	# Sprite top = -_bh*0.88. Chimneys at x=[10,37], y=2 in 56×64 tex.
-	#   left  x: (-0.5 + 13.5/56) * _bw = -_bw*0.259
-	#   right x: (-0.5 + 40.5/56) * _bw =  _bw*0.223
-	#   top   y: -_bh*0.88 + (2/64)*_bh  = -_bh*0.849
-	if building_id == "bakery":
-		_smoke1 = _make_smoke(Vector2(-_bw * 0.26, -_bh * 0.85))
-		_smoke2 = _make_smoke(Vector2(_bw * 0.22, -_bh * 0.85))
-
-
-func _make_smoke(pos: Vector2) -> CPUParticles2D:
-	var s := CPUParticles2D.new()
-	s.emitting = true
-	s.one_shot = false
-	s.amount = 8
-	s.lifetime = 2.2
-	s.explosiveness = 0.0
-	s.spread = 15.0
-	s.gravity = Vector2(0, -20)
-	s.initial_velocity_min = 18.0
-	s.initial_velocity_max = 30.0
-	s.scale_amount_min = 2.0
-	s.scale_amount_max = 4.5
-	s.color = Color(0.82, 0.82, 0.82, 0.50)
-	s.direction = Vector2(0, -1)
-	s.position = pos
-	add_child(s)
-	return s
 
 
 # ═════════════════════════════════════════════════════════════════════════════
