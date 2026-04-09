@@ -279,6 +279,11 @@ func _set_state(new_state: State) -> void:
 
 
 func _update_ui_for_state() -> void:
+	# Guard: node may have been removed from the tree by QuestOverlay before a
+	# pending timer callback fires. set_process() requires being in the tree.
+	if not is_inside_tree():
+		return
+
 	# Defaults — hide everything, show per-state below
 	_record_btn.visible = false
 	_stop_btn.visible = false
@@ -334,14 +339,15 @@ func _update_ui_for_state() -> void:
 				_content_card.visible = false
 			_result_panel.visible = true
 			_populate_result_panel(_current_result)
-			if _attempt_number < MAX_ATTEMPTS:
-				# Still has tries left — show Try Again
+			var correct: bool = _current_result.get("correct", false)
+			if correct or _attempt_number >= MAX_ATTEMPTS:
+				# Correct answer OR max attempts reached — submit, QuestOverlay shows Next
+				var best_correct: bool = _best_result.get("correct", correct)
+				answer_submitted.emit(best_correct)
+			else:
+				# Wrong answer, still has tries left — show Try Again
 				if is_instance_valid(_action_center):
 					_action_center.visible = true
-			else:
-				# Max attempts reached — auto-submit best result, QuestOverlay shows Next
-				var correct: bool = _best_result.get("correct", _current_result.get("correct", false))
-				answer_submitted.emit(correct)
 
 
 # ── Process (animations) ──────────────────────────────────────────────────────
@@ -378,7 +384,7 @@ func _on_record_pressed() -> void:
 	_recognizer.start_recognition("en-US")
 	# Safety net: if recognition never completes within 40s, reset gracefully
 	await get_tree().create_timer(40.0).timeout
-	if not is_instance_valid(self):
+	if not is_instance_valid(self) or not is_inside_tree():
 		return
 	if _state == State.LISTENING or _state == State.PROCESSING:
 		_set_state(State.IDLE)
@@ -429,7 +435,7 @@ func _on_transcript_ready(text: String, confidence: float) -> void:
 	_submit_assessment(_current_result, text, confidence, _audio_url)
 
 	await get_tree().create_timer(0.4).timeout
-	if not is_instance_valid(self):
+	if not is_instance_valid(self) or not is_inside_tree():
 		return
 	_set_state(State.RESULT)
 
