@@ -12,6 +12,8 @@ shader_type canvas_item;
 uniform float color_amount : hint_range(0.0, 1.0) = 1.0;
 // glow_amount: 0.0 = no celebration glow (default), 0.0–1.0 set by TownCelebration.
 uniform float glow_amount : hint_range(0.0, 1.0) = 0.0;
+// flash_amount: momentary white flash during unlock cutscene peak.
+uniform float flash_amount : hint_range(0.0, 1.0) = 0.0;
 
 void fragment() {
 	vec4 tex = texture(TEXTURE, UV);
@@ -42,6 +44,9 @@ void fragment() {
 	vec3 gold = vec3(0.95, 0.80, 0.25);
 	col = mix(col, gold, glow_amount * gold_pulse * 0.38);
 	col += glow_amount * gold_pulse * 0.06;
+
+	// White flash overlay (momentary during unlock cutscene)
+	col = mix(col, vec3(1.0), flash_amount * 0.7);
 
 	COLOR.rgb = col;
 	COLOR.a = tex.a;

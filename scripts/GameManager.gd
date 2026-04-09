@@ -102,11 +102,13 @@ func apply_student_update(student: Dictionary) -> void:
 
 
 ## Called by quest flow when the server confirms a building unlock. Idempotent.
-func register_unlocked_building(building_id: String) -> void:
+## Pass play_sfx=false when a cutscene will handle its own timed SFX.
+func register_unlocked_building(building_id: String, play_sfx: bool = true) -> void:
 	if building_id.is_empty() or building_id in unlocked_buildings:
 		return
 	unlocked_buildings.append(building_id)
-	AudioManager.play_sfx("building_unlock")
+	if play_sfx:
+		AudioManager.play_sfx("building_unlock")
 	building_unlocked.emit(building_id)
 	if unlocked_buildings.size() >= TOTAL_BUILDINGS:
 		all_buildings_unlocked.emit()

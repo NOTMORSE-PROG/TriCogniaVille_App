@@ -35,8 +35,7 @@ var _dot_count: int = 0
 @warning_ignore("unused_private_class_variable")
 @onready var _scroll: ScrollContainer = $Panel/OuterVBox/Scroll
 @onready var _content: VBoxContainer = $Panel/OuterVBox/Scroll/Content
-@onready var _close_row: HBoxContainer = $Panel/OuterVBox/CloseRow
-@onready var _close_btn: Button = $Panel/OuterVBox/CloseRow/CloseBtn
+@onready var _close_btn: CloseButton = $Panel/OuterVBox/CloseRow/CloseBtn
 @onready var _title_lbl: Label = $Panel/OuterVBox/CloseRow/Title
 @onready var _loading_section: CenterContainer = $Panel/OuterVBox/Scroll/Content/LoadingSection
 @onready var _loading_lbl: Label = $Panel/OuterVBox/Scroll/Content/LoadingSection/LoadingLabel
@@ -87,7 +86,6 @@ var _badges_box: VBoxContainer = $Panel/OuterVBox/Scroll/Content/ProfileContent/
 
 func _ready() -> void:
 	_close_btn.pressed.connect(func(): hide_profile())
-	_close_row.gui_input.connect(_on_close_row_input)
 	_blocker.gui_input.connect(_on_blocker_input)
 	_logout_btn.pressed.connect(_on_logout_pressed)
 	_avatar_ctrl.draw.connect(_draw_avatar)
@@ -103,35 +101,7 @@ func _style_nodes() -> void:
 	card_style.content_margin_bottom = 18.0
 	_panel.add_theme_stylebox_override("panel", card_style)
 
-	# Close button
 	_title_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
-	var cb := StyleBoxFlat.new()
-	cb.bg_color = Color(1, 1, 1, 0.08)
-	cb.set_corner_radius_all(8)
-	cb.border_width_top = 1
-	cb.border_width_bottom = 1
-	cb.border_width_left = 1
-	cb.border_width_right = 1
-	cb.border_color = Color(1, 1, 1, 0.2)
-	cb.content_margin_left = 16.0
-	cb.content_margin_right = 16.0
-	cb.content_margin_top = 16.0
-	cb.content_margin_bottom = 16.0
-	var cb_h := cb.duplicate() as StyleBoxFlat
-	cb_h.bg_color = Color(1, 1, 1, 0.18)
-	cb_h.border_color = StyleFactory.GOLD
-	var cb_p := cb.duplicate() as StyleBoxFlat
-	cb_p.bg_color = StyleFactory.TEXT_ERROR.darkened(0.3)
-	cb_p.border_color = StyleFactory.TEXT_ERROR
-	# Ensure focus/disabled states also have the correct content margins
-	var cb_f := cb.duplicate() as StyleBoxFlat
-	_close_btn.add_theme_stylebox_override("focus", cb_f)
-	_close_btn.add_theme_stylebox_override("disabled", cb_f)
-	_close_btn.add_theme_stylebox_override("normal", cb)
-	_close_btn.add_theme_stylebox_override("hover", cb_h)
-	_close_btn.add_theme_stylebox_override("pressed", cb_p)
-	_close_btn.add_theme_color_override("font_color", StyleFactory.GOLD)
-	_close_btn.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	# Header banner dark background
 	var banner_style := StyleBoxFlat.new()
@@ -196,13 +166,13 @@ func _apply_scale() -> void:
 	_panel.offset_right = card_w * 0.5
 	_panel.offset_top = -card_h * 0.5
 	_panel.offset_bottom = card_h * 0.5
-	_close_btn.custom_minimum_size = Vector2(88.0 * _sx, 88.0 * _sy)
+	_close_btn.setup(88.0 * _sx)
 	_logout_btn.custom_minimum_size = Vector2(200.0 * _sx, 66.0 * _sy)
 	_avatar_ctrl.custom_minimum_size = Vector2(140.0 * _sx, 140.0 * _sy)
 	_xp_bar_bg.custom_minimum_size.x = vp.x * 0.82
 
 	_title_lbl.add_theme_font_size_override("font_size", int(22 * _sy))
-	_close_btn.add_theme_font_size_override("font_size", int(32 * _sy))
+
 	_logout_btn.add_theme_font_size_override("font_size", int(22 * _sy))
 	_name_lbl.add_theme_font_size_override("font_size", int(34 * _sy))
 	_rl_lbl.add_theme_font_size_override("font_size", int(22 * _sy))
@@ -643,14 +613,6 @@ func _draw_avatar() -> void:
 # =============================================================================
 # INPUT / LOGOUT
 # =============================================================================
-
-
-func _on_close_row_input(event: InputEvent) -> void:
-	if not _can_dismiss:
-		return
-	if (event is InputEventMouseButton or event is InputEventScreenTouch) and event.pressed:
-		hide_profile()
-		get_viewport().set_input_as_handled()
 
 
 func _on_blocker_input(event: InputEvent) -> void:

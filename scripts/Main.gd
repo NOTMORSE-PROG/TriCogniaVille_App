@@ -1053,6 +1053,10 @@ func _build_ui() -> void:
 	_profile_btn.connect("tapped", _on_profile_btn_pressed)
 	canvas.add_child(_profile_btn)
 
+	_profile_panel = load("res://scenes/ProfilePanel.tscn").instantiate()
+	_profile_panel.setup(_sx, _sy)
+	canvas.add_child(_profile_panel)
+
 	# ── Quest UI components ──
 	_quest_prompt = load("res://scripts/quest/QuestPrompt.gd").new()
 	_quest_prompt.name = "QuestPrompt"
@@ -1069,10 +1073,6 @@ func _build_ui() -> void:
 	_dialogue_panel.name = "DialoguePanel"
 	_dialogue_panel.setup(_sx, _sy)
 	canvas.add_child(_dialogue_panel)
-
-	_profile_panel = load("res://scenes/ProfilePanel.tscn").instantiate()
-	_profile_panel.setup(_sx, _sy)
-	canvas.add_child(_profile_panel)
 
 
 func _on_profile_btn_pressed() -> void:
@@ -1354,9 +1354,30 @@ func _on_quest_completed(building_id: String, passed: bool, _score: int) -> void
 			StoryManager.mark_outro_seen(building_id)
 	if passed and _building_controllers.has(building_id):
 		var bc: BuildingController = _building_controllers[building_id]
+		# ── Cinematic unlock cutscene ──
+		var player := _ysort.get_node_or_null("Player")
+		var camera: Camera2D = null
+		if player:
+			for child in player.get_children():
+				if child is Camera2D:
+					camera = child
+					break
+		if player and camera and is_instance_valid(_town_livener):
+			_town_livener.cutscene_active = true
+			var cutscene: Node = load("res://scripts/UnlockCutscene.gd").new()
+			add_child(cutscene)
+			cutscene.setup(_vp, _sx, _sy, bc, camera, player, _ysort, _town_livener)
+			cutscene.cutscene_finished.connect(func() -> void:
+				_town_livener.cutscene_active = false
+				_set_joystick_active(true)
+			)
+			cutscene.play()
+			_update_progress_bar()
+			return  # Joystick re-enabled by cutscene_finished callback
+		# Fallback if camera not found
 		bc.unlock()
 		_update_progress_bar()
-	# Re-enable joystick after dialogue completes (previously a separate lambda that fired immediately)
+	# Re-enable joystick after dialogue completes
 	_set_joystick_active(true)
 
 
@@ -1371,12 +1392,18 @@ func _on_building_unlocked(building_id: String) -> void:
 		var bc: BuildingController = _building_controllers[building_id]
 		if not bc.is_unlocked:
 			bc.is_unlocked = true
-	AudioManager.play_sfx("building_unlock")
+	# SFX only when no cutscene is active (cutscene handles its own SFX)
+	if not (is_instance_valid(_town_livener) and _town_livener.cutscene_active):
+		AudioManager.play_sfx("building_unlock")
 	_update_progress_bar()
 
 
 func _on_all_buildings_unlocked() -> void:
 	print("[Main] Village fully restored!")
+	# Wait for any active unlock cutscene to finish first
+	var active_cutscene := get_node_or_null("UnlockCutscene")
+	if active_cutscene and active_cutscene.has_signal("cutscene_finished"):
+		await active_cutscene.cutscene_finished
 	# Wait for TownLivener's celebration finale before the story ending sequence.
 	if is_instance_valid(_town_livener) and _town_livener.has_signal("celebration_finished"):
 		await _town_livener.celebration_finished
@@ -1385,42 +1412,121 @@ func _on_all_buildings_unlocked() -> void:
 
 
 func _play_ending_sequence() -> void:
-	# ── 1. Dim the village ──
+	# ── Resolve camera + player references ──
+	var player := _ysort.get_node_or_null("Player")
+	var camera: Camera2D = null
+	if player:
+		for child in player.get_children():
+			if child is Camera2D:
+				camera = child
+				break
+	var original_cam_offset := camera.offset if camera else Vector2.ZERO
+	var original_cam_smooth := camera.position_smoothing_speed if camera else 6.0
+	var montage_skipped := false
+
+	# ── 1. Dim the village slightly (keep it visible for camera tour) ──
 	var tw := create_tween()
 	(
 		tw
-		. tween_property(_ysort, "modulate", Color(0.3, 0.3, 0.3, 1.0), 1.0)
+		. tween_property(_ysort, "modulate", Color(0.5, 0.5, 0.5, 1.0), 1.0)
 		. set_trans(Tween.TRANS_QUAD)
 		. set_ease(Tween.EASE_IN_OUT)
 	)
 	await tw.finished
 
-	# ── 2. Create ending overlay CanvasLayer ──
-	var ending_canvas := CanvasLayer.new()
-	ending_canvas.name = "EndingOverlay"
-	ending_canvas.layer = 20
-	add_child(ending_canvas)
+	# ── 2. Create banner overlay CanvasLayer (floating banner, NOT full-screen blocker) ──
+	var banner_canvas := CanvasLayer.new()
+	banner_canvas.name = "EndingBanner"
+	banner_canvas.layer = 16
+	add_child(banner_canvas)
 
-	var bg := ColorRect.new()
-	bg.color = Color(StyleFactory.BG_DEEP.r, StyleFactory.BG_DEEP.g, StyleFactory.BG_DEEP.b, 0.92)
-	bg.anchor_right = 1.0
-	bg.anchor_bottom = 1.0
-	bg.mouse_filter = Control.MOUSE_FILTER_STOP
-	ending_canvas.add_child(bg)
-	bg.modulate.a = 0.0
-	var bg_tw := create_tween()
-	bg_tw.tween_property(bg, "modulate:a", 1.0, 0.5)
-	await bg_tw.finished
+	# Skip button (appears after building 2)
+	var skip_btn := Button.new()
+	skip_btn.text = "Skip >>"
+	skip_btn.flat = true
+	skip_btn.add_theme_font_size_override("font_size", int(16 * _sy))
+	skip_btn.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+	skip_btn.size = Vector2(100 * _sx, 40 * _sy)
+	skip_btn.position = Vector2(_vp.x * 0.82, _vp.y * 0.90)
+	skip_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	banner_canvas.add_child(skip_btn)
+	skip_btn.modulate.a = 0.0
+	skip_btn.pressed.connect(func() -> void: montage_skipped = true)
 
-	# ── 3. Montage: show each building one at a time ──
+	# ── 3. Cinematic camera tour — pan to each building ──
 	var montage_data := StoryManager.get_ending_montage()
-	var center_x := _vp.x / 2.0
-	var center_y := _vp.y / 2.0
+	if camera:
+		camera.position_smoothing_speed = 20.0
 
+	var building_index := 0
 	for entry in montage_data:
+		if montage_skipped:
+			break
+
+		var building_id: String = entry.get("building", "")
 		var building_label: String = entry.get("label", "")
 		var keeper_line: String = entry.get("line", "")
 		var building_color: Color = Color(entry.get("color", "#FFFFFF"))
+
+		var bc: BuildingController = _building_controllers.get(building_id)
+		if not is_instance_valid(bc):
+			building_index += 1
+			continue
+
+		# Show skip button after building 2
+		if building_index == 2 and is_instance_valid(skip_btn):
+			UIAnimations.fade_in_up(self, skip_btn)
+
+		# ── Pan camera to this building ──
+		AudioManager.play_sfx("stage_advance")
+		if camera and player:
+			var building_world := bc.get_building_center_world_pos()
+			var target_offset: Vector2 = building_world - (player as Node2D).global_position
+			# Clamp within camera limits
+			var half_vp := _vp * 0.5
+			var min_pos := Vector2(camera.limit_left, camera.limit_top) + half_vp
+			var max_pos := Vector2(camera.limit_right, camera.limit_bottom) - half_vp
+			var final_pos: Vector2 = ((player as Node2D).global_position + target_offset).clamp(min_pos, max_pos)
+			target_offset = final_pos - (player as Node2D).global_position
+
+			var cam_tw := create_tween()
+			cam_tw.tween_property(camera, "offset", target_offset, 1.0).set_trans(
+				Tween.TRANS_CUBIC
+			).set_ease(Tween.EASE_IN_OUT)
+			await cam_tw.finished
+
+		if montage_skipped:
+			break
+
+		# ── Building glow pulse ──
+		var sprite := bc.get_building_sprite()
+		if is_instance_valid(sprite) and sprite.material is ShaderMaterial:
+			var mat := sprite.material as ShaderMaterial
+			var glow_tw := create_tween()
+			glow_tw.tween_method(
+				func(v: float) -> void:
+					if is_instance_valid(mat):
+						mat.set_shader_parameter("glow_amount", v),
+				0.0, 0.4, 1.2
+			)
+			glow_tw.tween_method(
+				func(v: float) -> void:
+					if is_instance_valid(mat):
+						mat.set_shader_parameter("glow_amount", v),
+				0.4, 0.0, 1.3
+			)
+
+		# ── NPC cheering ──
+		if is_instance_valid(_town_livener):
+			_town_livener.cheer_npcs_near(bc.get_building_center_world_pos(), 150.0 * _sx)
+
+		# ── Show floating banner at bottom of screen ──
+		var banner_bg := ColorRect.new()
+		banner_bg.color = Color(0.04, 0.08, 0.15, 0.80)
+		banner_bg.size = Vector2(_vp.x, _vp.y * 0.16)
+		banner_bg.position = Vector2(0, _vp.y * 0.84)
+		banner_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		banner_canvas.add_child(banner_bg)
 
 		# Building name
 		var name_label := Label.new()
@@ -1428,74 +1534,183 @@ func _play_ending_sequence() -> void:
 		name_label.add_theme_font_size_override("font_size", int(33 * _sy))
 		name_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name_label.anchor_left = 0.2
-		name_label.anchor_right = 0.8
-		name_label.anchor_top = 0.35
+		name_label.size = Vector2(_vp.x, 40 * _sy)
+		name_label.position = Vector2(0, _vp.y * 0.845)
 		name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		ending_canvas.add_child(name_label)
+		banner_canvas.add_child(name_label)
 
-		# Keeper line
-		var line_label := Label.new()
-		line_label.text = keeper_line
-		line_label.add_theme_font_size_override("font_size", int(24 * _sy))
-		line_label.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
-		line_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		line_label.anchor_left = 0.15
-		line_label.anchor_right = 0.85
-		line_label.anchor_top = 0.45
-		line_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		line_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		ending_canvas.add_child(line_label)
-
-		# Color accent bar
+		# Accent bar
 		var accent_bar := ColorRect.new()
 		accent_bar.color = building_color
-		accent_bar.custom_minimum_size = Vector2(180 * _sx, 6 * _sy)
-		accent_bar.anchor_left = 0.5
-		accent_bar.offset_left = -90 * _sx
-		accent_bar.anchor_top = 0.42
-		accent_bar.size = Vector2(180 * _sx, 6 * _sy)
+		accent_bar.size = Vector2(160 * _sx, 4 * _sy)
+		accent_bar.position = Vector2((_vp.x - 160 * _sx) * 0.5, _vp.y * 0.885)
 		accent_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		ending_canvas.add_child(accent_bar)
+		banner_canvas.add_child(accent_bar)
 
-		# Animate in
-		UIAnimations.elastic_reveal(self, name_label)
-		UIAnimations.fade_in_up(self, line_label, 0.2)
-		UIAnimations.fade_in_up(self, accent_bar, 0.1)
+		# Keeper quote
+		var line_label := Label.new()
+		line_label.text = keeper_line
+		line_label.add_theme_font_size_override("font_size", int(22 * _sy))
+		line_label.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
+		line_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		line_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		line_label.size = Vector2(_vp.x * 0.8, 40 * _sy)
+		line_label.position = Vector2(_vp.x * 0.1, _vp.y * 0.90)
+		line_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		banner_canvas.add_child(line_label)
 
-		await get_tree().create_timer(2.0).timeout
+		# Animate banner in
+		UIAnimations.fade_in_up(self, banner_bg, 0.0)
+		UIAnimations.fade_in_up(self, name_label, 0.1)
+		UIAnimations.fade_in_up(self, accent_bar, 0.2)
+		UIAnimations.fade_in_up(self, line_label, 0.3)
 
-		# Fade out this building's elements
+		# Hold on this building
+		await get_tree().create_timer(3.0).timeout
+
+		if montage_skipped:
+			# Clean up banner elements before breaking
+			for node in [banner_bg, name_label, accent_bar, line_label]:
+				if is_instance_valid(node):
+					node.queue_free()
+			break
+
+		# Fade banner out
 		var fade_tw := create_tween().set_parallel(true)
-		fade_tw.tween_property(name_label, "modulate:a", 0.0, 0.4)
-		fade_tw.tween_property(line_label, "modulate:a", 0.0, 0.4)
-		fade_tw.tween_property(accent_bar, "modulate:a", 0.0, 0.4)
+		for node in [banner_bg, name_label, accent_bar, line_label]:
+			fade_tw.tween_property(node, "modulate:a", 0.0, 0.4)
 		await fade_tw.finished
-		name_label.queue_free()
-		line_label.queue_free()
-		accent_bar.queue_free()
+		for node in [banner_bg, name_label, accent_bar, line_label]:
+			if is_instance_valid(node):
+				node.queue_free()
 
 		await get_tree().create_timer(0.3).timeout
+		building_index += 1
 
-	# ── 4. Lumi farewell dialogue ──
+	# ── 4. Pan camera back to player ──
+	if camera:
+		var cam_back := create_tween()
+		cam_back.tween_property(camera, "offset", Vector2.ZERO, 0.8).set_trans(
+			Tween.TRANS_CUBIC
+		).set_ease(Tween.EASE_IN_OUT)
+		await cam_back.finished
+		camera.position_smoothing_speed = original_cam_smooth
+
+	# Remove skip button
+	if is_instance_valid(skip_btn):
+		skip_btn.queue_free()
+
+	# ── 5. Restore village brightness ──
+	var restore_dim := create_tween()
+	(
+		restore_dim
+		. tween_property(_ysort, "modulate", Color.WHITE, 0.8)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_OUT)
+	)
+	await restore_dim.finished
+
+	# ── 6. Lumi farewell dialogue ──
 	var farewell := StoryManager.get_ending_farewell()
 	var farewell_branches := {"farewell_lore": StoryManager.get_farewell_lore()}
 	_dialogue_panel.show_sequence(farewell, farewell_branches)
 	await _dialogue_panel.dialogue_sequence_finished
 
-	# ── 5. Title card ──
-	var title := Label.new()
-	title.text = "The End... for now."
-	title.add_theme_font_size_override("font_size", int(48 * _sy))
-	title.add_theme_color_override("font_color", StyleFactory.GOLD)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.anchor_left = 0.1
-	title.anchor_right = 0.9
-	title.anchor_top = 0.38
-	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ending_canvas.add_child(title)
-	UIAnimations.elastic_reveal(self, title)
+	# ── 7. Cinematic title card ──
+	var ending_canvas := CanvasLayer.new()
+	ending_canvas.name = "EndingOverlay"
+	ending_canvas.layer = 20
+	add_child(ending_canvas)
 
+	# Dark overlay background with animated shader
+	var title_bg := ColorRect.new()
+	title_bg.color = Color(StyleFactory.BG_DEEP.r, StyleFactory.BG_DEEP.g, StyleFactory.BG_DEEP.b, 0.92)
+	title_bg.anchor_right = 1.0
+	title_bg.anchor_bottom = 1.0
+	title_bg.mouse_filter = Control.MOUSE_FILTER_STOP
+	ending_canvas.add_child(title_bg)
+	title_bg.modulate.a = 0.0
+
+	# Apply animated background shader if available
+	var anim_bg_path := "res://assets/shaders/animated_background.gdshader"
+	if ResourceLoader.exists(anim_bg_path):
+		var bg_shader := ShaderMaterial.new()
+		bg_shader.shader = load(anim_bg_path)
+		bg_shader.set_shader_parameter("color_top", Color(0.02, 0.04, 0.10, 1.0))
+		bg_shader.set_shader_parameter("color_mid", Color(0.04, 0.06, 0.14, 1.0))
+		bg_shader.set_shader_parameter("color_bottom", Color(0.02, 0.05, 0.08, 1.0))
+		bg_shader.set_shader_parameter("wave_speed", 0.02)
+		bg_shader.set_shader_parameter("wave_amplitude", 0.04)
+		title_bg.material = bg_shader
+
+	# Bokeh particles on title card
+	var bokeh_path := "res://assets/shaders/bokeh_particles.gdshader"
+	if ResourceLoader.exists(bokeh_path):
+		var bokeh_rect := ColorRect.new()
+		bokeh_rect.anchor_right = 1.0
+		bokeh_rect.anchor_bottom = 1.0
+		bokeh_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var bokeh_mat := ShaderMaterial.new()
+		bokeh_mat.shader = load(bokeh_path)
+		bokeh_mat.set_shader_parameter("particle_count", 10.0)
+		bokeh_mat.set_shader_parameter("particle_size", 0.010)
+		bokeh_mat.set_shader_parameter("speed", 0.015)
+		bokeh_mat.set_shader_parameter("particle_color", Color(0.886, 0.725, 0.290, 0.08))
+		bokeh_rect.material = bokeh_mat
+		ending_canvas.add_child(bokeh_rect)
+
+	# Fade in title background
+	var tbg_tw := create_tween()
+	tbg_tw.tween_property(title_bg, "modulate:a", 1.0, 0.6)
+	await tbg_tw.finished
+
+	# Gold accent line above title
+	var accent_top := ColorRect.new()
+	accent_top.color = StyleFactory.GOLD
+	accent_top.size = Vector2(120 * _sx, 3 * _sy)
+	accent_top.position = Vector2((_vp.x - 120 * _sx) * 0.5, _vp.y * 0.34)
+	accent_top.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ending_canvas.add_child(accent_top)
+	UIAnimations.expand_from_center(self, accent_top, 120 * _sx, 0.6)
+
+	await get_tree().create_timer(0.3).timeout
+
+	# Title text with typewriter reveal
+	UIAnimations.flash_screen_on_layer(ending_canvas, _vp, Color(0.886, 0.725, 0.290, 0.08), 0.4)
+
+	var title_rtl := RichTextLabel.new()
+	title_rtl.text = "The End... for now."
+	title_rtl.add_theme_font_size_override("normal_font_size", int(56 * _sy))
+	title_rtl.add_theme_color_override("default_color", StyleFactory.GOLD)
+	title_rtl.fit_content = true
+	title_rtl.bbcode_enabled = false
+	title_rtl.scroll_active = false
+	title_rtl.autowrap_mode = TextServer.AUTOWRAP_OFF
+	title_rtl.size = Vector2(_vp.x * 0.8, 80 * _sy)
+	title_rtl.position = Vector2(_vp.x * 0.1, _vp.y * 0.37)
+	title_rtl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Load Nunito font if available
+	var nunito_path := "res://assets/fonts/Nunito-Variable.ttf"
+	if ResourceLoader.exists(nunito_path):
+		var nunito_font = load(nunito_path)
+		title_rtl.add_theme_font_override("normal_font", nunito_font)
+	ending_canvas.add_child(title_rtl)
+
+	await UIAnimations.typewriter_reveal(self, title_rtl, 1.5)
+	AudioManager.play_sfx("building_unlock")
+
+	# Gold accent line below title
+	var accent_bottom := ColorRect.new()
+	accent_bottom.color = StyleFactory.GOLD
+	accent_bottom.size = Vector2(120 * _sx, 3 * _sy)
+	accent_bottom.position = Vector2((_vp.x - 120 * _sx) * 0.5, _vp.y * 0.45)
+	accent_bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ending_canvas.add_child(accent_bottom)
+	UIAnimations.expand_from_center(self, accent_bottom, 120 * _sx, 0.6)
+
+	await get_tree().create_timer(0.8).timeout
+
+	# Subtitle
 	var subtitle := Label.new()
 	subtitle.text = "Your reading journey continues..."
 	subtitle.add_theme_font_size_override("font_size", int(23 * _sy))
@@ -1503,17 +1718,14 @@ func _play_ending_sequence() -> void:
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	subtitle.anchor_left = 0.1
 	subtitle.anchor_right = 0.9
-	subtitle.anchor_top = 0.48
+	subtitle.anchor_top = 0.50
 	subtitle.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ending_canvas.add_child(subtitle)
-	UIAnimations.fade_in_up(self, subtitle, 0.5)
+	UIAnimations.fade_in_up(self, subtitle, 0.0)
 
 	await get_tree().create_timer(3.0).timeout
 
-	# ── 6. Fade out and return to village ──
-	var final_tw := create_tween()
-	final_tw.tween_property(ending_canvas, "offset", Vector2.ZERO, 0.0)  # dummy
-	# Fade children
+	# ── 8. Fade out and return to village ──
 	for child in ending_canvas.get_children():
 		if child is Control:
 			var ftw := create_tween()
@@ -1523,15 +1735,8 @@ func _play_ending_sequence() -> void:
 
 	await get_tree().create_timer(1.7).timeout
 	ending_canvas.queue_free()
-
-	# Restore village
-	var restore_tw := create_tween()
-	(
-		restore_tw
-		. tween_property(_ysort, "modulate", Color.WHITE, 1.0)
-		. set_trans(Tween.TRANS_QUAD)
-		. set_ease(Tween.EASE_OUT)
-	)
+	if is_instance_valid(banner_canvas):
+		banner_canvas.queue_free()
 
 	AudioManager.play_sfx("building_unlock")
 	StoryManager.mark_ending_seen()

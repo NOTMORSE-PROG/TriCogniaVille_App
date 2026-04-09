@@ -337,3 +337,109 @@ static func update_page_dots(node: Node, dots: Array, active_index: int) -> void
 		style.corner_radius_bottom_right = 8
 		style.anti_aliasing = true
 		dot.add_theme_stylebox_override("panel", style)
+
+
+# ── Cutscene Helpers ─────────────────────────────────────────────────────────
+
+
+## Shake a Node2D (e.g. YSortLayer) for screen-shake effect
+static func screen_shake(
+	node: Node, target: Node2D, intensity: float = 6.0, cycles: int = 4
+) -> Signal:
+	var original_pos := target.position
+	var tween := node.create_tween()
+	for i in cycles:
+		var x_off := intensity * (1.0 - float(i) / float(cycles))
+		var y_off := x_off * 0.5
+		tween.tween_property(target, "position", original_pos + Vector2(x_off, y_off), 0.06)
+		tween.tween_property(target, "position", original_pos + Vector2(-x_off, -y_off), 0.06)
+	tween.tween_property(target, "position", original_pos, 0.06)
+	return tween.finished
+
+
+## Flash overlay on a CanvasLayer (used by UnlockCutscene)
+static func flash_screen_on_layer(
+	layer: CanvasLayer,
+	vp_size: Vector2,
+	color: Color = Color(1, 1, 0.9, 0.35),
+	duration: float = 0.3,
+) -> void:
+	var flash := ColorRect.new()
+	flash.color = color
+	flash.size = vp_size
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(flash)
+	var tween := flash.create_tween()
+	(
+		tween
+		. tween_property(flash, "modulate:a", 0.0, duration)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_OUT)
+	)
+	tween.tween_callback(flash.queue_free)
+
+
+# ── Cinematic Reveal Helpers ─────────────────────────────────────────────────
+
+
+## Typewriter reveal for RichTextLabel — tweens visible_characters 0 → total.
+static func typewriter_reveal(
+	node: Node, rtl: RichTextLabel, duration: float = 1.5
+) -> Signal:
+	rtl.visible_characters = 0
+	var total := rtl.get_total_character_count()
+	if total <= 0:
+		await node.get_tree().process_frame
+		total = rtl.get_total_character_count()
+	var tween := node.create_tween()
+	tween.tween_method(
+		func(v: int) -> void:
+			if is_instance_valid(rtl):
+				rtl.visible_characters = v,
+		0, total, duration
+	).set_trans(Tween.TRANS_LINEAR)
+	return tween.finished
+
+
+## Brief scale pop: 1.0 → peak → 1.0 with elastic easing.
+static func scale_pulse(
+	node: Node, target: Control, peak: float = 1.15, duration: float = 0.4
+) -> Signal:
+	target.pivot_offset = target.size / 2.0
+	var tween := node.create_tween()
+	(
+		tween
+		. tween_property(target, "scale", Vector2(peak, peak), duration * 0.4)
+		. set_trans(Tween.TRANS_BACK)
+		. set_ease(Tween.EASE_OUT)
+	)
+	(
+		tween
+		. tween_property(target, "scale", Vector2.ONE, duration * 0.6)
+		. set_trans(Tween.TRANS_ELASTIC)
+		. set_ease(Tween.EASE_OUT)
+	)
+	return tween.finished
+
+
+## Expand a ColorRect from zero width to final_width, staying centered.
+static func expand_from_center(
+	node: Node, rect: ColorRect, final_width: float, duration: float = 0.6
+) -> Signal:
+	var center_x := rect.position.x + rect.size.x * 0.5
+	rect.size.x = 0.0
+	rect.position.x = center_x
+	var tween := node.create_tween().set_parallel(true)
+	(
+		tween
+		. tween_property(rect, "size:x", final_width, duration)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_OUT)
+	)
+	(
+		tween
+		. tween_property(rect, "position:x", center_x - final_width * 0.5, duration)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_OUT)
+	)
+	return tween.finished

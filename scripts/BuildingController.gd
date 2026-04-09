@@ -473,18 +473,25 @@ func _on_area_input(_viewport: Node, event: InputEvent, _shape_idx: int) -> void
 		building_tapped.emit(self)
 
 
-func unlock() -> void:
+func unlock(cutscene_mode: bool = false) -> void:
 	if is_unlocked:
 		return
 	is_unlocked = true
-	GameManager.register_unlocked_building(building_id)
+	GameManager.register_unlocked_building(building_id, not cutscene_mode)
+
+	if cutscene_mode:
+		# UnlockCutscene drives all visual animation externally.
+		return
+
+	# ── Fallback animation (non-cutscene, e.g. catch-up on reload) ──
 
 	# 1. Padlock exit: scale up + fade out → free
-	var lock_tween := create_tween()
-	lock_tween.set_parallel(true)
-	lock_tween.tween_property(_padlock, "scale", Vector2(1.5, 1.5), 0.4)
-	lock_tween.tween_property(_padlock, "modulate", Color(1, 1, 1, 0), 0.4)
-	lock_tween.chain().tween_callback(func() -> void: _padlock.queue_free())
+	if is_instance_valid(_padlock):
+		var lock_tween := create_tween()
+		lock_tween.set_parallel(true)
+		lock_tween.tween_property(_padlock, "scale", Vector2(1.5, 1.5), 0.4)
+		lock_tween.tween_property(_padlock, "modulate", Color(1, 1, 1, 0), 0.4)
+		lock_tween.chain().tween_callback(func() -> void: _padlock.queue_free())
 
 	# 2. Color reveal: tween shader color_amount 0 → 1 over 1.5s
 	var color_tween := create_tween()
@@ -508,4 +515,28 @@ func unlock() -> void:
 
 	# 4. Particle burst after reveal
 	var t := get_tree().create_timer(1.5)
-	t.timeout.connect(func() -> void: _particles.emitting = true)
+	t.timeout.connect(func() -> void:
+		if is_instance_valid(_particles):
+			_particles.emitting = true
+	)
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# CUTSCENE GETTERS — expose internals for UnlockCutscene to drive animation
+# ═════════════════════════════════════════════════════════════════════════════
+
+func get_padlock() -> Node2D:
+	return _padlock
+
+
+func get_building_sprite() -> Sprite2D:
+	return _sprite
+
+
+func get_confetti_particles() -> CPUParticles2D:
+	return _particles
+
+
+## World-space position of the building's visual center (above ground embedding).
+func get_building_center_world_pos() -> Vector2:
+	return global_position + Vector2(0, -_bh * 0.38)

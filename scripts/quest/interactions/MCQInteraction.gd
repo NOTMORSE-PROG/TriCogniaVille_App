@@ -77,7 +77,7 @@ func _build_ui() -> void:
 	# Question
 	_question_label = Label.new()
 	_question_label.text = _question.get("question", "")
-	_question_label.add_theme_font_size_override("font_size", int(52 * _sy))
+	_question_label.add_theme_font_size_override("font_size", int(40 * _sy))
 	_question_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_question_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_question_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -108,8 +108,8 @@ func _build_ui() -> void:
 	for i in options.size():
 		var btn := Button.new()
 		btn.text = options[i]
-		btn.custom_minimum_size = Vector2(0, 110 * _sy)
-		btn.add_theme_font_size_override("font_size", int(36 * _sy))
+		btn.custom_minimum_size = Vector2(0, 88 * _sy)
+		btn.add_theme_font_size_override("font_size", int(30 * _sy))
 		btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 		btn.add_theme_stylebox_override("normal", StyleFactory.make_student_card_normal())
 		btn.add_theme_stylebox_override("hover", StyleFactory.make_student_card_hover())

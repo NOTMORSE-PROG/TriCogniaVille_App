@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cx1but72fjtnk"]
 
 [ext_resource type="Script" path="res://scripts/ui/ProfilePanel.gd" id="1_profilepanel"]
+[ext_resource type="Script" path="res://scripts/ui/CloseButton.gd" id="2_closebtn"]
 
 ; ── Root ──────────────────────────────────────────────────────────────────────
 [node name="ProfilePanel" type="Control"]
@@ -63,9 +64,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="CloseBtn" type="Button" parent="Panel/OuterVBox/CloseRow"]
+[node name="CloseBtn" type="Control" parent="Panel/OuterVBox/CloseRow"]
 layout_mode = 2
-text = "✕"
+mouse_filter = 0
+script = ExtResource("2_closebtn")
 
 [node name="Scroll" type="ScrollContainer" parent="Panel/OuterVBox"]
 layout_mode = 2
