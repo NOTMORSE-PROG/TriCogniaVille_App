@@ -317,6 +317,7 @@ func _on_quest_started(building_id: String) -> void:
 	_topic_label.text = quest.get("topic", "")
 	# Defensive resets — state may be dirty from a previously abandoned quest
 	_transitioning = false
+	_clear_question_container()
 	if is_instance_valid(_question_scroll):
 		_question_scroll.visible = true
 	if is_instance_valid(_bottom_bar):
@@ -396,11 +397,9 @@ func _load_current_question() -> void:
 	else:
 		_counter_label.text = "%s %d of %d" % [stage.capitalize(), idx + 1, questions.size()]
 
-	# Clear old interaction
+	# Clear old interaction — remove all children immediately to prevent stacking
 	_transitioning = true
-	if is_instance_valid(_interaction_node):
-		_interaction_node.queue_free()
-		_interaction_node = null
+	_clear_question_container()
 
 	_next_btn.visible = false
 
@@ -748,9 +747,7 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 	set_process(false)
 
 	# Clear question area
-	if is_instance_valid(_interaction_node):
-		_interaction_node.queue_free()
-		_interaction_node = null
+	_clear_question_container()
 
 	_next_btn.visible = false
 	_counter_label.text = ""
@@ -1043,9 +1040,7 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 		retry_btn.add_theme_stylebox_override("pressed", StyleFactory.make_primary_button_pressed())
 		retry_btn.pressed.connect(
 			func() -> void:
-				if is_instance_valid(_interaction_node):
-					_interaction_node.queue_free()
-					_interaction_node = null
+				_clear_question_container()
 				QuestManager.retry_mission()
 		)
 		btn_row.add_child(retry_btn)
@@ -1076,14 +1071,23 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 # ═════════════════════════════════════════════════════════════════════════════
 
 
+## Immediately remove and queue-free all children of _question_container.
+## Uses remove_child() for instant visual removal (prevents stale nodes from
+## stacking when a new interaction is loaded on the same frame), then
+## queue_free() for safe deferred memory cleanup.
+func _clear_question_container() -> void:
+	for child in _question_container.get_children():
+		_question_container.remove_child(child)
+		child.queue_free()
+	_interaction_node = null
+
+
 func _show_tutorial_demo(question: Dictionary) -> void:
 	_tutorial_demo_shown = true
 	_transitioning = true
 
 	# Clear old interaction
-	if is_instance_valid(_interaction_node):
-		_interaction_node.queue_free()
-		_interaction_node = null
+	_clear_question_container()
 	_next_btn.visible = false
 
 	# Hide the empty content area so there's no big blank box while guide is shown
@@ -1218,9 +1222,7 @@ func _update_stage_dots(stage: String) -> void:
 
 
 func _hide_overlay() -> void:
-	if is_instance_valid(_interaction_node):
-		_interaction_node.queue_free()
-		_interaction_node = null
+	_clear_question_container()
 	_set_tracker_visible(true)
 	AudioManager.start_village_music()
 	var tw := create_tween()

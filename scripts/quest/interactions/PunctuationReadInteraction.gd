@@ -67,6 +67,7 @@ func setup(question: Dictionary, show_hints: bool, sx: float = 1.0, sy: float = 
 
 func _build_ui() -> void:
 	for child in get_children():
+		remove_child(child)
 		child.queue_free()
 
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL

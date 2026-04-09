@@ -76,6 +76,7 @@ func setup(question: Dictionary, _show_hints: bool, sx: float = 1.0, sy: float =
 
 func _build_ui() -> void:
 	for child in get_children():
+		remove_child(child)
 		child.queue_free()
 
 	# Set up speech recognizer
@@ -295,6 +296,8 @@ func _update_ui_for_state() -> void:
 		_content_card.visible = true
 	if is_instance_valid(_attempt_label):
 		_attempt_label.visible = false
+	if is_instance_valid(_status_panel):
+		_status_panel.modulate.a = 1.0
 	set_process(false)
 
 	match _state:
