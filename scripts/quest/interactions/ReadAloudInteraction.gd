@@ -35,7 +35,7 @@ var _summary_label: Label = null
 var _encourage_label: Label = null
 var _playback_btn: Button = null
 var _try_again_btn: Button = null
-var _continue_btn: Button = null
+var _action_center: CenterContainer = null
 var _attempt_label: Label = null
 
 # Attempt tracking
@@ -241,38 +241,20 @@ func _build_ui() -> void:
 	vbox.add_child(_result_panel)
 
 	# ── Action buttons row (shown after RESULT) ────────────────────────────────
-	var action_center := CenterContainer.new()
-	action_center.visible = false
-	vbox.add_child(action_center)
-
-	var action_hbox := HBoxContainer.new()
-	action_hbox.add_theme_constant_override("separation", int(12 * _sx))
-	action_center.add_child(action_hbox)
+	_action_center = CenterContainer.new()
+	_action_center.visible = false
+	vbox.add_child(_action_center)
 
 	_try_again_btn = Button.new()
 	_try_again_btn.text = "Try Again"
-	_try_again_btn.custom_minimum_size = Vector2(200 * _sx, 76 * _sy)
+	_try_again_btn.custom_minimum_size = Vector2(240 * _sx, 76 * _sy)
 	_try_again_btn.add_theme_font_size_override("font_size", int(26 * _sy))
 	_try_again_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_try_again_btn.add_theme_stylebox_override("normal", StyleFactory.make_glass_card(10))
 	_try_again_btn.add_theme_stylebox_override("hover", StyleFactory.make_glass_card(10))
 	_try_again_btn.add_theme_stylebox_override("pressed", StyleFactory.make_glass_card(10))
 	_try_again_btn.pressed.connect(_on_try_again_pressed)
-	action_hbox.add_child(_try_again_btn)
-
-	_continue_btn = Button.new()
-	_continue_btn.text = "Continue"
-	_continue_btn.custom_minimum_size = Vector2(240 * _sx, 76 * _sy)
-	_continue_btn.add_theme_font_size_override("font_size", int(26 * _sy))
-	_continue_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
-	_continue_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
-	_continue_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
-	_continue_btn.add_theme_stylebox_override("pressed", StyleFactory.make_primary_button_pressed())
-	_continue_btn.pressed.connect(_on_continue_pressed)
-	action_hbox.add_child(_continue_btn)
-
-	# Store reference to action_center so we can show/hide it
-	_continue_btn.set_meta("action_center", action_center)
+	_action_center.add_child(_try_again_btn)
 
 	# ── Decide initial state ───────────────────────────────────────────────────
 	if _recognizer.is_available():
@@ -305,7 +287,8 @@ func _update_ui_for_state() -> void:
 		_status_panel.visible = false
 	if is_instance_valid(_controls_center):
 		_controls_center.visible = false
-	_get_action_center().visible = false
+	if is_instance_valid(_action_center):
+		_action_center.visible = false
 	if is_instance_valid(_inst_label):
 		_inst_label.visible = true
 	if is_instance_valid(_content_card):
@@ -348,14 +331,14 @@ func _update_ui_for_state() -> void:
 				_content_card.visible = false
 			_result_panel.visible = true
 			_populate_result_panel(_current_result)
-			_get_action_center().visible = true
-			# Hide "Try Again" if max attempts reached
-			_try_again_btn.visible = (_attempt_number < MAX_ATTEMPTS)
-
-func _get_action_center() -> Control:
-	if is_instance_valid(_continue_btn):
-		return _continue_btn.get_meta("action_center") as Control
-	return Control.new()
+			if _attempt_number < MAX_ATTEMPTS:
+				# Still has tries left — show Try Again
+				if is_instance_valid(_action_center):
+					_action_center.visible = true
+			else:
+				# Max attempts reached — auto-submit best result, QuestOverlay shows Next
+				var correct: bool = _best_result.get("correct", _current_result.get("correct", false))
+				answer_submitted.emit(correct)
 
 
 # ── Process (animations) ──────────────────────────────────────────────────────
@@ -474,13 +457,6 @@ func _on_try_again_pressed() -> void:
 	if is_instance_valid(_status_panel):
 		_status_panel.modulate.a = 1.0
 	_set_state(State.IDLE)
-
-
-func _on_continue_pressed() -> void:
-	AudioManager.play_sfx("button_tap")
-	# Use best score across all attempts for the final answer
-	var correct: bool = _best_result.get("correct", _current_result.get("correct", false))
-	answer_submitted.emit(correct)
 
 
 # ── Result Panel Population ───────────────────────────────────────────────────
