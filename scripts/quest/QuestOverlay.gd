@@ -1076,7 +1076,8 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 ## stacking when a new interaction is loaded on the same frame), then
 ## queue_free() for safe deferred memory cleanup.
 func _clear_question_container() -> void:
-	for child in _question_container.get_children():
+	var children := _question_container.get_children()
+	for child in children:
 		_question_container.remove_child(child)
 		child.queue_free()
 	_interaction_node = null

@@ -102,6 +102,7 @@ func _build_ui() -> void:
 	drop_margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_drop_zone_container.add_child(drop_margin)
 
+	var mode: String = _question.get("mode", "syllable")
 	if mode == "syllable":
 		var hbox := HBoxContainer.new()
 		hbox.add_theme_constant_override("separation", int(6 * _sx))

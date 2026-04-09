@@ -35,6 +35,7 @@ var _dot_count: int = 0
 @warning_ignore("unused_private_class_variable")
 @onready var _scroll: ScrollContainer = $Panel/OuterVBox/Scroll
 @onready var _content: VBoxContainer = $Panel/OuterVBox/Scroll/Content
+@onready var _close_row: HBoxContainer = $Panel/OuterVBox/CloseRow
 @onready var _close_btn: Button = $Panel/OuterVBox/CloseRow/CloseBtn
 @onready var _title_lbl: Label = $Panel/OuterVBox/CloseRow/Title
 @onready var _loading_section: CenterContainer = $Panel/OuterVBox/Scroll/Content/LoadingSection
@@ -86,6 +87,7 @@ var _badges_box: VBoxContainer = $Panel/OuterVBox/Scroll/Content/ProfileContent/
 
 func _ready() -> void:
 	_close_btn.pressed.connect(func(): hide_profile())
+	_close_row.gui_input.connect(_on_close_row_input)
 	_blocker.gui_input.connect(_on_blocker_input)
 	_logout_btn.pressed.connect(_on_logout_pressed)
 	_avatar_ctrl.draw.connect(_draw_avatar)
@@ -641,6 +643,14 @@ func _draw_avatar() -> void:
 # =============================================================================
 # INPUT / LOGOUT
 # =============================================================================
+
+
+func _on_close_row_input(event: InputEvent) -> void:
+	if not _can_dismiss:
+		return
+	if (event is InputEventMouseButton or event is InputEventScreenTouch) and event.pressed:
+		hide_profile()
+		get_viewport().set_input_as_handled()
 
 
 func _on_blocker_input(event: InputEvent) -> void:
