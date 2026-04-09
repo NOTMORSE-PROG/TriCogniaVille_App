@@ -14,7 +14,6 @@ enum State { IDLE, LISTENING, PROCESSING, RESULT, UNAVAILABLE, TIMER_WAIT, COMPL
 
 const MAX_ATTEMPTS := 3
 const SPINNER_INTERVAL := 0.1
-const FALLBACK_MIN_TIME := 5.0
 
 var _state: State = State.IDLE
 var _sx: float = 1.0
@@ -41,8 +40,6 @@ var _continue_btn: Button = null
 var _attempt_label: Label = null
 
 # Fallback (timer) references
-var _fallback_progress: ProgressBar = null
-var _confirm_btn: Button = null
 
 # Attempt tracking
 var _attempt_number := 0
@@ -55,7 +52,6 @@ var _spinner_idx := 0
 var _spinner_elapsed := 0.0
 
 # Fallback timer
-var _fallback_elapsed := 0.0
 
 # Current assessment result (populated after processing)
 var _current_result: Dictionary = {}
@@ -300,7 +296,10 @@ func _build_ui() -> void:
 	elif _recognizer.is_available():
 		_set_state(State.IDLE)
 	else:
-		_set_state(State.UNAVAILABLE)
+		_set_state(State.IDLE)
+		_record_btn.disabled = true
+		_status_label.text = "Speech recording requires an Android device."
+		_status_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 1.0))
 
 
 # ── State Machine ─────────────────────────────────────────────────────────────
@@ -352,16 +351,8 @@ func _update_ui_for_state() -> void:
 			_try_again_btn.visible = (_attempt_number < MAX_ATTEMPTS)
 
 		State.UNAVAILABLE:
-			# Build fallback: timer-based path (same as original MVP)
-			_status_label.text = "Voice check not available on this device."
-			_status_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
-			_build_fallback_ui()
-
-		State.TIMER_WAIT:
-			set_process(true)
-
-		State.COMPLETE:
-			pass
+			_status_label.text = "Speech recording is not available on this device."
+			_status_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 1.0))
 
 
 func _get_action_center() -> Control:
@@ -391,14 +382,6 @@ func _process(delta: float) -> void:
 				if is_instance_valid(_status_label):
 					_status_label.text = _spinner_chars[_spinner_idx] + " Checking your reading..."
 
-		State.TIMER_WAIT:
-			# Fallback timer progress
-			_fallback_elapsed += delta
-			if is_instance_valid(_fallback_progress):
-				_fallback_progress.value = minf(_fallback_elapsed, FALLBACK_MIN_TIME)
-			if _fallback_elapsed >= FALLBACK_MIN_TIME:
-				set_process(false)
-				_enable_fallback_button()
 
 
 # ── Event Handlers ────────────────────────────────────────────────────────────
@@ -455,17 +438,9 @@ func _on_transcript_ready(text: String, confidence: float) -> void:
 		_best_score = this_score
 		_best_result = _current_result.duplicate()
 
-	# Upload audio to Cloudinary then submit assessment
-	var audio_b64 := _recognizer.get_audio_base64()
-	if not audio_b64.is_empty():
-		ApiClient.upload_audio(
-			audio_b64,
-			func(success: bool, data: Dictionary) -> void:
-				var audio_url: String = data.get("audioUrl", "") if success else ""
-				_submit_assessment(_current_result, text, confidence, audio_url)
-		)
-	else:
-		_submit_assessment(_current_result, text, confidence, "")
+	# Audio was already uploaded by /speech/transcribe — use cached URL
+	var audio_url := _recognizer.get_audio_url()
+	_submit_assessment(_current_result, text, confidence, audio_url)
 
 	await get_tree().create_timer(0.4).timeout
 	if not is_instance_valid(self):
@@ -486,7 +461,10 @@ func _on_recognition_error(reason: String) -> void:
 
 
 func _on_recognition_unavailable() -> void:
-	_set_state(State.UNAVAILABLE)
+	_set_state(State.IDLE)
+	_record_btn.disabled = true
+	_status_label.text = "Speech recording is not available on this device."
+	_status_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 1.0))
 
 
 func _on_try_again_pressed() -> void:
@@ -528,69 +506,6 @@ func _populate_result_panel(result: Dictionary) -> void:
 	_flag_label.visible = flag
 
 	UIAnimations.fade_in_up(self, _result_panel)
-
-
-# ── Fallback (timer-based) path ───────────────────────────────────────────────
-
-
-func _build_fallback_ui() -> void:
-	# Reuse the existing _status_panel area for the timer progress
-	_fallback_progress = ProgressBar.new()
-	_fallback_progress.min_value = 0.0
-	_fallback_progress.max_value = FALLBACK_MIN_TIME
-	_fallback_progress.value = 0.0
-	_fallback_progress.custom_minimum_size = Vector2(0, 14 * _sy)
-	_fallback_progress.add_theme_stylebox_override("background", StyleFactory.make_progress_bg())
-	_fallback_progress.add_theme_stylebox_override("fill", StyleFactory.make_progress_fill())
-	_fallback_progress.show_percentage = false
-
-	# Insert progress bar just below the status panel
-	var vbox: VBoxContainer = get_child(1) if get_child_count() > 1 else null
-	if vbox:
-		var idx := _status_panel.get_index()
-		vbox.add_child(_fallback_progress)
-		vbox.move_child(_fallback_progress, idx + 1)
-
-	# Confirm button
-	var center := CenterContainer.new()
-	if vbox:
-		vbox.add_child(center)
-
-	_confirm_btn = Button.new()
-	_confirm_btn.text = "I finished reading"
-	_confirm_btn.disabled = true
-	_confirm_btn.custom_minimum_size = Vector2(330 * _sx, 84 * _sy)
-	_confirm_btn.add_theme_font_size_override("font_size", int(28 * _sy))
-	_confirm_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
-	_confirm_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
-	_confirm_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
-	_confirm_btn.add_theme_stylebox_override("pressed", StyleFactory.make_primary_button_pressed())
-	_confirm_btn.add_theme_stylebox_override("disabled", StyleFactory.make_disabled_button())
-	_confirm_btn.pressed.connect(_on_fallback_confirm_pressed)
-	center.add_child(_confirm_btn)
-
-	_fallback_elapsed = 0.0
-	_set_state(State.TIMER_WAIT)
-
-
-func _enable_fallback_button() -> void:
-	if not is_instance_valid(_confirm_btn):
-		return
-	_confirm_btn.disabled = false
-	UIAnimations.fade_in_up(self, _confirm_btn)
-	UIAnimations.make_interactive(_confirm_btn)
-
-
-func _on_fallback_confirm_pressed() -> void:
-	_confirm_btn.disabled = true
-	_confirm_btn.text = "Great job!"
-	_confirm_btn.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
-	var style := StyleFactory.make_primary_button_normal()
-	style.bg_color = StyleFactory.SUCCESS_GREEN.darkened(0.4)
-	_confirm_btn.add_theme_stylebox_override("disabled", style)
-	AudioManager.play_sfx("correct")
-	UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.08))
-	answer_submitted.emit(true)
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

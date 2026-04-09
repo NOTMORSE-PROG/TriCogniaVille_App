@@ -197,6 +197,31 @@ func upload_audio(audio_b64: String, callback: Callable) -> void:
 	_post("/speech/upload", JSON.stringify({"audio": audio_b64}), callback)
 
 
+func transcribe_audio(audio_b64: String, language: String, callback: Callable) -> void:
+	var http := HTTPRequest.new()
+	http.timeout = 30.0  # Whisper round-trip takes 3-10s + Cloudinary upload
+	add_child(http)
+	_http_nodes.append(http)
+	var url := base_url + API_PREFIX + "/speech/transcribe"
+
+	http.request_completed.connect(
+		func(
+			_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
+		) -> void:
+			var parsed := _parse_response(response_code, body)
+			if response_code == 401:
+				_clear_token()
+			callback.call(parsed[0], parsed[1])
+			_cleanup_http(http)
+	)
+
+	var body_str := JSON.stringify({"audio": audio_b64, "language": language})
+	var err := http.request(url, _get_headers(), HTTPClient.METHOD_POST, body_str)
+	if err != OK:
+		callback.call(false, {"error": "Failed to send transcribe request"})
+		_cleanup_http(http)
+
+
 ## Generate a UUIDv4 string for use as `attemptId` on POST /quests.
 ## Reuse the same value for all retries of a single quest run so the
 ## backend's idempotency dedupe works.

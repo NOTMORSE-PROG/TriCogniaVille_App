@@ -1,11 +1,13 @@
 class_name SpeechRecognizer
 extends Node
-## SpeechRecognizer — Android native speech recognition via Kotlin plugin.
-## Uses MediaRecorder (saves audio) + Android SpeechRecognizer (transcribes)
-## running simultaneously on Android 10+ (shared mic).
+## SpeechRecognizer — Records audio via native Android plugin, transcribes
+## via backend Groq Whisper API.
+##
+## Public API is unchanged from the original on-device STT version so all
+## interaction consumers (FluencyInteraction, ReadAloudInteraction,
+## PunctuationReadInteraction) work without modification.
 ##
 ## On desktop/editor: all methods are safe no-ops; recognition_unavailable is emitted.
-## Fallback path in ReadAloudInteraction handles this gracefully.
 
 signal transcript_ready(text: String, confidence: float)
 signal recognition_error(reason: String)
@@ -18,26 +20,27 @@ var max_listen_seconds: float = 30.0
 var _plugin = null
 var _alternatives: Array = []
 var _audio_base64 := ""
+var _audio_url := ""
+var _language := "en-US"
 var _timeout_timer: Timer = null
+var _is_recording := false
 
 
 func _ready() -> void:
 	if Engine.has_singleton("SpeechPlugin"):
 		_plugin = Engine.get_singleton("SpeechPlugin")
-		_plugin.connect("transcript_ready", _on_plugin_transcript)
-		_plugin.connect("recognition_error", _on_plugin_error)
 		_plugin.connect("recording_completed", _on_recording_completed)
-		if _plugin.has_signal("recognition_unavailable"):
-			_plugin.connect(
-				"recognition_unavailable", func() -> void: recognition_unavailable.emit()
-			)
+		if _plugin.has_signal("recording_error"):
+			_plugin.connect("recording_error", _on_recording_error)
+		if _plugin.has_signal("listening_started"):
+			_plugin.connect("listening_started", func() -> void: listening_started.emit())
 		if _plugin.has_signal("listening_ended"):
 			_plugin.connect("listening_ended", func() -> void: listening_ended.emit())
 	else:
 		push_warning("[SpeechRecognizer] SpeechPlugin singleton not found — speech unavailable.")
 
 
-## Returns true if the native Android speech recognition is available.
+## Returns true if the native Android audio recording is available.
 func is_available() -> bool:
 	if _plugin == null:
 		return false
@@ -57,6 +60,9 @@ func start_recognition(language: String = "en-US") -> void:
 
 	_alternatives.clear()
 	_audio_base64 = ""
+	_audio_url = ""
+	_language = language
+	_is_recording = true
 	_plugin.startRecording(language)
 
 	# Safety: auto-stop after max_listen_seconds
@@ -74,16 +80,23 @@ func start_recognition(language: String = "en-US") -> void:
 ## Stop recognition early (e.g. user taps Stop button).
 func stop_recognition() -> void:
 	_cleanup_timer()
+	_is_recording = false
 	if _plugin != null:
-		_plugin.stopRecording()
-	listening_ended.emit()
+		_plugin.stopRecording()  # plugin emits listening_ended via connected signal
+	else:
+		listening_ended.emit()  # desktop/editor fallback — no plugin to emit it
 
 
-## Get the last recorded audio as base64 string (for Cloudinary upload).
+## Get the last recorded audio as base64 string (fallback).
 func get_audio_base64() -> String:
 	if _plugin != null and _audio_base64.is_empty():
 		_audio_base64 = _plugin.getAudioBase64()
 	return _audio_base64
+
+
+## Get the Cloudinary URL of the uploaded audio (returned by /speech/transcribe).
+func get_audio_url() -> String:
+	return _audio_url
 
 
 ## Get all STT alternative transcriptions from the last recognition.
@@ -101,38 +114,57 @@ func _cleanup_timer() -> void:
 		_timeout_timer = null
 
 
-## Called by plugin when transcript is ready.
-## text: best transcription, confidence: 0.0-1.0, alternatives_json: JSON array string
-func _on_plugin_transcript(text: String, confidence: float, alternatives_json: String = "") -> void:
+## Called by plugin when audio recording is done — send to backend for transcription.
+func _on_recording_completed(audio_b64: String) -> void:
 	_cleanup_timer()
-	if not alternatives_json.is_empty():
-		var parsed = JSON.parse_string(alternatives_json)
-		if parsed is Array:
-			_alternatives = parsed
-		else:
-			_alternatives = [text]
-	else:
-		_alternatives = [text]
+	_is_recording = false
+	_audio_base64 = audio_b64
 
-	if text.strip_edges().is_empty():
-		recognition_error.emit("No speech detected. Please speak clearly and try again.")
+	if audio_b64.is_empty():
+		recognition_error.emit("No audio recorded. Please try again.")
 		return
 
-	transcript_ready.emit(text, confidence)
+	# Send audio to backend for Whisper transcription
+	ApiClient.transcribe_audio(audio_b64, _language, _on_transcribe_response)
 
 
-func _on_plugin_error(reason: String) -> void:
+func _on_recording_error(reason: String) -> void:
 	_cleanup_timer()
+	_is_recording = false
 	recognition_error.emit(reason)
 
 
-func _on_recording_completed(audio_b64: String) -> void:
-	_audio_base64 = audio_b64
+func _on_transcribe_response(success: bool, data: Dictionary) -> void:
+	if not success:
+		recognition_error.emit("Could not transcribe. Check your connection and try again.")
+		return
+
+	var transcript: String = data.get("transcript", "")
+	var confidence: float = data.get("confidence", 0.0)
+	_audio_url = data.get("audioUrl", "")
+
+	var alts = data.get("alternatives", [])
+	if alts is Array:
+		_alternatives = alts
+	else:
+		_alternatives = [transcript] if not transcript.is_empty() else []
+
+	if transcript.strip_edges().is_empty():
+		recognition_error.emit("No speech detected. Please speak clearly and try again.")
+		return
+
+	transcript_ready.emit(transcript, confidence)
 
 
 func _on_safety_timeout() -> void:
 	_cleanup_timer()
-	if _plugin != null:
-		_plugin.stopRecording()
-	listening_ended.emit()
-	recognition_error.emit("No response from speech engine. Please try again.")
+	if _is_recording:
+		_is_recording = false
+		if _plugin != null:
+			_plugin.stopRecording()
+		# stopRecording will trigger recording_completed which will call the backend.
+		# But if for some reason it doesn't, emit an error after a brief delay.
+		await get_tree().create_timer(2.0).timeout
+		if _audio_url.is_empty() and _audio_base64.is_empty():
+			# listening_ended already emitted by plugin signal above — only emit the error
+			recognition_error.emit("No response from speech engine. Please try again.")

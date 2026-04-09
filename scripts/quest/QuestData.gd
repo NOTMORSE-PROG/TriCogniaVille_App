@@ -1583,70 +1583,4236 @@ const _CHAPEL_MISSION := [
 ]
 
 # ═════════════════════════════════════════════════════════════════════════════
+# LEVEL 1 — NON-READER / BEGINNING READER
+# Simple words, 2-5 word sentences, sound matching, 2-choice MCQ
+# ═════════════════════════════════════════════════════════════════════════════
+
+# ── Passages (Level 1) ────────────────────────────────────────────────────────
+const _CHAPEL_PASSAGE_L1 := "The dog runs. The dog is fast. It runs in the park."
+const _LIBRARY_PASSAGE_L1 := "The sun is bright. The sky is blue."
+const _WELL_PASSAGE_L1 := "A boy finds a dog. He feeds the dog. The dog is happy."
+const _MARKET_PASSAGE_L1 := "The sky is dark. The wind is strong."
+const _BAKERY_PASSAGE_L1 := "The boy walks. He sees a light. He goes home."
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 1 — DECODING (Town Hall) L1
+# Interaction types: MCQ (sound match) + Tap Target (first letter) + Read-Aloud
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _TOWN_HALL_TUTORIAL_L1 := [
+	{
+		"type": "mcq",
+		"instruction": "Let's learn letter sounds! The letter 'm' makes the sound 'mmm'. Listen and try!",
+		"question": "What sound does the letter 'm' make?",
+		"options": ["mmm", "sss"],
+		"correct_index": 0,
+		"feedback_correct": "Great! The letter 'm' says 'mmm'!",
+		"feedback_wrong": "The letter 'm' makes the sound 'mmm'. Try saying it!",
+	},
+]
+
+const _TOWN_HALL_PRACTICE_L1 := [
+	{
+		"type": "mcq",
+		"instruction": "Match the sound to the letter.",
+		"question": "What letter makes the 'sss' sound?",
+		"options": ["s", "m"],
+		"correct_index": 0,
+		"hint": "Think of a snake — what sound does it make?",
+		"feedback_correct": "Correct! The letter 's' makes the 'sss' sound!",
+		"feedback_wrong": "A snake goes 'sss' — that's the letter 's'.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Match the sound to the letter.",
+		"question": "What letter makes the 'aaa' sound?",
+		"options": ["a", "d"],
+		"correct_index": 0,
+		"hint": "Open your mouth wide and say 'aaa'.",
+		"feedback_correct": "Correct! The letter 'a' makes the 'aaa' sound!",
+		"feedback_wrong": "When you open your mouth wide and say 'aaa', that is the letter 'a'.",
+	},
+]
+
+const _TOWN_HALL_MISSION_L1 := [
+	# Part 1 — Sound Match MCQ (4 items)
+	{
+		"type": "mcq",
+		"instruction": "Match the sound to the correct letter.",
+		"question": "What letter makes the 'mmm' sound?",
+		"options": ["m", "s"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! 'm' makes the 'mmm' sound!",
+		"feedback_wrong": "The letter 'm' makes the 'mmm' sound.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Match the sound to the correct letter.",
+		"question": "What letter makes the 'sss' sound?",
+		"options": ["s", "m"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! 's' makes the 'sss' sound!",
+		"feedback_wrong": "The letter 's' makes the 'sss' sound.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Match the sound to the correct letter.",
+		"question": "What letter makes the 'aaa' sound?",
+		"options": ["a", "b"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! 'a' makes the 'aaa' sound!",
+		"feedback_wrong": "The letter 'a' makes the 'aaa' sound.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Match the sound to the correct letter.",
+		"question": "What letter makes the 'ddd' sound?",
+		"options": ["d", "g"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! 'd' makes the 'ddd' sound!",
+		"feedback_wrong": "The letter 'd' makes the 'ddd' sound.",
+	},
+	# Part 2 — Tap Letter (3 items)
+	{
+		"type": "tap_target",
+		"instruction": "Tap the first letter of the word.",
+		"word": "dog",
+		"segments": ["d", "o", "g"],
+		"target_indices": [0],
+		"feedback_correct": "'d' is the first letter of 'dog'!",
+		"feedback_wrong": "The first letter of 'dog' is 'd'.",
+	},
+	{
+		"type": "tap_target",
+		"instruction": "Tap the first letter of the word.",
+		"word": "bat",
+		"segments": ["b", "a", "t"],
+		"target_indices": [0],
+		"feedback_correct": "'b' is the first letter of 'bat'!",
+		"feedback_wrong": "The first letter of 'bat' is 'b'.",
+	},
+	{
+		"type": "tap_target",
+		"instruction": "Tap the first letter of the word.",
+		"word": "map",
+		"segments": ["m", "a", "p"],
+		"target_indices": [0],
+		"feedback_correct": "'m' is the first letter of 'map'!",
+		"feedback_wrong": "The first letter of 'map' is 'm'.",
+	},
+	# Part 3 — Read-Aloud (3 items)
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "cat",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "dog",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "sun",
+		"feedback_correct": "Great reading!",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 2 — SYLLABICATION (School) L1
+# Interaction types: Drag & Drop (syllables) + Read-Aloud
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _SCHOOL_TUTORIAL_L1 := [
+	{
+		"type": "drag_drop",
+		"instruction": "Words are made of parts called syllables. Drag the parts to make the word 'table'. ta-ble has 2 parts!",
+		"mode": "syllable",
+		"word": "table",
+		"pieces": ["ta", "ble"],
+		"correct_order": ["ta", "ble"],
+		"feedback_correct": "Great! 'ta' + 'ble' = table!",
+		"feedback_wrong": "Put 'ta' first, then 'ble' to make 'table'.",
+	},
+]
+
+const _SCHOOL_PRACTICE_L1 := [
+	{
+		"type": "drag_drop",
+		"instruction": "Drag the syllables to build the word.",
+		"mode": "syllable",
+		"word": "apple",
+		"pieces": ["ap", "ple"],
+		"correct_order": ["ap", "ple"],
+		"hint": "Say it slowly: ap-ple.",
+		"feedback_correct": "Correct! 'ap' + 'ple' = apple!",
+		"feedback_wrong": "Put 'ap' first, then 'ple' to make 'apple'.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Drag the syllables to build the word.",
+		"mode": "syllable",
+		"word": "banana",
+		"pieces": ["ba", "na", "na"],
+		"correct_order": ["ba", "na", "na"],
+		"hint": "Say it slowly: ba-na-na. Three parts!",
+		"feedback_correct": "Correct! 'ba' + 'na' + 'na' = banana!",
+		"feedback_wrong": "Put 'ba' first, then 'na', then 'na' to make 'banana'.",
+	},
+]
+
+const _SCHOOL_MISSION_L1 := [
+	# Drag & Drop (5 items)
+	{
+		"type": "drag_drop",
+		"instruction": "Drag the syllables to build the word.",
+		"mode": "syllable",
+		"word": "table",
+		"pieces": ["ta", "ble"],
+		"correct_order": ["ta", "ble"],
+		"feedback_correct": "'ta' + 'ble' = table!",
+		"feedback_wrong": "Put 'ta' first, then 'ble'.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Drag the syllables to build the word.",
+		"mode": "syllable",
+		"word": "banana",
+		"pieces": ["ba", "na", "na"],
+		"correct_order": ["ba", "na", "na"],
+		"feedback_correct": "'ba' + 'na' + 'na' = banana!",
+		"feedback_wrong": "Put 'ba' first, then 'na', then 'na'.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Drag the syllables to build the word.",
+		"mode": "syllable",
+		"word": "apple",
+		"pieces": ["ap", "ple"],
+		"correct_order": ["ap", "ple"],
+		"feedback_correct": "'ap' + 'ple' = apple!",
+		"feedback_wrong": "Put 'ap' first, then 'ple'.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Drag the syllables to build the word.",
+		"mode": "syllable",
+		"word": "pencil",
+		"pieces": ["pen", "cil"],
+		"correct_order": ["pen", "cil"],
+		"feedback_correct": "'pen' + 'cil' = pencil!",
+		"feedback_wrong": "Put 'pen' first, then 'cil'.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Drag the syllables to build the word.",
+		"mode": "syllable",
+		"word": "basket",
+		"pieces": ["bas", "ket"],
+		"correct_order": ["bas", "ket"],
+		"feedback_correct": "'bas' + 'ket' = basket!",
+		"feedback_wrong": "Put 'bas' first, then 'ket'.",
+	},
+	# Read-Aloud (5 items)
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "baby",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "table",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "banana",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "happy",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "mommy",
+		"feedback_correct": "Great reading!",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 3 — PUNCTUATION (Inn) L1
+# Interaction types: Punctuation Read
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _INN_TUTORIAL_L1 := [
+	{
+		"type": "punctuation_read",
+		"sentence": "Stop.",
+		"word": "Stop",
+		"instruction": "A period (.) means stop. An exclamation mark (!) means loud. A question mark (?) means asking. Read this sentence aloud. Then answer the question.",
+		"question": "What does the period mean?",
+		"options": ["pause", "stop at the end"],
+		"correct_index": 1,
+		"feedback_correct": "Right! A period means stop at the end of a sentence.",
+		"feedback_wrong": "A period tells you to stop at the end of the sentence.",
+	},
+]
+
+const _INN_PRACTICE_L1 := [
+	{
+		"type": "punctuation_read",
+		"sentence": "Run!",
+		"word": "Run",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should you read this?",
+		"options": ["quiet voice", "strong voice"],
+		"correct_index": 1,
+		"hint": "The exclamation mark (!) means you should say it with feeling.",
+		"feedback_correct": "Right! The exclamation mark means you read it with a strong voice!",
+		"feedback_wrong": "The '!' means strong voice — say it loudly!",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Are you ok?",
+		"word": "ok",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "Is this asking or telling?",
+		"options": ["asking", "telling"],
+		"correct_index": 0,
+		"hint": "Look at the mark at the end. A '?' means someone is asking.",
+		"feedback_correct": "Right! The question mark means it is asking something!",
+		"feedback_wrong": "The '?' means this is asking a question, not telling.",
+	},
+]
+
+const _INN_MISSION_L1 := [
+	{
+		"type": "punctuation_read",
+		"sentence": "Stop.",
+		"word": "Stop",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What does the period mean?",
+		"options": ["pause", "stop at the end"],
+		"correct_index": 1,
+		"feedback_correct": "Right! A period means stop.",
+		"feedback_wrong": "A period tells you to stop at the end.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Run!",
+		"word": "Run",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should you read this?",
+		"options": ["quiet voice", "strong voice"],
+		"correct_index": 1,
+		"feedback_correct": "Right! Say it with a strong voice!",
+		"feedback_wrong": "The '!' means strong voice!",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Are you ok?",
+		"word": "ok",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "Is this asking or telling?",
+		"options": ["asking", "telling"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The '?' means asking!",
+		"feedback_wrong": "The '?' means this is asking, not telling.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Go!",
+		"word": "Go",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "Should you read this loud or soft?",
+		"options": ["loud", "soft"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The '!' means loud!",
+		"feedback_wrong": "The exclamation mark means you say it loud.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Sit.",
+		"word": "Sit",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What does the period tell you?",
+		"options": ["stop", "run"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The period means stop.",
+		"feedback_wrong": "A period tells you to stop.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Jump!",
+		"word": "Jump",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should you say this?",
+		"options": ["strong voice", "whisper"],
+		"correct_index": 0,
+		"feedback_correct": "Right! Say it with a strong voice!",
+		"feedback_wrong": "The '!' means strong voice, not a whisper.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Is it big?",
+		"word": "big",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "Is this a question or a statement?",
+		"options": ["question", "statement"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The '?' makes it a question!",
+		"feedback_wrong": "The '?' means it is a question.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "No.",
+		"word": "No",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What does the period mean?",
+		"options": ["stop", "shout"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The period means stop.",
+		"feedback_wrong": "A period means stop, not shout.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Come!",
+		"word": "Come",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should you say this?",
+		"options": ["strong voice", "question"],
+		"correct_index": 0,
+		"feedback_correct": "Right! Say it with a strong voice!",
+		"feedback_wrong": "The '!' means strong voice.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Yes?",
+		"word": "Yes",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "Is this asking or telling?",
+		"options": ["asking", "telling"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The '?' means asking!",
+		"feedback_wrong": "The '?' means this is asking, not telling.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 4 — FLUENCY (Chapel) L1
+# Interaction types: Fluency Check + MCQ
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _CHAPEL_TUTORIAL_L1 := [
+	{
+		"type": "mcq",
+		"instruction": "Fluency means reading smoothly, like talking. Not too fast, not too slow. Let's practice!",
+		"question": "What does fluency mean?",
+		"options": ["reading smoothly", "reading very fast"],
+		"correct_index": 0,
+		"feedback_correct": "Right! Fluency means reading smoothly!",
+		"feedback_wrong": "Fluency means reading smoothly, not too fast.",
+	},
+]
+
+const _CHAPEL_PRACTICE_L1 := [
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _CHAPEL_PASSAGE_L1,
+		"question": "What does the dog do?",
+		"options": ["runs", "sleeps"],
+		"correct_index": 0,
+		"hint": "Look at the first sentence.",
+		"feedback_correct": "Right! The dog runs!",
+		"feedback_wrong": "The passage says 'The dog runs.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _CHAPEL_PASSAGE_L1,
+		"question": "Is the dog fast or slow?",
+		"options": ["fast", "slow"],
+		"correct_index": 0,
+		"hint": "Read the second sentence.",
+		"feedback_correct": "Right! The dog is fast!",
+		"feedback_wrong": "The passage says 'The dog is fast.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _CHAPEL_PASSAGE_L1,
+		"question": "Where does the dog run?",
+		"options": ["in the park", "in the house"],
+		"correct_index": 0,
+		"hint": "Read the last sentence.",
+		"feedback_correct": "Right! It runs in the park!",
+		"feedback_wrong": "The passage says 'It runs in the park.'",
+	},
+]
+
+const _CHAPEL_MISSION_L1 := [
+	# Fluency check first
+	{
+		"type": "fluency_check",
+		"instruction": "Read the passage aloud clearly.",
+		"passage": _CHAPEL_PASSAGE_L1,
+		"feedback_correct": "Excellent reading!",
+	},
+	# 10 MCQ items
+	{
+		"type": "mcq",
+		"instruction": "Think about reading smoothly.",
+		"question": "Where do you stop when you see a period?",
+		"options": ["at the comma", "at the period"],
+		"correct_index": 1,
+		"feedback_correct": "Right! You stop at the period.",
+		"feedback_wrong": "A period means stop.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about reading smoothly.",
+		"question": "How should you read smoothly?",
+		"options": ["word by word", "in groups of words"],
+		"correct_index": 1,
+		"feedback_correct": "Right! Read in groups of words for smooth reading.",
+		"feedback_wrong": "Smooth reading means reading in groups of words, not one at a time.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the sentence: The dog runs.",
+		"question": "Where do you pause in 'The dog runs.'?",
+		"options": ["after dog", "at the end"],
+		"correct_index": 1,
+		"feedback_correct": "Right! You pause at the end, where the period is.",
+		"feedback_wrong": "The period is at the end, so you pause there.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about reading clearly.",
+		"question": "What helps you read clearly?",
+		"options": ["reading very fast", "reading at a steady pace"],
+		"correct_index": 1,
+		"feedback_correct": "Right! A steady pace helps you read clearly.",
+		"feedback_wrong": "Reading at a steady pace helps, not reading too fast.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the sentence: The dog is fast.",
+		"question": "How should you read 'The dog is fast.'?",
+		"options": ["quickly", "smoothly"],
+		"correct_index": 1,
+		"feedback_correct": "Right! Read it smoothly!",
+		"feedback_wrong": "Read smoothly, not too quickly.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about punctuation.",
+		"question": "What does a period tell you?",
+		"options": ["keep going", "stop"],
+		"correct_index": 1,
+		"feedback_correct": "Right! A period means stop.",
+		"feedback_wrong": "A period tells you to stop.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about good reading.",
+		"question": "What makes good reading?",
+		"options": ["skipping words", "reading every word"],
+		"correct_index": 1,
+		"feedback_correct": "Right! Good reading means reading every word.",
+		"feedback_wrong": "You should read every word, not skip them.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the sentence: It runs in the park.",
+		"question": "How do you read 'It runs in the park.'?",
+		"options": ["in one smooth phrase", "one word at a time"],
+		"correct_index": 0,
+		"feedback_correct": "Right! Read it in one smooth phrase!",
+		"feedback_wrong": "Try reading it as one smooth phrase.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage.",
+		"question": "Where should you stop in the passage?",
+		"options": ["at each period", "at each word"],
+		"correct_index": 0,
+		"feedback_correct": "Right! Stop at each period.",
+		"feedback_wrong": "You stop at the periods, not at every word.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about smooth reading.",
+		"question": "What is smooth reading?",
+		"options": ["reading without stopping at every word", "reading very fast"],
+		"correct_index": 0,
+		"feedback_correct": "Right! Smooth reading means not stopping at every word.",
+		"feedback_wrong": "Smooth reading is reading without stopping at every word.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 5 — VOCABULARY (Library) L1
+# Interaction types: MCQ
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _LIBRARY_TUTORIAL_L1 := [
+	{
+		"type": "mcq",
+		"instruction": "Vocabulary means learning what words mean. Let's learn some words from this passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "What does 'bright' mean?",
+		"options": ["shiny", "dark"],
+		"correct_index": 0,
+		"feedback_correct": "Right! 'Bright' means shiny!",
+		"feedback_wrong": "'Bright' means shiny, like the sun.",
+	},
+]
+
+const _LIBRARY_PRACTICE_L1 := [
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "What color is the sky?",
+		"options": ["blue", "green"],
+		"correct_index": 0,
+		"hint": "Read the second sentence.",
+		"feedback_correct": "Right! The sky is blue!",
+		"feedback_wrong": "The passage says 'The sky is blue.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "Is the sun hot or cold?",
+		"options": ["hot", "cold"],
+		"correct_index": 0,
+		"hint": "Think about what the sun feels like.",
+		"feedback_correct": "Right! The sun is hot!",
+		"feedback_wrong": "The sun is hot!",
+	},
+]
+
+const _LIBRARY_MISSION_L1 := [
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "'Bright' means:",
+		"options": ["shiny", "dark"],
+		"correct_index": 0,
+		"feedback_correct": "Right! 'Bright' means shiny!",
+		"feedback_wrong": "'Bright' means shiny, not dark.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "'Sky' is:",
+		"options": ["above us", "below us"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The sky is above us!",
+		"feedback_wrong": "The sky is above us, not below.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "'Sun' is:",
+		"options": ["hot", "cold"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The sun is hot!",
+		"feedback_wrong": "The sun is hot, not cold.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "What color is the sky?",
+		"options": ["blue", "green"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The sky is blue!",
+		"feedback_wrong": "The passage says the sky is blue.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "The sun is:",
+		"options": ["bright", "dark"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The sun is bright!",
+		"feedback_wrong": "The passage says the sun is bright.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "'Blue' is a:",
+		"options": ["color", "animal"],
+		"correct_index": 0,
+		"feedback_correct": "Right! Blue is a color!",
+		"feedback_wrong": "Blue is a color, not an animal.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "Where is the sun?",
+		"options": ["in the sky", "in the water"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The sun is in the sky!",
+		"feedback_wrong": "The sun is in the sky.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "What is bright?",
+		"options": ["the sun", "the ground"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The sun is bright!",
+		"feedback_wrong": "The passage says the sun is bright.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "The passage is about:",
+		"options": ["the sun and sky", "the rain"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The passage is about the sun and the sky!",
+		"feedback_wrong": "The passage talks about the sun and the sky.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _LIBRARY_PASSAGE_L1,
+		"question": "What do we see in the sky?",
+		"options": ["the sun", "a fish"],
+		"correct_index": 0,
+		"feedback_correct": "Right! We see the sun in the sky!",
+		"feedback_wrong": "We see the sun in the sky, not a fish.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 6 — MAIN IDEA (Well) L1
+# Interaction types: MCQ + Drag & Drop (sequence)
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _WELL_TUTORIAL_L1 := [
+	{
+		"type": "mcq",
+		"instruction": "The main idea is what a story is mostly about. Let's read: " + _WELL_PASSAGE_L1,
+		"question": "What is the story mostly about?",
+		"options": ["a boy and a dog", "a cat"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The story is about a boy and a dog!",
+		"feedback_wrong": "The story tells about a boy who finds and feeds a dog.",
+	},
+]
+
+const _WELL_PRACTICE_L1 := [
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _WELL_PASSAGE_L1,
+		"question": "Who found the dog?",
+		"options": ["a boy", "a girl"],
+		"correct_index": 0,
+		"hint": "Read the first sentence.",
+		"feedback_correct": "Right! A boy found the dog!",
+		"feedback_wrong": "The passage says 'A boy finds a dog.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _WELL_PASSAGE_L1,
+		"question": "How is the dog at the end?",
+		"options": ["happy", "sad"],
+		"correct_index": 0,
+		"hint": "Read the last sentence.",
+		"feedback_correct": "Right! The dog is happy!",
+		"feedback_wrong": "The passage says 'The dog is happy.'",
+	},
+]
+
+const _WELL_MISSION_L1 := [
+	# MCQ (5 items)
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _WELL_PASSAGE_L1,
+		"question": "Who found the dog?",
+		"options": ["a boy", "a girl"],
+		"correct_index": 0,
+		"feedback_correct": "Right! A boy found the dog!",
+		"feedback_wrong": "The passage says 'A boy finds a dog.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _WELL_PASSAGE_L1,
+		"question": "What did the boy do?",
+		"options": ["fed the dog", "left the dog"],
+		"correct_index": 0,
+		"feedback_correct": "Right! He fed the dog!",
+		"feedback_wrong": "The passage says 'He feeds the dog.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _WELL_PASSAGE_L1,
+		"question": "How is the dog?",
+		"options": ["happy", "sad"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The dog is happy!",
+		"feedback_wrong": "The passage says 'The dog is happy.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _WELL_PASSAGE_L1,
+		"question": "What is the story about?",
+		"options": ["a boy and a dog", "a cat"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The story is about a boy and a dog!",
+		"feedback_wrong": "The story is about a boy who finds and feeds a dog.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _WELL_PASSAGE_L1,
+		"question": "Where did the boy find the dog?",
+		"options": ["we don't know", "at school"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The story doesn't tell us where.",
+		"feedback_wrong": "The story doesn't say where the boy found the dog.",
+	},
+	# Drag & Drop sequence (5 items)
+	{
+		"type": "drag_drop",
+		"instruction": "Put the story in order. What happened first?",
+		"mode": "sequence",
+		"word": "story_order",
+		"pieces": ["A boy finds a dog", "He feeds the dog", "The dog is happy", "The boy sleeps", "The dog runs away"],
+		"correct_order": ["A boy finds a dog", "He feeds the dog", "The dog is happy"],
+		"feedback_correct": "Right! That's the correct order!",
+		"feedback_wrong": "First the boy finds the dog, then feeds it, then the dog is happy.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "What happened first in the story?",
+		"mode": "sequence",
+		"word": "first_event",
+		"pieces": ["A boy finds a dog", "The dog is happy"],
+		"correct_order": ["A boy finds a dog", "The dog is happy"],
+		"feedback_correct": "Right! First the boy finds the dog!",
+		"feedback_wrong": "The boy finds the dog first, then the dog is happy.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "What happened after the boy found the dog?",
+		"mode": "sequence",
+		"word": "second_event",
+		"pieces": ["He feeds the dog", "The dog is happy"],
+		"correct_order": ["He feeds the dog", "The dog is happy"],
+		"feedback_correct": "Right! He feeds the dog, then the dog is happy!",
+		"feedback_wrong": "First he feeds the dog, then the dog is happy.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Put these two events in order.",
+		"mode": "sequence",
+		"word": "event_pair_1",
+		"pieces": ["A boy finds a dog", "He feeds the dog"],
+		"correct_order": ["A boy finds a dog", "He feeds the dog"],
+		"feedback_correct": "Right! First he finds the dog, then feeds it!",
+		"feedback_wrong": "The boy finds the dog first, then feeds it.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "What is the last thing that happens?",
+		"mode": "sequence",
+		"word": "last_event",
+		"pieces": ["He feeds the dog", "The dog is happy"],
+		"correct_order": ["He feeds the dog", "The dog is happy"],
+		"feedback_correct": "Right! The dog is happy at the end!",
+		"feedback_wrong": "After being fed, the dog is happy.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 7 — INFERENCE (Market) L1
+# Interaction types: MCQ
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _MARKET_TUTORIAL_L1 := [
+	{
+		"type": "mcq",
+		"instruction": "Inference means using clues to figure things out. Read: " + _MARKET_PASSAGE_L1,
+		"question": "What do you think is happening?",
+		"options": ["a storm is coming", "it is sunny"],
+		"correct_index": 0,
+		"feedback_correct": "Right! A dark sky and strong wind mean a storm is coming!",
+		"feedback_wrong": "The dark sky and strong wind are clues that a storm is coming.",
+	},
+]
+
+const _MARKET_PRACTICE_L1 := [
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _MARKET_PASSAGE_L1,
+		"question": "Why should you go inside?",
+		"options": ["to stay safe", "to play"],
+		"correct_index": 0,
+		"hint": "What happens when a storm comes?",
+		"feedback_correct": "Right! You go inside to stay safe from the storm!",
+		"feedback_wrong": "When a storm comes, you should go inside to stay safe.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _MARKET_PASSAGE_L1,
+		"question": "What might happen next?",
+		"options": ["rain", "sunshine"],
+		"correct_index": 0,
+		"hint": "Dark sky and strong wind are clues!",
+		"feedback_correct": "Right! It might rain!",
+		"feedback_wrong": "A dark sky and strong wind mean rain might come.",
+	},
+]
+
+const _MARKET_MISSION_L1 := [
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _MARKET_PASSAGE_L1,
+		"question": "What is happening?",
+		"options": ["a storm is coming", "it is sunny"],
+		"correct_index": 0,
+		"feedback_correct": "Right! A storm is coming!",
+		"feedback_wrong": "The dark sky and strong wind mean a storm is coming.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _MARKET_PASSAGE_L1,
+		"question": "Why should you go inside?",
+		"options": ["to stay safe", "to play"],
+		"correct_index": 0,
+		"feedback_correct": "Right! Go inside to stay safe!",
+		"feedback_wrong": "You go inside to stay safe from the storm.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _MARKET_PASSAGE_L1,
+		"question": "Dark sky means:",
+		"options": ["it might rain", "it is daytime"],
+		"correct_index": 0,
+		"feedback_correct": "Right! A dark sky means it might rain!",
+		"feedback_wrong": "A dark sky is a clue that rain is coming.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _MARKET_PASSAGE_L1,
+		"question": "The wind is:",
+		"options": ["strong", "weak"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The wind is strong!",
+		"feedback_wrong": "The passage says 'The wind is strong.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _MARKET_PASSAGE_L1,
+		"question": "What might happen next?",
+		"options": ["rain", "sunshine"],
+		"correct_index": 0,
+		"feedback_correct": "Right! It might rain!",
+		"feedback_wrong": "Dark sky and strong wind mean rain might come.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _MARKET_PASSAGE_L1,
+		"question": "How does the weather feel?",
+		"options": ["scary", "happy"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The weather feels scary!",
+		"feedback_wrong": "Dark sky and strong wind feel scary.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _MARKET_PASSAGE_L1,
+		"question": "People will probably:",
+		"options": ["go inside", "go swimming"],
+		"correct_index": 0,
+		"feedback_correct": "Right! People will go inside!",
+		"feedback_wrong": "When a storm comes, people go inside.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _MARKET_PASSAGE_L1,
+		"question": "The weather is:",
+		"options": ["bad", "good"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The weather is bad!",
+		"feedback_wrong": "Dark sky and strong wind mean bad weather.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _MARKET_PASSAGE_L1,
+		"question": "The clue is:",
+		"options": ["the dark sky", "the blue sky"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The dark sky is the clue!",
+		"feedback_wrong": "The dark sky is the clue that a storm is coming.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _MARKET_PASSAGE_L1,
+		"question": "The main idea is:",
+		"options": ["a storm is coming", "a picnic is starting"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The main idea is that a storm is coming!",
+		"feedback_wrong": "The passage is about a storm coming, not a picnic.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 8 — FINAL MISSION (Bakery) L1
+# Interaction types: Read-Aloud + Fluency Check + MCQ
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _BAKERY_TUTORIAL_L1 := [
+	{
+		"type": "read_aloud",
+		"instruction": "Let's practice reading! Read this word aloud clearly.",
+		"word": "cat",
+		"feedback_correct": "Great reading!",
+	},
+]
+
+const _BAKERY_PRACTICE_L1 := [
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "dog",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "sun",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "run",
+		"feedback_correct": "Great reading!",
+	},
+]
+
+const _BAKERY_MISSION_L1 := [
+	# Part A — Read-Aloud (10 items)
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "cat",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "dog",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "sun",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "run",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "tree",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "home",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "path",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "book",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "light",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "day",
+		"feedback_correct": "Great reading!",
+	},
+	# Part B — Fluency Check
+	{
+		"type": "fluency_check",
+		"instruction": "Read the passage aloud clearly.",
+		"passage": _BAKERY_PASSAGE_L1,
+		"feedback_correct": "Excellent reading!",
+	},
+	# Part C — MCQ (10 items)
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _BAKERY_PASSAGE_L1,
+		"question": "Who is in the story?",
+		"options": ["a boy", "a girl"],
+		"correct_index": 0,
+		"feedback_correct": "Right! A boy is in the story!",
+		"feedback_wrong": "The passage says 'The boy walks.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _BAKERY_PASSAGE_L1,
+		"question": "What did the boy see?",
+		"options": ["a light", "a dog"],
+		"correct_index": 0,
+		"feedback_correct": "Right! He sees a light!",
+		"feedback_wrong": "The passage says 'He sees a light.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _BAKERY_PASSAGE_L1,
+		"question": "Where did the boy go?",
+		"options": ["home", "school"],
+		"correct_index": 0,
+		"feedback_correct": "Right! He goes home!",
+		"feedback_wrong": "The passage says 'He goes home.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _BAKERY_PASSAGE_L1,
+		"question": "What is the story about?",
+		"options": ["a boy going home", "a boy at school"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The story is about a boy going home!",
+		"feedback_wrong": "The story tells about a boy who walks, sees a light, and goes home.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _BAKERY_PASSAGE_L1,
+		"question": "What did the boy do first?",
+		"options": ["walked", "ran"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The boy walked first!",
+		"feedback_wrong": "The passage says 'The boy walks.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _BAKERY_PASSAGE_L1,
+		"question": "The light is:",
+		"options": ["something he saw", "something he heard"],
+		"correct_index": 0,
+		"feedback_correct": "Right! He saw the light!",
+		"feedback_wrong": "The passage says 'He sees a light' — he saw it.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _BAKERY_PASSAGE_L1,
+		"question": "Where did the boy end up?",
+		"options": ["home", "the park"],
+		"correct_index": 0,
+		"feedback_correct": "Right! He ended up at home!",
+		"feedback_wrong": "The passage says 'He goes home.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _BAKERY_PASSAGE_L1,
+		"question": "The boy was:",
+		"options": ["walking", "sleeping"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The boy was walking!",
+		"feedback_wrong": "The passage says 'The boy walks.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _BAKERY_PASSAGE_L1,
+		"question": "How does the story feel?",
+		"options": ["calm", "scary"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The story feels calm!",
+		"feedback_wrong": "The boy walks and goes home — that feels calm.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about the passage: " + _BAKERY_PASSAGE_L1,
+		"question": "The main idea is:",
+		"options": ["a boy goes home", "a boy plays"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The main idea is that a boy goes home!",
+		"feedback_wrong": "The story is about a boy going home.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# LEVEL 2 — EMERGING READER
+# Short vowels, blends, simple comprehension, 3-4 choice MCQ
+# ═════════════════════════════════════════════════════════════════════════════
+
+# ── Passages (Level 2) ─────────────────────────────────────────────────────
+
+const _CHAPEL_PASSAGE_L2 := "The small dog ran across the yard. It looked happy and full of energy. The boy watched and smiled."
+
+const _LIBRARY_PASSAGE_L2 := "The boy found a small kitten in the garden. The kitten looked weak but friendly."
+
+const _WELL_PASSAGE_L2 := "A girl lost her bag in the park. She looked for it everywhere. A man found it and returned it to her."
+
+const _MARKET_PASSAGE_L2 := "Dark clouds filled the sky. The wind grew stronger, and people hurried home."
+
+const _BAKERY_PASSAGE_L2 := "The boy walked along a quiet path. He saw a small light near a tree. He followed it and found his way home."
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 1 — DECODING (Town Hall) Level 2
+# Interaction types: MCQ (short vowels) + Tap Target (blends) + Read-Aloud
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _TOWN_HALL_TUTORIAL_L2 := [
+	{
+		"type": "mcq",
+		"instruction":
+		"Let's learn about short vowel sounds! Short vowels make a quick sound. The 'a' in 'cat' is short — it says /a/, not its name.",
+		"question": "What vowel sound does the word 'cat' have?",
+		"options": ["Short a", "Long a", "Short e"],
+		"correct_index": 0,
+		"feedback_correct": "Great! The 'a' in 'cat' is a short a sound — quick and snappy!",
+		"feedback_wrong":
+		"The 'a' in 'cat' does not say its name. It makes a quick /a/ sound — that's a short a.",
+	},
+]
+
+const _TOWN_HALL_PRACTICE_L2 := [
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound.",
+		"question": "What vowel sound does 'bed' have?",
+		"options": ["Long e", "Short e", "Short a"],
+		"correct_index": 1,
+		"hint": "Say the word slowly. Does the 'e' say its name or make a quick sound?",
+		"feedback_correct": "Correct! 'Bed' has a short e sound.",
+		"feedback_wrong": "The 'e' in 'bed' is quick — it's a short e.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound.",
+		"question": "What vowel sound does 'pig' have?",
+		"options": ["Short i", "Long i", "Short o"],
+		"correct_index": 0,
+		"hint": "Say the word slowly. The 'i' makes a quick sound.",
+		"feedback_correct": "Correct! 'Pig' has a short i sound.",
+		"feedback_wrong": "The 'i' in 'pig' is quick — it's a short i.",
+	},
+	{
+		"type": "tap_target",
+		"instruction": "Tap the consonant blend at the beginning of the word.",
+		"word": "flag",
+		"segments": ["fl", "a", "g"],
+		"target_indices": [0],
+		"hint": "A blend is two consonants together. Look at the start!",
+		"feedback_correct": "'fl' is the consonant blend!",
+		"feedback_wrong": "The blend is at the beginning — 'fl'.",
+	},
+]
+
+const _TOWN_HALL_MISSION_L2 := [
+	# Part 1 — Vowel MCQ (4 items)
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound.",
+		"question": "What vowel sound does 'cat' have?",
+		"options": ["Short a", "Long a", "Short e"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! 'Cat' has a short a sound.",
+		"feedback_wrong": "The 'a' in 'cat' is quick — short a.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound.",
+		"question": "What vowel sound does 'bed' have?",
+		"options": ["Long e", "Short e", "Short a"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Bed' has a short e sound.",
+		"feedback_wrong": "The 'e' in 'bed' is quick — short e.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound.",
+		"question": "What vowel sound does 'pig' have?",
+		"options": ["Short i", "Long i", "Short o"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! 'Pig' has a short i sound.",
+		"feedback_wrong": "The 'i' in 'pig' is quick — short i.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound.",
+		"question": "What vowel sound does 'hop' have?",
+		"options": ["Long o", "Short o", "Short a"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Hop' has a short o sound.",
+		"feedback_wrong": "The 'o' in 'hop' is quick — short o.",
+	},
+	# Part 2 — Blends Tap Target (3 items)
+	{
+		"type": "tap_target",
+		"instruction": "Tap the consonant blend.",
+		"word": "flag",
+		"segments": ["fl", "a", "g"],
+		"target_indices": [0],
+		"feedback_correct": "'fl' is the consonant blend!",
+		"feedback_wrong": "The blend is 'fl' at the beginning.",
+	},
+	{
+		"type": "tap_target",
+		"instruction": "Tap the consonant blend.",
+		"word": "stop",
+		"segments": ["st", "o", "p"],
+		"target_indices": [0],
+		"feedback_correct": "'st' is the consonant blend!",
+		"feedback_wrong": "The blend is 'st' at the beginning.",
+	},
+	{
+		"type": "tap_target",
+		"instruction": "Tap the consonant blend.",
+		"word": "clap",
+		"segments": ["cl", "a", "p"],
+		"target_indices": [0],
+		"feedback_correct": "'cl' is the consonant blend!",
+		"feedback_wrong": "The blend is 'cl' at the beginning.",
+	},
+	# Part 3 — Read-Aloud (3 items)
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "cat",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "stop",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "clap",
+		"feedback_correct": "Great reading!",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 2 — SYLLABICATION (School) Level 2
+# Interaction types: Drag & Drop (syllables) + Read-Aloud
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _SCHOOL_TUTORIAL_L2 := [
+	{
+		"type": "drag_drop",
+		"instruction":
+		"Let's learn to split words into syllables! Drag the syllables into the correct order to form the word.",
+		"mode": "syllable",
+		"word": "paper",
+		"pieces": ["per", "pa"],
+		"correct_order": ["pa", "per"],
+		"feedback_correct": "Great! 'paper' splits into pa-per.",
+		"feedback_wrong": "The word 'paper' splits into pa-per. Try again!",
+	},
+]
+
+const _SCHOOL_PRACTICE_L2 := [
+	{
+		"type": "drag_drop",
+		"instruction": "Split the word into syllables. Arrange them in the correct order.",
+		"mode": "syllable",
+		"word": "robot",
+		"pieces": ["bot", "ro"],
+		"correct_order": ["ro", "bot"],
+		"hint": "Say it slowly: ro-bot.",
+		"feedback_correct": "Correct! ro-bot.",
+		"feedback_wrong": "The word splits into ro-bot.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Split the word into syllables. Arrange them in the correct order.",
+		"mode": "syllable",
+		"word": "tiger",
+		"pieces": ["ger", "ti"],
+		"correct_order": ["ti", "ger"],
+		"hint": "Say it slowly: ti-ger.",
+		"feedback_correct": "Correct! ti-ger.",
+		"feedback_wrong": "The word splits into ti-ger.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Split the word into syllables. Arrange them in the correct order.",
+		"mode": "syllable",
+		"word": "music",
+		"pieces": ["sic", "mu"],
+		"correct_order": ["mu", "sic"],
+		"hint": "Say it slowly: mu-sic.",
+		"feedback_correct": "Correct! mu-sic.",
+		"feedback_wrong": "The word splits into mu-sic.",
+	},
+]
+
+const _SCHOOL_MISSION_L2 := [
+	# Part 1 — Drag & Drop syllables (5 items)
+	{
+		"type": "drag_drop",
+		"instruction": "Arrange the syllables in the correct order.",
+		"mode": "syllable",
+		"word": "paper",
+		"pieces": ["per", "pa"],
+		"correct_order": ["pa", "per"],
+		"feedback_correct": "Correct! pa-per.",
+		"feedback_wrong": "The correct order is: pa-per.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Arrange the syllables in the correct order.",
+		"mode": "syllable",
+		"word": "robot",
+		"pieces": ["bot", "ro"],
+		"correct_order": ["ro", "bot"],
+		"feedback_correct": "Correct! ro-bot.",
+		"feedback_wrong": "The correct order is: ro-bot.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Arrange the syllables in the correct order.",
+		"mode": "syllable",
+		"word": "tiger",
+		"pieces": ["ger", "ti"],
+		"correct_order": ["ti", "ger"],
+		"feedback_correct": "Correct! ti-ger.",
+		"feedback_wrong": "The correct order is: ti-ger.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Arrange the syllables in the correct order.",
+		"mode": "syllable",
+		"word": "music",
+		"pieces": ["sic", "mu"],
+		"correct_order": ["mu", "sic"],
+		"feedback_correct": "Correct! mu-sic.",
+		"feedback_wrong": "The correct order is: mu-sic.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Arrange the syllables in the correct order.",
+		"mode": "syllable",
+		"word": "window",
+		"pieces": ["dow", "win"],
+		"correct_order": ["win", "dow"],
+		"feedback_correct": "Correct! win-dow.",
+		"feedback_wrong": "The correct order is: win-dow.",
+	},
+	# Part 2 — Read-Aloud (5 items)
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "discovery",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "important",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "together",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "library",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "beautiful",
+		"feedback_correct": "Great reading!",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 3 — PUNCTUATION (Inn) Level 2
+# Interaction types: PunctuationRead
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _INN_TUTORIAL_L2 := [
+	{
+		"type": "mcq",
+		"instruction":
+		"Punctuation marks help us read!\n• A period (.) means stop at the end.\n• An exclamation mark (!) means use a strong voice.\n• A question mark (?) means you are asking something.\n• A comma (,) means pause briefly.",
+		"question": "What does a period (.) at the end of a sentence tell you?",
+		"options": ["Keep going", "Stop at the end", "Ask a question"],
+		"correct_index": 1,
+		"feedback_correct": "Right! A period means stop — the sentence is finished.",
+		"feedback_wrong":
+		"A period tells you to stop. The sentence is done.",
+	},
+]
+
+const _INN_PRACTICE_L2 := [
+	{
+		"type": "punctuation_read",
+		"sentence": "I am happy.",
+		"word": "I am happy.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What does the period tell you to do?",
+		"options": ["Keep going", "Stop at the end"],
+		"correct_index": 1,
+		"hint": "A period means the sentence is finished.",
+		"feedback_correct": "Correct! A period means stop at the end.",
+		"feedback_wrong": "A period tells you to stop — the sentence is finished.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Help!",
+		"word": "Help!",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should you read this word?",
+		"options": ["Quiet voice", "Strong voice"],
+		"correct_index": 1,
+		"hint": "The exclamation mark means strong feeling!",
+		"feedback_correct": "Correct! An exclamation mark means use a strong voice.",
+		"feedback_wrong": "An exclamation mark means strong feeling — use a strong voice!",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Is it hot?",
+		"word": "Is it hot?",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What kind of sentence is this?",
+		"options": ["Asking", "Telling"],
+		"correct_index": 0,
+		"hint": "Look at the mark at the end — it's a question mark.",
+		"feedback_correct": "Correct! A question mark means someone is asking.",
+		"feedback_wrong": "The question mark tells you this is asking something.",
+	},
+]
+
+const _INN_MISSION_L2 := [
+	{
+		"type": "punctuation_read",
+		"sentence": "I am tired.",
+		"word": "I am tired.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What does the period tell you to do?",
+		"options": ["Pause briefly", "Stop at the end"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! A period means stop at the end.",
+		"feedback_wrong": "A period tells you to stop — the sentence is finished.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Run!",
+		"word": "Run!",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should you read this?",
+		"options": ["Quiet voice", "Strong voice"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The exclamation mark means use a strong voice.",
+		"feedback_wrong": "An exclamation mark means strong feeling — use a strong voice!",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Are you here?",
+		"word": "Are you here?",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What kind of sentence is this?",
+		"options": ["Asking", "Telling"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The question mark means this is asking.",
+		"feedback_wrong": "The question mark tells you this is a question — someone is asking.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Stop, look, and listen.",
+		"word": "Stop, look, and listen.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What should you do at the commas?",
+		"options": ["Read without stopping", "Pause at the commas"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! Commas tell you to pause briefly.",
+		"feedback_wrong": "Commas are short pauses — pause at each comma before continuing.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Wow!",
+		"word": "Wow!",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should you read this?",
+		"options": ["Excited voice", "Soft voice"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The exclamation mark means excited voice!",
+		"feedback_wrong": "An exclamation mark means strong feeling — use an excited voice!",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Sit down.",
+		"word": "Sit down.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What does the period tell you?",
+		"options": ["Stop at the end", "Keep going"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! A period means stop — the sentence is finished.",
+		"feedback_wrong": "A period tells you to stop at the end.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Where are you?",
+		"word": "Where are you?",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What kind of sentence is this?",
+		"options": ["Asking a question", "Making a statement"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The question mark means this is asking a question.",
+		"feedback_wrong": "The question mark tells you this is a question.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Go!",
+		"word": "Go!",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should you read this?",
+		"options": ["Whisper", "Strong voice"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The exclamation mark means use a strong voice.",
+		"feedback_wrong": "An exclamation mark means strong feeling — use a strong voice!",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "He laughed, then stopped.",
+		"word": "He laughed, then stopped.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "Where should you pause?",
+		"options": ["Pause after 'laughed'", "Read without pausing"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The comma after 'laughed' tells you to pause.",
+		"feedback_wrong": "The comma after 'laughed' means you should pause briefly there.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Is it big?",
+		"word": "Is it big?",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What kind of sentence is this?",
+		"options": ["A question", "A command"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The question mark tells you this is a question.",
+		"feedback_wrong": "The question mark means someone is asking something.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 4 — FLUENCY (Chapel) Level 2
+# Interaction types: FluencyCheck + MCQ
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _CHAPEL_TUTORIAL_L2 := [
+	{
+		"type": "mcq",
+		"instruction":
+		"Reading fluently means reading smoothly — not too fast, not too slow. Good readers read in phrases, not one word at a time.",
+		"question": "Which way of reading is best?",
+		"options":
+		[
+			"Reading one word at a time",
+			"Reading smoothly in phrases",
+			"Reading as fast as you can"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Right! Smooth reading in phrases is the best way to read.",
+		"feedback_wrong":
+		"Good readers read smoothly in phrases — not word by word or super fast.",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this sentence aloud as smoothly as you can.",
+		"word": "The small dog ran across the yard.",
+		"feedback_correct": "Beautiful reading — smooth and steady!",
+	},
+]
+
+const _CHAPEL_PRACTICE_L2 := [
+	{
+		"type": "fluency_check",
+		"instruction": "Read these sentences as smoothly as you can.",
+		"passage":
+		"The small dog ran across the yard. It looked happy and full of energy.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about how the passage should be read.",
+		"question": "How should you read the passage?",
+		"options": ["Word by word", "Smooth and steady", "As fast as possible"],
+		"correct_index": 1,
+		"hint": "Good reading flows naturally — not too slow, not too fast.",
+		"feedback_correct": "Right! Smooth and steady reading is best.",
+		"feedback_wrong": "Good reading is smooth and steady — not word by word or rushed.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about reading with expression.",
+		"question": "What should you emphasize when reading about the happy dog?",
+		"options": ["'happy and full of energy'", "'the boy'"],
+		"correct_index": 0,
+		"hint": "The important feeling words deserve emphasis.",
+		"feedback_correct": "Right! 'Happy and full of energy' are the key feeling words.",
+		"feedback_wrong": "The feeling words 'happy and full of energy' should be emphasized.",
+	},
+]
+
+const _CHAPEL_MISSION_L2 := [
+	{
+		"type": "fluency_check",
+		"instruction":
+		"Read the full passage aloud. Read smoothly, at a steady pace.",
+		"passage": _CHAPEL_PASSAGE_L2,
+		"feedback_correct": "Excellent reading!",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on how the passage should be read.",
+		"question": "Where should you pause in the first sentence?",
+		"options": ["After 'small'", "After 'dog'"],
+		"correct_index": 1,
+		"feedback_correct": "Right! Pause after 'dog' to group the phrase naturally.",
+		"feedback_wrong": "Pause after 'dog' — 'The small dog' is a natural phrase.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Choose the smooth phrasing.",
+		"question": "Which sounds smoother?",
+		"options": ["The / small / dog / ran", "The small dog ran across the yard"],
+		"correct_index": 1,
+		"feedback_correct": "Right! Reading in full phrases sounds much smoother.",
+		"feedback_wrong": "Reading in full phrases is smoother than word by word.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about reading style.",
+		"question": "What is the best reading style?",
+		"options": ["Word by word", "Smooth and steady"],
+		"correct_index": 1,
+		"feedback_correct": "Right! Smooth and steady is the best reading style.",
+		"feedback_wrong": "Good reading is smooth and steady — not word by word.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about emphasis.",
+		"question": "What words should you emphasize?",
+		"options": ["'happy and full of energy'", "'the boy'"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The feeling words 'happy and full of energy' deserve emphasis.",
+		"feedback_wrong": "'Happy and full of energy' are the important words to stress.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about tone.",
+		"question": "What tone should you use for this passage?",
+		"options": ["Calm and steady", "Angry"],
+		"correct_index": 0,
+		"feedback_correct": "Right! A calm, steady tone matches this happy passage.",
+		"feedback_wrong": "This is a happy passage — a calm, steady tone is best.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about pacing.",
+		"question": "Where should you slow down?",
+		"options": ["'watched and smiled'", "'the boy'"],
+		"correct_index": 0,
+		"feedback_correct": "Right! Slow down at 'watched and smiled' — it's the ending moment.",
+		"feedback_wrong": "'Watched and smiled' is the ending — slow down there.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about fluency.",
+		"question": "What helps you read fluently?",
+		"options": ["Reading with pauses", "Reading very fast"],
+		"correct_index": 0,
+		"feedback_correct": "Right! Pausing at the right places helps you read fluently.",
+		"feedback_wrong": "Reading with pauses — not super fast — helps fluency.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Choose the correct phrasing.",
+		"question": "Which sounds better?",
+		"options": ["The / boy / watched", "The boy watched and smiled"],
+		"correct_index": 1,
+		"feedback_correct": "Right! Full phrases sound much better.",
+		"feedback_wrong": "Reading in full phrases sounds better than word by word.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about pausing.",
+		"question": "In the last sentence, where should you pause?",
+		"options": ["Pause after 'watched'", "No pause needed"],
+		"correct_index": 0,
+		"feedback_correct": "Right! A brief pause after 'watched' makes it flow naturally.",
+		"feedback_wrong": "Pause briefly after 'watched' before 'and smiled.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about good reading.",
+		"question": "What does good reading sound like?",
+		"options": ["Smooth flow with pauses", "Word by word"],
+		"correct_index": 0,
+		"feedback_correct": "Right! Good reading has smooth flow with natural pauses.",
+		"feedback_wrong": "Good reading flows smoothly with pauses — not word by word.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 5 — VOCABULARY (Library) Level 2
+# Interaction types: MCQ
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _LIBRARY_TUTORIAL_L2 := [
+	{
+		"type": "mcq",
+		"instruction":
+		"Context clues are hints in a sentence that help you figure out what a word means. Read the sentence carefully to find clues!",
+		"question": "What does 'kitten' mean in: 'The boy found a small kitten in the garden.'?",
+		"options": ["A small cat", "A small dog", "A small bird"],
+		"correct_index": 0,
+		"feedback_correct": "Right! A kitten is a small cat.",
+		"feedback_wrong": "A kitten is a small, young cat.",
+	},
+]
+
+const _LIBRARY_PRACTICE_L2 := [
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "What does 'garden' mean?",
+		"options": ["A place with plants", "A room inside", "A type of food"],
+		"correct_index": 0,
+		"hint": "Think about where you might find a kitten outdoors.",
+		"feedback_correct": "Correct! A garden is a place with plants.",
+		"feedback_wrong": "A garden is an outdoor place with plants and flowers.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "What does 'weak' mean?",
+		"options": ["Not strong", "Very fast", "Very big"],
+		"correct_index": 0,
+		"hint": "The kitten looked tired — what word means not strong?",
+		"feedback_correct": "Correct! Weak means not strong.",
+		"feedback_wrong": "Weak means not strong — the kitten looked tired.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "What does 'friendly' mean?",
+		"options": ["Kind", "Angry", "Scared"],
+		"correct_index": 0,
+		"hint": "The kitten was weak BUT friendly — it was nice even though it was tired.",
+		"feedback_correct": "Correct! Friendly means kind.",
+		"feedback_wrong": "Friendly means kind and nice to others.",
+	},
+]
+
+const _LIBRARY_MISSION_L2 := [
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "What does 'kitten' mean?",
+		"options": ["A small cat", "A small dog"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! A kitten is a small cat.",
+		"feedback_wrong": "A kitten is a small, young cat.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "What does 'garden' mean?",
+		"options": ["A place with plants", "A room inside"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! A garden is a place with plants.",
+		"feedback_wrong": "A garden is an outdoor place with plants.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "What does 'weak' mean?",
+		"options": ["Not strong", "Very fast"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! Weak means not strong.",
+		"feedback_wrong": "Weak means not strong.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "What does 'friendly' mean?",
+		"options": ["Kind", "Angry"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! Friendly means kind.",
+		"feedback_wrong": "Friendly means kind and nice.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "Where was the kitten found?",
+		"options": ["In the garden", "In the house"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The kitten was found in the garden.",
+		"feedback_wrong": "The boy found the kitten in the garden.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "How did the kitten look?",
+		"options": ["Weak", "Strong"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The kitten looked weak.",
+		"feedback_wrong": "The passage says the kitten looked weak.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "What did the boy find?",
+		"options": ["A kitten", "A bird"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The boy found a kitten.",
+		"feedback_wrong": "The boy found a small kitten.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "What clue tells you the kitten was 'weak'?",
+		"options": ["It looked tired", "It was running"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! Looking tired is a clue that the kitten was weak.",
+		"feedback_wrong": "The kitten looked tired — that tells us it was weak.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "A garden is like:",
+		"options": ["An outdoor place", "Inside a building"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! A garden is an outdoor place.",
+		"feedback_wrong": "A garden is outside, not inside a building.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use the passage to answer.",
+		"passage": _LIBRARY_PASSAGE_L2,
+		"question": "What is the main idea of this passage?",
+		"options": ["Finding a kitten", "Playing at school"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The main idea is about finding a kitten.",
+		"feedback_wrong": "The passage is about a boy finding a kitten in the garden.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 6 — MAIN IDEA (Well) Level 2
+# Interaction types: MCQ + Drag & Drop (sequence)
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _WELL_TUTORIAL_L2 := [
+	{
+		"type": "mcq",
+		"instruction":
+		"The main idea is what the story is mostly about. Read the passage and think: what is the big idea?",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "What is this story mostly about?",
+		"options": ["A girl losing and finding her bag", "Playing in the park", "Going to school"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The main idea is about a girl losing and finding her bag.",
+		"feedback_wrong": "Think about what happens in the whole story — it's about losing and finding a bag.",
+	},
+]
+
+const _WELL_PRACTICE_L2 := [
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "Who lost the bag?",
+		"options": ["A girl", "A man", "A boy"],
+		"correct_index": 0,
+		"hint": "Read the first sentence carefully.",
+		"feedback_correct": "Correct! A girl lost her bag.",
+		"feedback_wrong": "The first sentence says: 'A girl lost her bag in the park.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "Where did she lose it?",
+		"options": ["In the park", "At school", "At home"],
+		"correct_index": 0,
+		"hint": "Look at the first sentence for the place.",
+		"feedback_correct": "Correct! She lost it in the park.",
+		"feedback_wrong": "The passage says she lost her bag in the park.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "Who found the bag?",
+		"options": ["A man", "A boy", "A teacher"],
+		"correct_index": 0,
+		"hint": "Read the last sentence.",
+		"feedback_correct": "Correct! A man found it.",
+		"feedback_wrong": "The last sentence says a man found it and returned it.",
+	},
+]
+
+const _WELL_MISSION_L2 := [
+	# Part A — MCQ (5 items)
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "Who lost the bag?",
+		"options": ["A girl", "A man", "A boy"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! A girl lost her bag.",
+		"feedback_wrong": "A girl lost her bag in the park.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "Where was the bag lost?",
+		"options": ["In the park", "At school", "At home"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The bag was lost in the park.",
+		"feedback_wrong": "She lost her bag in the park.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "What did she do?",
+		"options": ["Looked everywhere", "Ignored it", "Went home"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! She looked for it everywhere.",
+		"feedback_wrong": "The passage says she looked for it everywhere.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "Who found the bag?",
+		"options": ["A man", "A boy", "A teacher"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! A man found the bag.",
+		"feedback_wrong": "A man found the bag and returned it.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "What is the main idea?",
+		"options": ["Getting help to find something", "Playing in the park", "Going to school"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The main idea is about getting help to find something.",
+		"feedback_wrong": "The story is about a girl who got help finding her lost bag.",
+	},
+	# Part B — Drag & Drop sequence (5 items as one)
+	{
+		"type": "drag_drop",
+		"instruction":
+		"Arrange the events in the correct order. Drag the sentences from FIRST to LAST.",
+		"mode": "sequence",
+		"pieces":
+		[
+			"She looked everywhere",
+			"The girl lost her bag",
+			"The girl was happy",
+			"He returned the bag",
+			"A man found the bag",
+		],
+		"correct_order":
+		[
+			"The girl lost her bag",
+			"She looked everywhere",
+			"A man found the bag",
+			"He returned the bag",
+			"The girl was happy",
+		],
+		"feedback_correct": "Perfect order!",
+		"feedback_wrong":
+		"The correct order follows the story: lost, looked, found, returned, happy.",
+	},
+	# Fill remaining 4 items with comprehension MCQ
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "How did the girl feel at first?",
+		"options": ["Worried", "Happy", "Angry"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! She was worried about her lost bag.",
+		"feedback_wrong": "She lost her bag — she would feel worried.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "What did the man do?",
+		"options": ["Returned the bag", "Kept the bag", "Threw it away"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The man returned the bag.",
+		"feedback_wrong": "The man found the bag and returned it to her.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "What does this story teach us?",
+		"options": ["Helping others is good", "Parks are fun", "Bags are important"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The story teaches us that helping others is good.",
+		"feedback_wrong": "The man helped the girl — helping others is the lesson.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L2,
+		"question": "How did the story end?",
+		"options": ["The girl got her bag back", "The bag stayed lost", "The girl went home"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The girl got her bag back.",
+		"feedback_wrong": "The man returned the bag — the girl got it back.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 7 — INFERENCE (Market) Level 2
+# Interaction types: MCQ
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _MARKET_TUTORIAL_L2 := [
+	{
+		"type": "mcq",
+		"instruction":
+		"An inference is a smart guess based on clues in the text. Read carefully and think about what the clues tell you!",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "What is probably about to happen?",
+		"options": ["A storm is coming", "It is sunny", "School is starting"],
+		"correct_index": 0,
+		"feedback_correct": "Right! Dark clouds and strong wind are clues that a storm is coming.",
+		"feedback_wrong": "Dark clouds and strong wind are clues — a storm is probably coming!",
+	},
+]
+
+const _MARKET_PRACTICE_L2 := [
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "Why did people hurry home?",
+		"options": ["Bad weather", "To play", "To eat"],
+		"correct_index": 0,
+		"hint": "Think about what dark clouds and strong wind mean.",
+		"feedback_correct": "Correct! People hurried home because of bad weather.",
+		"feedback_wrong": "Dark clouds and strong wind mean bad weather — that's why people hurried.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "What clue tells you the weather is bad?",
+		"options": ["Dark clouds", "Blue sky", "Green grass"],
+		"correct_index": 0,
+		"hint": "Look at the first sentence for the clue.",
+		"feedback_correct": "Correct! Dark clouds are a clue for bad weather.",
+		"feedback_wrong": "Dark clouds tell you the weather is getting bad.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "How is the wind?",
+		"options": ["Strong", "Calm", "Cold"],
+		"correct_index": 0,
+		"hint": "The passage says the wind 'grew stronger.'",
+		"feedback_correct": "Correct! The wind grew stronger.",
+		"feedback_wrong": "The passage says the wind grew stronger.",
+	},
+]
+
+const _MARKET_MISSION_L2 := [
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "What is happening?",
+		"options": ["A storm is coming", "It is sunny", "School is starting"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! A storm is coming.",
+		"feedback_wrong": "Dark clouds and strong wind tell you a storm is coming.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "Why did people hurry home?",
+		"options": ["Bad weather", "To play", "To eat"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! People hurried because of bad weather.",
+		"feedback_wrong": "The bad weather made people hurry home.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "What clue tells you the weather is bad?",
+		"options": ["Dark clouds", "Blue sky", "Green grass"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! Dark clouds are a clue for bad weather.",
+		"feedback_wrong": "Dark clouds are the clue — they mean bad weather.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "How is the wind?",
+		"options": ["Strong", "Calm", "Cold"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The wind is strong.",
+		"feedback_wrong": "The passage says the wind grew stronger.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "What will probably happen next?",
+		"options": ["Rain", "Snow", "Sunshine"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! Rain will probably come after dark clouds and wind.",
+		"feedback_wrong": "Dark clouds and strong wind usually mean rain is coming.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "What is the mood of the passage?",
+		"options": ["Tense", "Happy", "Funny"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The mood is tense — something big is about to happen.",
+		"feedback_wrong": "Dark clouds and rushing people create a tense mood.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "Why did people go home?",
+		"options": ["For safety", "For fun", "For homework"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! People went home for safety from the storm.",
+		"feedback_wrong": "People hurried home to be safe from the coming storm.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "What is implied in the passage?",
+		"options": ["A storm is near", "Nothing special", "A party"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The passage implies a storm is near.",
+		"feedback_wrong": "The clues — dark clouds, strong wind, people hurrying — imply a storm.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "Which clue word is most important?",
+		"options": ["Clouds", "Sun", "Flowers"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! 'Clouds' is the key clue word.",
+		"feedback_wrong": "'Dark clouds' is the biggest clue about what's happening.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to answer.",
+		"passage": _MARKET_PASSAGE_L2,
+		"question": "What would be the best title?",
+		"options": ["The Coming Storm", "A Sunny Day", "A School Trip"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! 'The Coming Storm' is the best title.",
+		"feedback_wrong": "The passage is about a coming storm — that's the best title.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 8 — FINAL MISSION (Bakery) Level 2
+# Interaction types: Read-Aloud + FluencyCheck + MCQ
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _BAKERY_TUTORIAL_L2 := [
+	{
+		"type": "read_aloud",
+		"instruction":
+		"This is the final mission! Let's practice reading some words aloud. Read this word clearly.",
+		"word": "careful",
+		"feedback_correct": "Great reading!",
+	},
+]
+
+const _BAKERY_PRACTICE_L2 := [
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "garden",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "pathway",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "quiet",
+		"feedback_correct": "Great reading!",
+	},
+]
+
+const _BAKERY_MISSION_L2 := [
+	# Part A — Read-Aloud words (10 items)
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "careful",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "garden",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "pathway",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "small",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "happy",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "strong",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "quiet",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "light",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "home",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "friend",
+		"feedback_correct": "Great reading!",
+	},
+	# Part B — Full passage read-aloud (1 item)
+	{
+		"type": "fluency_check",
+		"instruction": "Read the full passage aloud clearly. Speak at a steady pace.",
+		"passage": _BAKERY_PASSAGE_L2,
+		"feedback_correct": "Excellent reading! You read the full passage clearly.",
+	},
+	# Part C — Comprehension MCQ (10 items)
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L2,
+		"question": "Who is in the story?",
+		"options": ["A boy", "A girl", "A dog"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The story is about a boy.",
+		"feedback_wrong": "The story is about a boy.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L2,
+		"question": "Where did the boy walk?",
+		"options": ["Along a path", "Along a road", "Along a river"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The boy walked along a quiet path.",
+		"feedback_wrong": "The boy walked along a quiet path.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L2,
+		"question": "What did the boy see?",
+		"options": ["A light", "Rain", "A bird"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The boy saw a small light.",
+		"feedback_wrong": "The boy saw a small light near a tree.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L2,
+		"question": "Where was the light?",
+		"options": ["Near a tree", "Inside a house", "In the sky"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The light was near a tree.",
+		"feedback_wrong": "The light was near a tree.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L2,
+		"question": "What did the boy do?",
+		"options": ["Followed the light", "Ran away", "Sat down"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The boy followed the light.",
+		"feedback_wrong": "He followed the light and found his way home.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L2,
+		"question": "What happened at the end?",
+		"options": ["He found his way home", "He got lost", "He fell asleep"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! He found his way home.",
+		"feedback_wrong": "The boy followed the light and found his way home.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L2,
+		"question": "Why did the boy follow the light?",
+		"options": ["To find his way", "To hide", "To play"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! He followed the light to find his way home.",
+		"feedback_wrong": "He followed the light because it helped him find his way.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L2,
+		"question": "What is the mood of the story?",
+		"options": ["Calm", "Loud", "Angry"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The story has a calm, quiet mood.",
+		"feedback_wrong": "The quiet path and small light give the story a calm mood.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L2,
+		"question": "What helped the boy?",
+		"options": ["The light", "The wind", "A map"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The light helped the boy find his way.",
+		"feedback_wrong": "The small light near the tree helped the boy.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L2,
+		"question": "What is the main idea of the story?",
+		"options": ["Finding your way home", "Playing in a forest", "Going to school"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The main idea is about finding your way home.",
+		"feedback_wrong": "The story is about a boy who found his way home by following a light.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# LEVEL 4 — INDEPENDENT READER
+# Complex vocabulary, analysis-level questions, 4-choice MCQ
+# ═════════════════════════════════════════════════════════════════════════════
+
+# ── Passages (Level 4) ──────────────────────────────────────────────────────
+
+const _CHAPEL_PASSAGE_L4 := (
+	"The ancient library stood at the heart of Luminara, its towering shelves disappearing into shadow."
+	+ " Dust particles danced in narrow beams of light that filtered through stained glass windows."
+	+ " The Cognian moved carefully between the rows, running his fingers along cracked leather spines.\n"
+	+ "Each book seemed to hum with forgotten knowledge, as though the words inside were waiting to be spoken aloud once more."
+	+ " He paused at a desk where an open manuscript lay, its pages yellowed but its ink still vivid.\n"
+	+ "The script was unlike anything he had seen — elegant curves intertwined with angular marks that suggested both urgency and beauty."
+	+ " He began to read, slowly at first, then with growing confidence.\n"
+	+ "As his voice filled the silence, the library seemed to awaken."
+	+ " Lights flickered in distant corners, and the air itself grew warm with possibility."
+)
+
+const _LIBRARY_PASSAGE_L4 := (
+	"The village had endured a prolonged period of desolation."
+	+ " Its inhabitants, once prosperous and industrious, had gradually abandoned their dwellings as an inexplicable silence descended upon the narrow streets.\n"
+	+ "Only the most resilient remained, clinging to hope like the last embers of a dying fire."
+	+ " Among them was an elderly woman whose tenacity had become legendary.\n"
+	+ "She believed that the village's salvation lay not in grand gestures but in the meticulous preservation of its stories."
+)
+
+const _WELL_PASSAGE_L4 := (
+	"The two factions of Luminara had not spoken to each other in years."
+	+ " The Northside blamed the Southside for the silence that had fallen over the village, claiming they had angered the ancient spirits."
+	+ " The Southside, in turn, accused the Northside of hoarding the last written records, letting the words decay in locked chambers.\n"
+	+ "The Cognian arrived to find a village divided by suspicion and resentment."
+	+ " Markets that once bustled with trade now stood empty, their stalls serving as barriers between the two communities.\n"
+	+ "Through patient listening and careful questioning, the Cognian discovered that neither faction was responsible."
+	+ " The silence had begun when the village stopped sharing its stories aloud."
+	+ " Each side had retreated into isolation, and without the exchange of words, the language itself had begun to fade.\n"
+	+ "Only by reuniting the factions — by encouraging them to speak, to read, and to listen to one another — could the voice of Luminara be restored."
+)
+
+const _MARKET_PASSAGE_L4 := (
+	"The keeper of the archive sat motionless at his desk, staring at a letter he could not bring himself to open."
+	+ " His hands trembled — not from cold, but from the weight of what the letter might contain."
+	+ " For months, rumours had circulated that the last remaining copy of the Founding Verses had been found in a distant province.\n"
+	+ "If the rumours were true, the silence could be broken."
+	+ " But the keeper had been disappointed before."
+	+ " He remembered the expedition three years ago — the long journey, the false leads, the empty vault at the end of the trail.\n"
+	+ "He turned the letter over in his hands."
+	+ " The wax seal bore an unfamiliar crest, and the parchment smelled faintly of cedar."
+	+ " His assistant watched from the doorway, her expression unreadable but her posture tense.\n"
+	+ "'Are you going to open it?' she asked quietly."
+	+ " The keeper looked up, his eyes searching her face for something — reassurance, perhaps, or permission to hope."
+	+ " He broke the seal."
+)
+
+const _BAKERY_PASSAGE_L4 := (
+	"The restoration of Luminara did not happen in a single moment of triumph."
+	+ " It unfolded gradually, like dawn spreading across a valley."
+	+ " First came the whispers — hesitant voices testing the silence, unsure whether they would be heard.\n"
+	+ "Then came the children, who had never known the village in its former glory."
+	+ " They spoke freely, unburdened by the memory of loss, and their laughter echoed through streets that had been mute for a generation.\n"
+	+ "The elders wept."
+	+ " Some wept from relief, others from grief for the years that had been lost."
+	+ " The elderly woman who had preserved the stories stepped forward and began to read from the manuscripts she had guarded so fiercely.\n"
+	+ "Her voice, though frail, carried extraordinary power."
+	+ " Each word she spoke seemed to mend something invisible — a thread in the fabric of the community that had come undone.\n"
+	+ "The Cognian stood at the edge of the gathering, watching."
+	+ " He understood now that literacy was not merely a skill."
+	+ " It was the foundation upon which an entire civilisation could stand or fall.\n"
+	+ "As the last page was read, the great bell of Luminara rang for the first time in decades."
+	+ " The village had found its voice again — not through magic, but through the persistent, meticulous act of reading, speaking, and sharing words."
+)
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 1 — DECODING (Town Hall) — Level 4
+# Focus: Diphthongs, consonant clusters (spl, str, thr, scr), multi-syllable
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _TOWN_HALL_TUTORIAL_L4 := [
+	{
+		"type": "mcq",
+		"instruction":
+		"Advanced vowel patterns can be tricky! Some vowel combinations create unexpected sounds. For example, 'ea' can sound like long e (in 'breathe') or short e (in 'threat'). The letters 'ough' can sound completely different depending on the word.",
+		"question": "Which word contains a long 'e' sound spelled with 'ea'?",
+		"options": ["Breathe", "Threat", "Sweat", "Bread"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! In 'breathe,' the 'ea' makes a long e sound — /ee/.",
+		"feedback_wrong":
+		"In 'breathe,' the 'ea' says /ee/ — a long e. Words like 'threat,' 'sweat,' and 'bread' use a short e sound instead.",
+	},
+	{
+		"type": "mcq",
+		"instruction":
+		"Consonant clusters are groups of three consonants that blend together, like 'spl' in 'splash,' 'str' in 'string,' and 'thr' in 'throw.' Each consonant is heard, but they flow as one sound.",
+		"question": "Which word begins with the consonant cluster 'scr'?",
+		"options": ["Scratch", "Sketch", "Speech", "Stretch"],
+		"correct_index": 0,
+		"feedback_correct": "Right! 'Scratch' starts with the three-letter cluster s-c-r.",
+		"feedback_wrong":
+		"'Scratch' begins with 'scr' — three consonants blended together. 'Sketch' starts with 'sk,' 'speech' with 'sp,' and 'stretch' with 'str.'",
+	},
+]
+
+const _TOWN_HALL_PRACTICE_L4 := [
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound in this word.",
+		"question": "What vowel sound does 'breathe' have?",
+		"options": ["Long e", "Short e", "Long a", "Schwa"],
+		"correct_index": 0,
+		"hint": "Say it slowly: br-EETHE. What sound does the 'ea' make?",
+		"feedback_correct": "Correct! 'Breathe' has a long e sound — the 'ea' says /ee/.",
+		"feedback_wrong": "The 'ea' in 'breathe' makes a long e sound: /ee/.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound in this word.",
+		"question": "What vowel sound does 'threat' have?",
+		"options": ["Long e", "Short e", "Long a", "Short a"],
+		"correct_index": 1,
+		"hint": "Say it: THRET. The 'ea' here sounds different from 'breathe.'",
+		"feedback_correct": "Correct! 'Threat' has a short e sound, even though it uses 'ea.'",
+		"feedback_wrong": "The 'ea' in 'threat' makes a short e sound: /eh/. Not all 'ea' words sound the same!",
+	},
+	{
+		"type": "tap_target",
+		"instruction": "Tap the three-letter consonant cluster at the beginning of the word.",
+		"word": "structure",
+		"segments": ["str", "uc", "ture"],
+		"target_indices": [0],
+		"hint": "Look for three consonants blended together at the start.",
+		"feedback_correct": "'str' is the consonant cluster — three sounds blended into one onset!",
+		"feedback_wrong": "The cluster is 'str' at the beginning — s, t, and r blended together.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Count the syllables in this complex word.",
+		"question": "How many syllables does 'communication' have?",
+		"options": ["3", "4", "5", "6"],
+		"correct_index": 2,
+		"hint": "Clap slowly: com-mu-ni-ca-tion.",
+		"feedback_correct": "Correct! com-mu-ni-ca-tion = 5 syllables.",
+		"feedback_wrong": "Clap along: com-mu-ni-ca-tion. That's 5 syllables.",
+	},
+	{
+		"type": "tap_target",
+		"instruction": "Tap the three-letter consonant cluster at the beginning of the word.",
+		"word": "splendid",
+		"segments": ["spl", "en", "did"],
+		"target_indices": [0],
+		"hint": "Three consonants at the very start form the cluster.",
+		"feedback_correct": "'spl' is the three-letter consonant cluster!",
+		"feedback_wrong": "The cluster is 'spl' — s, p, and l blended at the beginning.",
+	},
+]
+
+const _TOWN_HALL_MISSION_L4 := [
+	# Part 1 — Vowel MCQ (4 items)
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound in this word.",
+		"question": "What vowel sound does 'breathe' contain?",
+		"options": ["Short e (as in 'bed')", "Long e (as in 'see')", "Long a (as in 'cake')", "Schwa (as in 'about')"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Breathe' has a long e sound — the 'ea' says /ee/.",
+		"feedback_wrong": "The 'ea' in 'breathe' makes a long e sound: /ee/, like 'see.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound in this word.",
+		"question": "What vowel sound does 'threat' contain?",
+		"options": ["Long e (as in 'breathe')", "Short e (as in 'bed')", "Short a (as in 'cat')", "Long a (as in 'gate')"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Threat' has a short e sound — same 'ea' spelling, different sound.",
+		"feedback_wrong": "Despite the 'ea' spelling, 'threat' uses a short e sound: /eh/.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound in this word.",
+		"question": "What vowel sound does 'through' contain?",
+		"options": ["Short o (as in 'hot')", "Ow sound (as in 'though')", "Oo sound (as in 'moon')", "Uh sound (as in 'rough')"],
+		"correct_index": 2,
+		"feedback_correct": "Correct! 'Through' has an /oo/ sound, like 'moon.'",
+		"feedback_wrong": "'Through' rhymes with 'who' — it has an /oo/ vowel sound.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Identify the vowel sound in this word.",
+		"question": "What vowel sound does 'thorough' contain?",
+		"options": ["Oo sound (as in 'through')", "Or sound (as in 'thorn')", "Uh sound (as in 'up')", "Ow sound (as in 'bough')"],
+		"correct_index": 2,
+		"feedback_correct": "Correct! The second syllable of 'thorough' uses a schwa/uh sound: THUR-uh.",
+		"feedback_wrong": "'Thorough' ends with an /uh/ sound — THUR-uh. Different from 'through'!",
+	},
+	# Part 2 — Tap Target Clusters (3 items)
+	{
+		"type": "tap_target",
+		"instruction": "Tap the three-letter consonant cluster.",
+		"word": "splendid",
+		"segments": ["spl", "en", "did"],
+		"target_indices": [0],
+		"feedback_correct": "'spl' is the three-letter consonant cluster!",
+		"feedback_wrong": "The cluster is 'spl' at the start — three consonants blended together.",
+	},
+	{
+		"type": "tap_target",
+		"instruction": "Tap the three-letter consonant cluster.",
+		"word": "structure",
+		"segments": ["str", "uc", "ture"],
+		"target_indices": [0],
+		"feedback_correct": "'str' is the three-letter consonant cluster!",
+		"feedback_wrong": "The cluster is 'str' at the start — s, t, r blended together.",
+	},
+	{
+		"type": "tap_target",
+		"instruction": "Tap the three-letter consonant cluster.",
+		"word": "threshold",
+		"segments": ["thr", "esh", "old"],
+		"target_indices": [0],
+		"feedback_correct": "'thr' is the three-letter consonant cluster!",
+		"feedback_wrong": "The cluster is 'thr' at the start — t, h, r blended together.",
+	},
+	# Part 3 — Syllable MCQ (3 items)
+	{
+		"type": "mcq",
+		"instruction": "Count the syllables in this complex word.",
+		"question": "How many syllables does 'extraordinary' have?",
+		"options": ["4", "5", "6", "7"],
+		"correct_index": 2,
+		"feedback_correct": "Correct! ex-tra-or-di-na-ry = 6 syllables.",
+		"feedback_wrong": "Count carefully: ex-tra-or-di-na-ry = 6 syllables.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Count the syllables in this complex word.",
+		"question": "How many syllables does 'communication' have?",
+		"options": ["3", "4", "5", "6"],
+		"correct_index": 2,
+		"feedback_correct": "Correct! com-mu-ni-ca-tion = 5 syllables.",
+		"feedback_wrong": "Clap along: com-mu-ni-ca-tion = 5 syllables.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Count the syllables in this complex word.",
+		"question": "How many syllables does 'refrigerator' have?",
+		"options": ["3", "4", "5", "6"],
+		"correct_index": 2,
+		"feedback_correct": "Correct! re-frig-er-a-tor = 5 syllables.",
+		"feedback_wrong": "Clap along: re-frig-er-a-tor = 5 syllables.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 2 — SYLLABICATION (School) — Level 4
+# Focus: 4-5 syllable words, complex splitting
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _SCHOOL_TUTORIAL_L4 := [
+	{
+		"type": "drag_drop",
+		"instruction":
+		"Complex words have many syllables. Drag the syllable pieces into the correct order. Listen to each part carefully — some syllables may surprise you!",
+		"mode": "syllable",
+		"word": "unforgettable",
+		"pieces": ["ta", "for", "un", "get", "ble"],
+		"correct_order": ["un", "for", "get", "ta", "ble"],
+		"feedback_correct": "Excellent! 'Unforgettable' splits into un-for-get-ta-ble — 5 syllables!",
+		"feedback_wrong": "The word splits into un-for-get-ta-ble. Try saying each part slowly.",
+	},
+]
+
+const _SCHOOL_PRACTICE_L4 := [
+	{
+		"type": "drag_drop",
+		"instruction": "Split the word into syllables. Arrange them in the correct order.",
+		"mode": "syllable",
+		"word": "imagination",
+		"pieces": ["na", "i", "mag", "tion", "i"],
+		"correct_order": ["i", "mag", "i", "na", "tion"],
+		"hint": "Say it slowly: i-mag-i-na-tion. Five parts.",
+		"feedback_correct": "Correct! i-mag-i-na-tion.",
+		"feedback_wrong": "The word splits into i-mag-i-na-tion.",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "determination",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Split the word into syllables. Arrange them in the correct order.",
+		"mode": "syllable",
+		"word": "extraordinary",
+		"pieces": ["di", "or", "na", "ex", "tra", "ry"],
+		"correct_order": ["ex", "tra", "or", "di", "na", "ry"],
+		"hint": "Say it slowly: ex-tra-or-di-na-ry. Six parts.",
+		"feedback_correct": "Correct! ex-tra-or-di-na-ry.",
+		"feedback_wrong": "The word splits into ex-tra-or-di-na-ry.",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "communication",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Split the word into syllables. Arrange them in the correct order.",
+		"mode": "syllable",
+		"word": "determination",
+		"pieces": ["mi", "de", "na", "ter", "tion"],
+		"correct_order": ["de", "ter", "mi", "na", "tion"],
+		"hint": "Say it slowly: de-ter-mi-na-tion.",
+		"feedback_correct": "Correct! de-ter-mi-na-tion.",
+		"feedback_wrong": "The word splits into de-ter-mi-na-tion.",
+	},
+]
+
+const _SCHOOL_MISSION_L4 := [
+	# Part 1 — Drag & Drop (5 items)
+	{
+		"type": "drag_drop",
+		"instruction": "Arrange the syllables in the correct order.",
+		"mode": "syllable",
+		"word": "extraordinary",
+		"pieces": ["di", "or", "na", "ex", "tra", "ry"],
+		"correct_order": ["ex", "tra", "or", "di", "na", "ry"],
+		"feedback_correct": "Correct! ex-tra-or-di-na-ry.",
+		"feedback_wrong": "The correct order is: ex-tra-or-di-na-ry.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Arrange the syllables in the correct order.",
+		"mode": "syllable",
+		"word": "communication",
+		"pieces": ["ca", "mu", "com", "tion", "ni"],
+		"correct_order": ["com", "mu", "ni", "ca", "tion"],
+		"feedback_correct": "Correct! com-mu-ni-ca-tion.",
+		"feedback_wrong": "The correct order is: com-mu-ni-ca-tion.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Arrange the syllables in the correct order.",
+		"mode": "syllable",
+		"word": "unforgettable",
+		"pieces": ["ta", "for", "un", "get", "ble"],
+		"correct_order": ["un", "for", "get", "ta", "ble"],
+		"feedback_correct": "Correct! un-for-get-ta-ble.",
+		"feedback_wrong": "The correct order is: un-for-get-ta-ble.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Arrange the syllables in the correct order.",
+		"mode": "syllable",
+		"word": "imagination",
+		"pieces": ["na", "i", "mag", "tion", "i"],
+		"correct_order": ["i", "mag", "i", "na", "tion"],
+		"feedback_correct": "Correct! i-mag-i-na-tion.",
+		"feedback_wrong": "The correct order is: i-mag-i-na-tion.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Arrange the syllables in the correct order.",
+		"mode": "syllable",
+		"word": "determination",
+		"pieces": ["mi", "de", "na", "ter", "tion"],
+		"correct_order": ["de", "ter", "mi", "na", "tion"],
+		"feedback_correct": "Correct! de-ter-mi-na-tion.",
+		"feedback_wrong": "The correct order is: de-ter-mi-na-tion.",
+	},
+	# Part 2 — Read-Aloud (5 items)
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "extraordinary",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "communication",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "unforgettable",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "imagination",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "determination",
+		"feedback_correct": "Great reading!",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 3 — PUNCTUATION (Inn) — Level 4
+# Focus: Semicolons, em-dashes, subordinate clauses, dialogue punctuation
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _INN_TUTORIAL_L4 := [
+	{
+		"type": "mcq",
+		"instruction":
+		"Advanced punctuation guides complex reading!\n• A semicolon (;) connects two related ideas — pause longer than a comma, but don't fully stop.\n• An em-dash (\u2014) signals a sudden break, added detail, or dramatic pause.\n• Quotation marks with dialogue tags show who is speaking and how.",
+		"question": "What does a semicolon (;) tell a reader to do?",
+		"options": ["Stop completely like a period", "Pause longer than a comma, then continue the connected thought", "Read faster", "Raise your voice"],
+		"correct_index": 1,
+		"feedback_correct": "Right! A semicolon is a medium pause — longer than a comma, shorter than a period — connecting two related ideas.",
+		"feedback_wrong":
+		"A semicolon connects two related thoughts. Pause longer than a comma, but keep going — the ideas are linked.",
+	},
+	{
+		"type": "mcq",
+		"instruction":
+		"An em-dash (\u2014) creates a dramatic pause or inserts extra information into a sentence. It's like a spotlight on what comes next.",
+		"question": "What effect does an em-dash (\u2014) create in reading?",
+		"options": ["It signals the end of a paragraph", "It creates a dramatic pause or highlights added detail", "It means the same as a comma", "It tells you to whisper"],
+		"correct_index": 1,
+		"feedback_correct": "Exactly! An em-dash creates drama — it makes the reader pause and pay attention to what follows.",
+		"feedback_wrong":
+		"An em-dash creates a dramatic break. It tells you: pause here, something important is coming.",
+	},
+]
+
+const _INN_PRACTICE_L4 := [
+	{
+		"type": "punctuation_read",
+		"sentence": "She read silently; he watched from the doorway.",
+		"word": "She read silently; he watched from the doorway.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should you handle the semicolon in this sentence?",
+		"options": ["Ignore it completely", "Pause longer than a comma, then continue", "Stop fully like a period", "Speed up after it"],
+		"correct_index": 1,
+		"hint": "A semicolon links two related but separate ideas. The pause should be noticeable but not final.",
+		"feedback_correct": "Correct! The semicolon creates a medium pause — the two actions happen in the same scene.",
+		"feedback_wrong": "A semicolon means: pause longer than a comma, but don't fully stop. The ideas are connected.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "The elder spoke carefully \u2014 each word carried weight.",
+		"word": "The elder spoke carefully \u2014 each word carried weight.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What does the em-dash signal in this sentence?",
+		"options": ["A question is coming", "A dramatic pause before important information", "The sentence is ending", "You should whisper"],
+		"correct_index": 1,
+		"hint": "The em-dash interrupts the flow to highlight what follows.",
+		"feedback_correct": "Right! The em-dash creates a dramatic pause — then the important detail lands: 'each word carried weight.'",
+		"feedback_wrong": "The em-dash pauses the sentence dramatically before revealing the key idea.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "'Come closer,' whispered the keeper of the gate.",
+		"word": "'Come closer,' whispered the keeper of the gate.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should the dialogue 'Come closer' be read?",
+		"options": ["Loudly and cheerfully", "In a soft, whispering tone", "Quickly and casually", "With a rising question tone"],
+		"correct_index": 1,
+		"hint": "The dialogue tag says 'whispered.' Let your voice match the tag.",
+		"feedback_correct": "Correct! The tag 'whispered' tells you to read 'Come closer' softly and quietly.",
+		"feedback_wrong": "When the tag says 'whispered,' your voice should drop to a soft, quiet tone.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "The path split into three: one led north, one east, and one into darkness.",
+		"word": "The path split into three: one led north, one east, and one into darkness.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What does the colon (:) signal here?",
+		"options": ["The sentence is finished", "A list or explanation follows", "Read the next part louder", "A question is being asked"],
+		"correct_index": 1,
+		"hint": "The colon introduces the three directions — it says 'here is the detail.'",
+		"feedback_correct": "Correct! The colon says: 'here comes the explanation' — three paths are listed.",
+		"feedback_wrong": "A colon introduces what follows — in this case, the three directions the path splits into.",
+	},
+]
+
+const _INN_MISSION_L4 := [
+	{
+		"type": "punctuation_read",
+		"sentence": "Though he searched for hours, he could not find what he had lost; the trail had gone cold.",
+		"word": "Though he searched for hours, he could not find what he had lost; the trail had gone cold.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "This sentence has a comma and a semicolon. How do the pauses differ?",
+		"options": ["Both pauses are the same length", "The comma is a brief pause; the semicolon is a longer, more deliberate pause", "The semicolon is shorter than the comma", "Neither requires a pause"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The comma after 'hours' is brief; the semicolon before 'the trail' is a longer pause separating two connected ideas.",
+		"feedback_wrong": "Commas = brief pause. Semicolons = longer pause between two related but distinct thoughts.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "The elder spoke carefully \u2014 each word carried weight.",
+		"word": "The elder spoke carefully \u2014 each word carried weight.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should your reading change at the em-dash?",
+		"options": ["Speed up immediately", "Pause dramatically, then deliver the next phrase with emphasis", "Lower your voice to a whisper", "Stop completely and start a new sentence"],
+		"correct_index": 1,
+		"feedback_correct": "Right! The em-dash creates a dramatic break — pause, then emphasise 'each word carried weight.'",
+		"feedback_wrong": "An em-dash signals drama: pause at the dash, then give weight to what follows.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "'Come closer,' whispered the keeper of the gate.",
+		"word": "'Come closer,' whispered the keeper of the gate.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "The dialogue tag says 'whispered.' How does this affect your reading of the entire sentence?",
+		"options": ["Only whisper the word 'closer'", "Read the dialogue softly and the tag at normal volume", "Shout the dialogue for contrast", "Read everything at the same volume"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The dialogue ('Come closer') should be whispered softly; the narration returns to normal volume.",
+		"feedback_wrong": "The dialogue tag tells you HOW to read the quoted words. 'Whispered' means the dialogue is soft; the narration is normal.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "She read silently; he watched from the doorway.",
+		"word": "She read silently; he watched from the doorway.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "Why does the author use a semicolon here instead of a period?",
+		"options": ["To save space", "To show that the two actions happen simultaneously in the same scene", "Because periods are only for long sentences", "To indicate a question"],
+		"correct_index": 1,
+		"feedback_correct": "Exactly! The semicolon shows these are parallel, simultaneous actions — two people in one quiet moment.",
+		"feedback_wrong": "A semicolon links related ideas. Here, both actions happen at the same time in the same scene.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "If the words were lost \u2014 truly lost \u2014 then the village would remain silent forever.",
+		"word": "If the words were lost \u2014 truly lost \u2014 then the village would remain silent forever.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "What is the effect of the paired em-dashes around 'truly lost'?",
+		"options": ["They make you skip those words", "They create emphasis — pausing before and after to stress the gravity of 'truly lost'", "They signal a change of speaker", "They mean the same as commas"],
+		"correct_index": 1,
+		"feedback_correct": "Right! The paired em-dashes isolate 'truly lost' for dramatic emphasis — pause on both sides.",
+		"feedback_wrong": "Paired em-dashes frame a phrase for emphasis. Pause before and after 'truly lost' to let its weight land.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "The manuscript, which had been hidden for decades, was finally discovered.",
+		"word": "The manuscript, which had been hidden for decades, was finally discovered.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should the clause 'which had been hidden for decades' be read?",
+		"options": ["Louder than the rest", "At a slightly lower pitch, as an aside, with brief pauses at both commas", "Faster than the surrounding text", "With a rising question tone"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The non-essential clause is read as an aside — slightly lower pitch, with pauses at the commas.",
+		"feedback_wrong": "Commas around a relative clause signal an aside. Lower your pitch slightly and pause at both commas.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "He hesitated; should he enter the forgotten chamber?",
+		"word": "He hesitated; should he enter the forgotten chamber?",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "This sentence ends with a question mark but begins with a statement. How should you manage the shift?",
+		"options": ["Read it all as a question with rising tone throughout", "Read the first clause as a statement, pause at the semicolon, then shift to a questioning tone", "Read everything in a flat tone", "Ignore the semicolon"],
+		"correct_index": 1,
+		"feedback_correct": "Right! 'He hesitated' is a statement — pause at the semicolon — then 'should he enter...' shifts to a questioning tone.",
+		"feedback_wrong": "The semicolon separates a statement from a question. Read each part with the appropriate tone.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "'Why?' she asked, her voice barely a whisper.",
+		"word": "'Why?' she asked, her voice barely a whisper.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should the single word 'Why?' be delivered?",
+		"options": ["Shouted loudly", "Spoken softly with a questioning, almost fragile tone", "Read quickly and casually", "In a commanding voice"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The tag says 'barely a whisper' — 'Why?' should be soft, questioning, and fragile.",
+		"feedback_wrong": "The description 'barely a whisper' tells you the tone: quiet, questioning, vulnerable.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "The path split into three: one led north, one east, and one into darkness.",
+		"word": "The path split into three: one led north, one east, and one into darkness.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "How should the rhythm change after the colon?",
+		"options": ["Read everything at the same pace", "Pause at the colon, then read each listed item with brief pauses at the commas, slowing at 'into darkness'", "Speed up after the colon", "Whisper the list"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The colon introduces the list. Pause there, then read each item clearly — and let 'into darkness' land with weight.",
+		"feedback_wrong": "After a colon, pause, then deliver each item. The final item — 'into darkness' — carries the most dramatic weight.",
+	},
+	{
+		"type": "punctuation_read",
+		"sentence": "Although the sky was clear, an unease settled over the village \u2014 something was not right.",
+		"word": "Although the sky was clear, an unease settled over the village \u2014 something was not right.",
+		"instruction": "Read this sentence aloud. Then answer the question.",
+		"question": "This sentence uses a comma and an em-dash. What is the combined effect on reading rhythm?",
+		"options": ["Both create identical pauses", "The comma creates a brief pause after the contrast; the em-dash creates a dramatic pause before the ominous conclusion", "The em-dash should be ignored", "Read straight through without pausing"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The comma separates the contrast ('clear sky' vs. 'unease'); the em-dash dramatically reveals the conclusion.",
+		"feedback_wrong": "The comma sets up the contrast; the em-dash delivers the punch. Two different pauses, two different effects.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 4 — FLUENCY (Chapel) — Level 4
+# Focus: Expression, pacing, tone in literary prose
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _CHAPEL_TUTORIAL_L4 := [
+	{
+		"type": "mcq",
+		"instruction":
+		"At this level, fluent reading means more than just smooth phrasing. It means adjusting your pace for suspense, your tone for mood, and your emphasis for meaning. A skilled reader makes the text come alive — the listener should feel the atmosphere.",
+		"question": "What separates good fluency from great fluency?",
+		"options":
+		[
+			"Reading as fast as possible",
+			"Adjusting pace, tone, and emphasis to match the mood and meaning",
+			"Pronouncing every word perfectly but in a flat tone",
+			"Pausing after every single word"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Exactly! Great fluency means your voice becomes an instrument — adapting to the text's mood and meaning.",
+		"feedback_wrong":
+		"Great fluency goes beyond accuracy. It means your pace, tone, and emphasis all serve the meaning of the text.",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this sentence aloud with expression. Let your voice match the atmosphere.",
+		"word": "The ancient library stood at the heart of Luminara, its towering shelves disappearing into shadow.",
+		"feedback_correct": "Beautiful reading — you captured the atmosphere!",
+	},
+]
+
+const _CHAPEL_PRACTICE_L4 := [
+	{
+		"type": "fluency_check",
+		"instruction": "Read these sentences with expression. Slow down for the atmosphere and emphasise key words.",
+		"passage":
+		"Dust particles danced in narrow beams of light that filtered through stained glass windows.\nThe Cognian moved carefully between the rows, running his fingers along cracked leather spines.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Think about how the passage should be read.",
+		"question": "How should 'Dust particles danced in narrow beams of light' be read?",
+		"options":
+		["Quickly and energetically", "Slowly and gently, with a sense of wonder", "In a monotone", "Loudly to emphasise the dust"],
+		"correct_index": 1,
+		"hint": "Dust dancing in light beams creates a quiet, almost magical image. Let your voice reflect that.",
+		"feedback_correct": "Right! The image is delicate and beautiful — your voice should be slow, soft, and full of wonder.",
+		"feedback_wrong": "Dust 'dancing' in light creates a gentle, magical mood. Read slowly, softly, with wonder.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Consider pacing and emphasis.",
+		"question": "Which phrase in the passage should receive the most emphasis?",
+		"options":
+		[
+			"'Dust particles danced'",
+			"'cracked leather spines'",
+			"'stained glass windows'",
+			"All phrases should be read with equal emphasis"
+		],
+		"correct_index": 0,
+		"hint": "The opening image sets the tone for the entire scene. Which phrase does that?",
+		"feedback_correct": "Right! 'Dust particles danced' is the key image — it creates the atmosphere of the entire scene.",
+		"feedback_wrong": "'Dust particles danced' is the phrase that establishes the mood — emphasise it to anchor the scene.",
+	},
+]
+
+const _CHAPEL_MISSION_L4 := [
+	{
+		"type": "fluency_check",
+		"instruction":
+		"Read the full passage aloud with expression. Adjust your pace for suspense, your tone for mood, and your emphasis for meaning.",
+		"passage": _CHAPEL_PASSAGE_L4,
+		"feedback_correct": "Excellent reading! You brought the library to life with your voice.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on how the passage should be read aloud.",
+		"question": "Where should a reader slow down most in the passage?",
+		"options":
+		[
+			"'Dust particles danced in narrow beams'",
+			"'He began to read, slowly at first'",
+			"'The Cognian moved carefully'",
+			"'Lights flickered in distant corners'"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Right! The phrase itself tells you to slow down — 'slowly at first' — mirror the pace with your voice.",
+		"feedback_wrong": "'He began to read, slowly at first' — the text literally tells you the pace. Slow down there.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Consider the pacing of the passage.",
+		"question": "How should the pace change between 'slowly at first' and 'then with growing confidence'?",
+		"options":
+		[
+			"Stay the same throughout",
+			"Gradually accelerate — matching the character's increasing confidence",
+			"Slow down even more after 'growing confidence'",
+			"Read both parts very quickly"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Exactly! The text describes acceleration — your reading speed should mirror the character's growing confidence.",
+		"feedback_wrong": "The character moves from slow to confident. Your pace should mirror this — gradually pick up speed.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Consider the tone of the passage.",
+		"question": "What tone should 'Each book seemed to hum with forgotten knowledge' be read with?",
+		"options":
+		[
+			"A matter-of-fact, informational tone",
+			"A reverent, almost mystical tone — as if describing something sacred",
+			"A cheerful, upbeat tone",
+			"A frightened, anxious tone"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Right! Books 'humming with forgotten knowledge' is mystical and reverent — read it with awe.",
+		"feedback_wrong": "Books humming with forgotten knowledge is a mystical image. Read it with reverence and quiet awe.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Consider the mood shift.",
+		"question": "How does the mood shift in the final two sentences of the passage?",
+		"options":
+		[
+			"From tension to fear",
+			"From quiet stillness to warmth and awakening",
+			"From excitement to sadness",
+			"There is no mood shift"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The library 'awakens' — lights flicker, the air grows warm. The mood shifts from stillness to life.",
+		"feedback_wrong": "The final lines describe the library awakening — lights, warmth, possibility. The mood lifts from stillness to hope.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Consider emphasis and stress.",
+		"question": "In the phrase 'its ink still vivid,' which word deserves the most stress?",
+		"options": ["Its", "Ink", "Still", "Vivid"],
+		"correct_index": 3,
+		"feedback_correct": "Right! 'Vivid' is the surprise — despite the yellowed pages, the ink remains vivid. Stress it.",
+		"feedback_wrong": "'Vivid' carries the contrast: the pages are yellowed, but the ink is still VIVID. That word gets the stress.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Consider how emphasis communicates meaning.",
+		"question": "Why should 'as though the words inside were waiting to be spoken aloud once more' be read with gentle emphasis?",
+		"options":
+		[
+			"Because it is the longest phrase in the passage",
+			"Because it personifies the books — they are waiting — which is the central theme",
+			"Because it contains difficult vocabulary",
+			"Because it comes at the end of a paragraph"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Exactly! The books are 'waiting to be spoken' — this personification is the heart of the passage's meaning.",
+		"feedback_wrong": "The phrase personifies the books as waiting. This is the passage's key theme — give it gentle, meaningful emphasis.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Consider expression and voice quality.",
+		"question": "How should the em-dash in 'elegant curves intertwined with angular marks that suggested both urgency and beauty' affect your reading?",
+		"options":
+		[
+			"Skip over it quickly",
+			"Pause at the dash, then read the description with a sense of discovery and wonder",
+			"Read it in a monotone",
+			"Speed up immediately after the dash"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Right! The em-dash signals discovery — pause, then let the description unfold with wonder.",
+		"feedback_wrong": "The em-dash creates a moment of discovery. Pause there, then describe the script with a sense of awe.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Consider the overall reading strategy.",
+		"question": "What is the most important quality for reading this passage fluently?",
+		"options":
+		[
+			"Speed — finish it quickly",
+			"Volume — read it loudly throughout",
+			"Sensitivity — adjusting pace, tone, and emphasis to match the shifting atmosphere",
+			"Precision — pronouncing every word perfectly without expression"
+		],
+		"correct_index": 2,
+		"feedback_correct": "Exactly! This passage demands sensitivity — your voice must follow the atmosphere as it shifts from stillness to awakening.",
+		"feedback_wrong": "Fluency in literary text means sensitivity: let your pace, tone, and emphasis reflect the shifting mood.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Consider the final image.",
+		"question": "How should 'the air itself grew warm with possibility' be read?",
+		"options":
+		[
+			"Quickly and casually",
+			"With a sense of rising warmth and hope — the climax of the awakening",
+			"In a flat, neutral tone",
+			"With fear and uncertainty"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Right! This is the passage's emotional climax — warmth and possibility. Let your voice rise with hope.",
+		"feedback_wrong": "The air growing warm with possibility is the emotional peak. Read it with warmth and rising hope in your voice.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 5 — VOCABULARY (Library) — Level 4
+# Focus: Academic vocabulary through context clues
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _LIBRARY_TUTORIAL_L4 := [
+	{
+		"type": "mcq",
+		"instruction":
+		"At this level, you will encounter academic vocabulary — words used in formal writing. Use context clues to determine meaning. Look at the words and ideas AROUND the unfamiliar word.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "Using context clues, what does 'desolation' most likely mean?",
+		"options": ["Celebration and joy", "Emptiness and ruin", "Growth and progress", "Confusion and noise"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Desolation' means emptiness and ruin — the passage describes abandoned dwellings and silence.",
+		"feedback_wrong":
+		"The context says inhabitants abandoned dwellings and silence descended. 'Desolation' means emptiness and ruin.",
+	},
+]
+
+const _LIBRARY_PRACTICE_L4 := [
+	{
+		"type": "mcq",
+		"instruction": "Use context clues from the passage to determine the meaning.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'prolonged' mean in 'a prolonged period of desolation'?",
+		"options": ["Short and sudden", "Extended over a long time", "Surprising", "Intense but brief"],
+		"correct_index": 1,
+		"hint": "The inhabitants 'gradually' abandoned — this happened over time, not suddenly.",
+		"feedback_correct": "Correct! 'Prolonged' means extended over a long time.",
+		"feedback_wrong": "'Prolonged' means lasting a long time. The word 'gradually' in the passage supports this.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use context clues from the passage to determine the meaning.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'industrious' mean?",
+		"options": ["Lazy and careless", "Hard-working and productive", "Wealthy and powerful", "Quiet and reserved"],
+		"correct_index": 1,
+		"hint": "It is paired with 'prosperous' — both describe the people BEFORE the decline.",
+		"feedback_correct": "Correct! 'Industrious' means hard-working — the people were once busy and productive.",
+		"feedback_wrong": "'Industrious' means hard-working. It pairs with 'prosperous' to describe the village's former vitality.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use context clues from the passage to determine the meaning.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'resilient' mean in this context?",
+		"options": ["Frightened and unsure", "Able to recover and endure hardship", "Angry and defiant", "Old and tired"],
+		"correct_index": 1,
+		"hint": "The resilient ones 'remained, clinging to hope.' They endured when others left.",
+		"feedback_correct": "Correct! 'Resilient' means able to endure — they stayed when everyone else gave up.",
+		"feedback_wrong": "'Resilient' means able to withstand difficulty. These people stayed and held on to hope.",
+	},
+]
+
+const _LIBRARY_MISSION_L4 := [
+	{
+		"type": "mcq",
+		"instruction": "Based on the passage, determine the meaning of the word.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'desolation' mean?",
+		"options": ["Happiness and celebration", "Emptiness, ruin, and abandonment", "Rapid growth", "A state of confusion"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Desolation' means emptiness and ruin.",
+		"feedback_wrong": "The passage describes abandoned dwellings and silence — 'desolation' means emptiness and ruin.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Based on the passage, determine the meaning of the word.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'prolonged' mean?",
+		"options": ["Sudden and brief", "Extended over a long time", "Unexpected", "Mild and gentle"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Prolonged' means lasting a long time.",
+		"feedback_wrong": "'Prolonged' means extended — the desolation lasted for a long period.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Based on the passage, determine the meaning of the word.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'prosperous' mean?",
+		"options": ["Poor and struggling", "Successful and wealthy", "Isolated and alone", "Fearful and anxious"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Prosperous' means successful and thriving.",
+		"feedback_wrong": "'Prosperous' describes the people before the decline — they were once successful and well-off.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Based on the passage, determine the meaning of the word.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'industrious' mean?",
+		"options": ["Lazy and idle", "Hard-working and productive", "Artistic and creative", "Dangerous and reckless"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Industrious' means hard-working.",
+		"feedback_wrong": "'Industrious' means hard-working and productive — paired with 'prosperous' to show former success.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Based on the passage, determine the meaning of the word.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'inexplicable' mean?",
+		"options": ["Easy to understand", "Impossible to explain", "Very loud", "Extremely beautiful"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Inexplicable' means impossible to explain — no one could account for the silence.",
+		"feedback_wrong": "'Inexplicable' means impossible to explain. The prefix 'in-' means 'not,' and 'explicable' means 'explainable.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Based on the passage, determine the meaning of the word.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'resilient' mean?",
+		"options": ["Weak and fragile", "Able to endure and recover from hardship", "Loud and demanding", "Young and inexperienced"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Resilient' means able to withstand difficulty and keep going.",
+		"feedback_wrong": "'Resilient' people endure hardship. They 'remained, clinging to hope' when others left.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Based on the passage, determine the meaning of the word.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'tenacity' mean?",
+		"options": ["Talent for music", "Persistent determination", "Physical strength", "Quiet patience"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Tenacity' means stubborn determination — she refused to give up.",
+		"feedback_wrong": "'Tenacity' means persistent determination. Her refusal to give up became legendary.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Based on the passage, determine the meaning of the word.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'meticulous' mean?",
+		"options": ["Careless and hasty", "Extremely careful and precise", "Secretive and hidden", "Generous and kind"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Meticulous' means extremely careful and thorough.",
+		"feedback_wrong": "'Meticulous' means precise and careful — she preserved the stories with great attention to detail.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Based on the passage, determine the meaning of the word.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'preservation' mean?",
+		"options": ["The act of destroying something", "The act of keeping something safe and intact", "The act of discovering something new", "The act of forgetting something"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Preservation' means keeping something safe from damage or decay.",
+		"feedback_wrong": "'Preservation' means keeping something safe. She believed in carefully maintaining the village's stories.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Based on the passage, determine the meaning of the word.",
+		"passage": _LIBRARY_PASSAGE_L4,
+		"question": "What does 'salvation' mean?",
+		"options": ["The cause of a problem", "Rescue or deliverance from danger or difficulty", "A form of punishment", "A type of celebration"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Salvation' means rescue or being saved from a terrible situation.",
+		"feedback_wrong": "'Salvation' means being saved or rescued. The village's salvation lay in preserving its stories.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 6 — MAIN IDEA (Well) — Level 4
+# Focus: Main idea in complex multi-event narratives, cause and effect
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _WELL_TUTORIAL_L4 := [
+	{
+		"type": "mcq",
+		"instruction":
+		"In complex narratives, the main idea is not always stated directly. You must look at ALL the events together and ask: what is the passage really about? What is the author's central message?",
+		"passage": _WELL_PASSAGE_L4,
+		"question": "What is this passage mostly about?",
+		"options":
+		[
+			"Two factions fighting over territory",
+			"A village divided by blame that can only heal through shared communication",
+			"The Cognian defeating the village's enemies",
+			"Ancient spirits punishing the villagers"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Excellent! The main idea is that the village's silence came from division, and only shared communication can restore it.",
+		"feedback_wrong": "The passage shows that blame divided the village, but the real problem was that people stopped sharing stories. Communication is the cure.",
+	},
+]
+
+const _WELL_PRACTICE_L4 := [
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L4,
+		"question": "What did the Cognian discover was the true cause of the silence?",
+		"options": ["The Northside hoarded records", "The Southside angered spirits", "Both factions stopped sharing stories aloud", "A curse from outside the village"],
+		"correct_index": 2,
+		"hint": "The passage says 'neither faction was responsible.' What really caused the silence?",
+		"feedback_correct": "Correct! The silence began when the village stopped sharing stories — neither faction was to blame.",
+		"feedback_wrong": "Neither faction caused the silence. It began when people stopped sharing their stories aloud.",
+	},
+	{
+		"type": "drag_drop",
+		"instruction": "Arrange these causes and effects in the correct order (first to last).",
+		"mode": "sequence",
+		"pieces":
+		[
+			"The Cognian arrived to mediate",
+			"The factions stopped sharing stories",
+			"The language began to fade",
+			"Each side retreated into isolation"
+		],
+		"correct_order":
+		[
+			"The factions stopped sharing stories",
+			"Each side retreated into isolation",
+			"The language began to fade",
+			"The Cognian arrived to mediate"
+		],
+		"hint": "What happened first? What was the chain of causes and effects?",
+		"feedback_correct": "Correct order! Stories stopped, isolation grew, language faded, then the Cognian came.",
+		"feedback_wrong": "The chain: stopped sharing stories, retreated into isolation, language faded, Cognian arrived.",
+	},
+]
+
+const _WELL_MISSION_L4 := [
+	# Part A — MCQ (5 items)
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L4,
+		"question": "What is the main idea of the passage?",
+		"options":
+		[
+			"The Northside was responsible for the silence",
+			"A divided community can only heal through shared communication",
+			"The Cognian used magic to restore the village",
+			"The markets were the most important part of the village"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The central message is that shared communication heals division.",
+		"feedback_wrong": "The main idea is that the village split because people stopped communicating — only sharing words can heal it.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L4,
+		"question": "Why did the Northside blame the Southside?",
+		"options": ["They stole the written records", "They claimed the Southside angered ancient spirits", "They refused to trade at the market", "They left the village first"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The Northside accused the Southside of angering the ancient spirits.",
+		"feedback_wrong": "The Northside claimed the Southside 'had angered the ancient spirits.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L4,
+		"question": "What did the Southside accuse the Northside of doing?",
+		"options": ["Destroying the village gate", "Hoarding the last written records and letting words decay", "Refusing to speak to anyone", "Leaving the village at night"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The Southside accused the Northside of hoarding records in locked chambers.",
+		"feedback_wrong": "The Southside accused the Northside of 'hoarding the last written records, letting the words decay.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L4,
+		"question": "What was the true cause of the silence?",
+		"options": ["A natural disaster", "Both factions stopped sharing stories aloud", "The ancient spirits were angry", "The records were destroyed"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The silence began when the village stopped sharing its stories aloud.",
+		"feedback_wrong": "Neither faction was responsible. The silence came from people no longer sharing stories.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L4,
+		"question": "What is the author's message about the role of communication?",
+		"options":
+		[
+			"Communication is only useful for trade",
+			"Without the exchange of words, language and community fade",
+			"Written records are more important than spoken words",
+			"Communication causes more conflict than silence"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The author shows that without exchanging words, both language and community decline.",
+		"feedback_wrong": "The passage demonstrates that language fades without exchange — communication sustains both words and community.",
+	},
+	# Part B — Drag & Drop cause-and-effect (5 items as sequence)
+	{
+		"type": "drag_drop",
+		"instruction": "Arrange the causes and effects in the correct order (first to last).",
+		"mode": "sequence",
+		"pieces":
+		[
+			"The Cognian encouraged speaking, reading, and listening",
+			"The village stopped sharing stories",
+			"Suspicion and resentment divided the factions",
+			"The language itself began to fade",
+			"Each side retreated into isolation"
+		],
+		"correct_order":
+		[
+			"The village stopped sharing stories",
+			"Each side retreated into isolation",
+			"Suspicion and resentment divided the factions",
+			"The language itself began to fade",
+			"The Cognian encouraged speaking, reading, and listening"
+		],
+		"feedback_correct": "Perfect order! You traced the cause-and-effect chain accurately.",
+		"feedback_wrong": "The chain: stories stopped, isolation, suspicion grew, language faded, then the Cognian's solution.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L4,
+		"question": "What had happened to the village markets?",
+		"options": ["They were busier than ever", "They stood empty, their stalls serving as barriers", "They were burned down", "They were moved outside the village"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The markets stood empty — their stalls became barriers between the factions.",
+		"feedback_wrong": "The once-bustling markets stood empty, with stalls acting as physical barriers between the two communities.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L4,
+		"question": "How did the Cognian approach the problem?",
+		"options": ["By choosing one faction's side", "Through patient listening and careful questioning", "By using force to unite them", "By ignoring both sides"],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The Cognian used patient listening and careful questioning to find the truth.",
+		"feedback_wrong": "The Cognian used 'patient listening and careful questioning' — a diplomatic approach.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L4,
+		"question": "What does the passage suggest about blame?",
+		"options":
+		[
+			"Blame is always justified",
+			"Blame can prevent people from seeing the real problem",
+			"The Northside deserved the blame",
+			"Blame is the same as truth"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! Both factions blamed each other, but neither was responsible — blame obscured the truth.",
+		"feedback_wrong": "The passage shows that blame kept both factions from seeing the real cause of the silence.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _WELL_PASSAGE_L4,
+		"question": "What does 'the language itself had begun to fade' suggest?",
+		"options":
+		[
+			"The villagers forgot how to write",
+			"Without spoken exchange, even the ability to communicate was disappearing",
+			"A magical force was erasing words",
+			"The language was replaced by a new one"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! Language fading means that without use — without speaking and sharing — communication itself deteriorates.",
+		"feedback_wrong": "When people stop exchanging words, even the language starts to disappear. Use it or lose it.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 7 — INFERENCE (Market) — Level 4
+# Focus: Author's purpose, character motivation, foreshadowing
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _MARKET_TUTORIAL_L4 := [
+	{
+		"type": "mcq",
+		"instruction":
+		"Advanced inference means reading between the lines at a deeper level. You must consider: What does the author suggest without saying it directly? What motivates a character's actions? What do subtle details foreshadow?",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "What does the keeper's trembling hands suggest about his emotional state?",
+		"options":
+		[
+			"He is cold from the weather",
+			"He is filled with anxiety and conflicting hope about the letter's contents",
+			"He is angry at the person who sent the letter",
+			"He is too old to hold objects steadily"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Excellent inference! The passage explicitly says 'not from cold' — his trembling reveals inner conflict between hope and fear of disappointment.",
+		"feedback_wrong": "The passage says his hands trembled 'not from cold, but from the weight of what the letter might contain.' This is emotional, not physical.",
+	},
+]
+
+const _MARKET_PRACTICE_L4 := [
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to make inferences.",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "Why does the author include the detail about the failed expedition three years ago?",
+		"options": ["To describe the keeper's travel hobby", "To explain why the keeper is afraid to hope — he has been disappointed before", "To show that the keeper is an adventurer", "To introduce a new character"],
+		"correct_index": 1,
+		"hint": "The past failure makes the current letter feel more significant. Why would the author mention it?",
+		"feedback_correct": "Correct! The past disappointment explains the keeper's hesitation — he fears being let down again.",
+		"feedback_wrong": "The failed expedition shows why the keeper hesitates. Past disappointment makes hope feel dangerous.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to make inferences.",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "What does the detail 'the parchment smelled faintly of cedar' suggest?",
+		"options": ["The letter was written in a forest", "The letter comes from somewhere distant and possibly significant — cedar suggests careful preservation", "Cedar is the keeper's favourite smell", "The letter is fake"],
+		"correct_index": 1,
+		"hint": "Cedar is associated with preservation — it protects things from decay. What might this suggest about the letter?",
+		"feedback_correct": "Correct! Cedar suggests careful preservation — this letter was protected, which hints at its importance.",
+		"feedback_wrong": "Cedar is used to preserve valuable items. The scent suggests this letter has been carefully kept — it may be important.",
+	},
+]
+
+const _MARKET_MISSION_L4 := [
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to make inferences.",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "What does the author suggest about the keeper's character through the detail 'staring at a letter he could not bring himself to open'?",
+		"options":
+		[
+			"He cannot read",
+			"He is afraid — the letter could bring either hope or another devastating disappointment",
+			"He dislikes reading letters",
+			"He is too busy to open it"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! His inability to open the letter reveals deep fear of disappointment battling against hope.",
+		"feedback_wrong": "He 'could not bring himself to open it' — this shows fear. Opening it means risking another disappointment.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to make inferences.",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "What is the significance of the 'unfamiliar crest' on the wax seal?",
+		"options":
+		[
+			"It means the letter is unimportant",
+			"It suggests the letter comes from an unknown or distant source — possibly the province where the Verses were found",
+			"It means the letter is a forgery",
+			"It is purely decorative and means nothing"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! An unfamiliar crest from a distant source aligns with the rumour about a distant province.",
+		"feedback_wrong": "The unfamiliar crest suggests a distant origin — matching the rumour about the Verses found 'in a distant province.'",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to make inferences.",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "Why does the author describe the assistant's expression as 'unreadable but her posture tense'?",
+		"options":
+		[
+			"She is bored by the situation",
+			"She is trying to hide her own anxiety and anticipation about the letter",
+			"She disapproves of the keeper",
+			"She does not care about the letter"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! Her unreadable expression masks her feelings, but her tense posture betrays her anxiety — she cares deeply.",
+		"feedback_wrong": "Her face hides her emotions, but her body language (tense posture) reveals she is anxious too.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to make inferences.",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "What does the keeper's search for 'reassurance, perhaps, or permission to hope' in his assistant's face reveal?",
+		"options":
+		[
+			"He needs her approval for all decisions",
+			"He is emotionally vulnerable and seeks shared courage before taking a risk",
+			"He does not trust his own reading ability",
+			"He wants her to open the letter instead"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! He looks to her for emotional support — sharing the weight of this moment before taking the leap.",
+		"feedback_wrong": "He seeks reassurance because the moment is too heavy to face alone — he wants shared courage.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to make inferences.",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "What is the author's purpose in ending the passage with 'He broke the seal'?",
+		"options":
+		[
+			"To provide a satisfying conclusion",
+			"To create suspense — the reader wants to know what the letter says but is left waiting",
+			"To show the keeper's impatience",
+			"To describe a physical action with no deeper meaning"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The abrupt ending creates suspense — the seal is broken, but the contents remain unknown.",
+		"feedback_wrong": "Ending at the moment the seal breaks leaves the reader in suspense — we never learn what the letter says.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to make inferences.",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "What does the phrase 'the weight of what the letter might contain' suggest about the Founding Verses?",
+		"options":
+		[
+			"The letter is physically heavy",
+			"The Founding Verses have enormous importance — their recovery could change everything",
+			"The keeper collects heavy objects",
+			"The Verses are not important to anyone"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! 'Weight' is metaphorical — the Verses are so important that even the possibility of finding them is overwhelming.",
+		"feedback_wrong": "The 'weight' is emotional, not physical. The Verses could break the silence — that possibility is overwhelming.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to make inferences.",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "Why does the author include the details about 'the long journey, the false leads, the empty vault'?",
+		"options":
+		[
+			"To make the passage longer",
+			"To build a pattern of disappointment that makes the current moment more tense",
+			"To describe a travel story",
+			"To introduce new characters from the expedition"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The past failures create a pattern. Each disappointment raises the emotional stakes of this new letter.",
+		"feedback_wrong": "Past failures establish a pattern of crushed hope — making this new moment more tense and meaningful.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to make inferences.",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "What can you infer about the relationship between the keeper and his assistant?",
+		"options":
+		[
+			"They dislike each other",
+			"They share a deep, unspoken bond — she understands his struggle without needing to say much",
+			"She is new and does not know him well",
+			"He does not trust her"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! Her quiet question and his searching look suggest a deep bond — they communicate beyond words.",
+		"feedback_wrong": "Her simple question 'Are you going to open it?' and his look for reassurance show a close, trusting relationship.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to make inferences.",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "What is the overall mood of this passage?",
+		"options":
+		[
+			"Lighthearted and humorous",
+			"Tense, anxious, and filled with fragile hope",
+			"Angry and confrontational",
+			"Peaceful and contented"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The mood is tense anxiety mixed with fragile hope — the keeper wants to believe but fears disappointment.",
+		"feedback_wrong": "Trembling hands, past failures, an unopened letter — the mood is anxious tension mixed with fragile, guarded hope.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Use clues from the passage to make inferences.",
+		"passage": _MARKET_PASSAGE_L4,
+		"question": "What does the author suggest about hope through this passage?",
+		"options":
+		[
+			"Hope is easy and always rewarded",
+			"Hope is dangerous because it always leads to disappointment",
+			"Hope requires courage — choosing to hope again after past failure is itself an act of bravery",
+			"Hope is irrelevant to the story"
+		],
+		"correct_index": 2,
+		"feedback_correct": "Correct! The keeper's choice to break the seal — despite past pain — shows that hope requires courage.",
+		"feedback_wrong": "After repeated disappointments, choosing to hope again is brave. Breaking the seal is an act of courage.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
+# WEEK 8 — FINAL MISSION (Bakery) — Level 4
+# Comprehensive: Read-Aloud + Fluency + Analysis-level comprehension
+# ═════════════════════════════════════════════════════════════════════════════
+
+const _BAKERY_TUTORIAL_L4 := [
+	{
+		"type": "read_aloud",
+		"instruction":
+		"This is the final mission! Let's prepare by practising complex words. Read this word clearly and confidently.",
+		"word": "illuminate",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "persevere",
+		"feedback_correct": "Great reading!",
+	},
+]
+
+const _BAKERY_PRACTICE_L4 := [
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "extraordinary",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "determination",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Read the passage, then answer.",
+		"passage": _BAKERY_PASSAGE_L4,
+		"question": "Who preserved the stories throughout the years of silence?",
+		"options": ["The Cognian", "The children", "An elderly woman", "The village elders"],
+		"correct_index": 2,
+		"hint": "Look for the character described as guarding the manuscripts.",
+		"feedback_correct": "Correct! The elderly woman preserved and guarded the stories.",
+		"feedback_wrong": "The elderly woman 'had preserved the stories' and 'guarded them so fiercely.'",
+	},
+]
+
+const _BAKERY_MISSION_L4 := [
+	# Part A — Read-Aloud words (10 items)
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "illuminate",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "desolate",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "persevere",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "contemplate",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "restoration",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "labyrinth",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "extraordinary",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "determination",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "resilience",
+		"feedback_correct": "Great reading!",
+	},
+	{
+		"type": "read_aloud",
+		"instruction": "Read this word aloud clearly.",
+		"word": "magnificent",
+		"feedback_correct": "Great reading!",
+	},
+	# Part B — Full passage fluency check (1 item)
+	{
+		"type": "fluency_check",
+		"instruction": "Read the full passage aloud with expression. Adjust your pace for the emotional shifts — from hesitant whispers to triumphant restoration.",
+		"passage": _BAKERY_PASSAGE_L4,
+		"feedback_correct": "Excellent reading! You brought the restoration of Luminara to life.",
+	},
+	# Part C — Analysis-level comprehension MCQ (10 items)
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L4,
+		"question": "Why does the author compare the restoration to 'dawn spreading across a valley'?",
+		"options":
+		[
+			"Because the restoration happened at sunrise",
+			"To show that recovery was gradual and natural, not sudden",
+			"Because the valley is where Luminara is located",
+			"To describe the weather during the restoration"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The simile shows that healing was slow and gradual — like dawn, it unfolded over time.",
+		"feedback_wrong": "Dawn spreads gradually. The author uses this simile to show that restoration was a slow, natural process.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L4,
+		"question": "Why did the children speak 'freely, unburdened by the memory of loss'?",
+		"options":
+		[
+			"They were too young to understand language",
+			"They had never experienced the silence's beginning, so they had no fear of speaking",
+			"They were taught by the Cognian",
+			"They did not care about the village's history"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The children had no memory of the loss — they could speak without the weight of past trauma.",
+		"feedback_wrong": "The children 'had never known the village in its former glory' — they had no painful memories to hold them back.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L4,
+		"question": "Why did some elders weep from grief rather than relief?",
+		"options":
+		[
+			"They were unhappy about the restoration",
+			"They mourned the years of silence that could never be recovered",
+			"They were frightened by the children's voices",
+			"They disagreed with the elderly woman"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! Even in joy, they grieved the irretrievable years lost to silence.",
+		"feedback_wrong": "Their grief was for 'the years that had been lost' — time that could never be reclaimed.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L4,
+		"question": "What does 'Each word she spoke seemed to mend something invisible' mean?",
+		"options":
+		[
+			"She was repairing physical objects with her voice",
+			"Her words were literally magical",
+			"Her reading repaired the broken bonds of community — something you cannot see but can feel",
+			"She was fixing the manuscripts"
+		],
+		"correct_index": 2,
+		"feedback_correct": "Correct! The 'invisible thread' is community connection — her words repaired what division had torn apart.",
+		"feedback_wrong": "The 'invisible' thing being mended is community — the bonds between people that silence had broken.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L4,
+		"question": "What is the significance of the Cognian standing 'at the edge of the gathering, watching'?",
+		"options":
+		[
+			"He was not allowed to participate",
+			"He understood that the village's restoration belonged to its people, not to an outsider",
+			"He was bored by the reading",
+			"He was planning to leave immediately"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The Cognian stepped back because the healing belonged to the community — he was a catalyst, not the hero.",
+		"feedback_wrong": "Standing at the edge shows wisdom — the Cognian helped, but the restoration was the village's own achievement.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L4,
+		"question": "What does the passage suggest literacy is?",
+		"options":
+		[
+			"A hobby for educated people",
+			"The foundation upon which civilisation stands or falls",
+			"A skill only needed in schools",
+			"Less important than physical strength"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The passage explicitly states that literacy is 'the foundation upon which an entire civilisation could stand or fall.'",
+		"feedback_wrong": "The Cognian understood that literacy is not merely a skill — it is the foundation of civilisation itself.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L4,
+		"question": "Why does the author describe the woman's voice as 'frail' yet carrying 'extraordinary power'?",
+		"options":
+		[
+			"To show she was shouting",
+			"To contrast physical weakness with the immense power of words and stories",
+			"To suggest she was not a good reader",
+			"To describe her age with no deeper meaning"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The contrast between her frail voice and its extraordinary power shows that words matter more than volume.",
+		"feedback_wrong": "The contrast highlights a theme: the power of words transcends physical strength. A frail voice can carry immense meaning.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L4,
+		"question": "What is the significance of the bell ringing at the end?",
+		"options":
+		[
+			"It signals lunchtime",
+			"It symbolises the village's full restoration — the return of communal life and voice",
+			"It means a storm is coming",
+			"It is just background noise"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The bell ringing symbolises the complete restoration — the village has fully found its voice again.",
+		"feedback_wrong": "The bell, silent for decades, ringing again symbolises the full return of the village's communal voice and life.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L4,
+		"question": "What does the final line — 'not through magic, but through the persistent, meticulous act of reading, speaking, and sharing words' — tell us about the author's message?",
+		"options":
+		[
+			"Magic is more powerful than reading",
+			"The author values persistence and daily effort over grand, dramatic solutions",
+			"Reading is boring but necessary",
+			"The village actually used magic"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The author's message is clear: real restoration comes from persistent, everyday effort — not from magic or grand gestures.",
+		"feedback_wrong": "The author contrasts 'magic' with 'persistent, meticulous' effort — the message is that daily dedication matters most.",
+	},
+	{
+		"type": "mcq",
+		"instruction": "Answer based on the passage.",
+		"passage": _BAKERY_PASSAGE_L4,
+		"question": "What is the main theme of the entire passage?",
+		"options":
+		[
+			"Children are better readers than adults",
+			"Communities are healed through the shared, persistent practice of literacy",
+			"Old people should be in charge of villages",
+			"Bells are important cultural symbols"
+		],
+		"correct_index": 1,
+		"feedback_correct": "Correct! The central theme is that literacy — reading, speaking, sharing words — is what sustains and heals communities.",
+		"feedback_wrong": "The passage's theme: communities are healed and sustained through the shared, persistent practice of literacy.",
+	},
+]
+
+# ═════════════════════════════════════════════════════════════════════════════
 # QUEST LOOKUP
 # ═════════════════════════════════════════════════════════════════════════════
 
 # ── Static Helpers ──────────────────────────────────────────────────────────
 
 
-static func _lookup_stages(building_id: String) -> Dictionary:
+static func _lookup_stages(building_id: String, level: int = 3) -> Dictionary:
+	# Level-specific question lookup. Levels 1, 2, 4 fall back to default (L3)
+	# if no level-specific constants are defined yet.
 	match building_id:
 		"town_hall":
-			return {
-				"tutorial": _TOWN_HALL_TUTORIAL,
-				"practice": _TOWN_HALL_PRACTICE,
-				"mission": _TOWN_HALL_MISSION
-			}
+			match level:
+				1: return {"tutorial": _TOWN_HALL_TUTORIAL_L1, "practice": _TOWN_HALL_PRACTICE_L1, "mission": _TOWN_HALL_MISSION_L1}
+				2: return {"tutorial": _TOWN_HALL_TUTORIAL_L2, "practice": _TOWN_HALL_PRACTICE_L2, "mission": _TOWN_HALL_MISSION_L2}
+				4: return {"tutorial": _TOWN_HALL_TUTORIAL_L4, "practice": _TOWN_HALL_PRACTICE_L4, "mission": _TOWN_HALL_MISSION_L4}
+				_: return {"tutorial": _TOWN_HALL_TUTORIAL, "practice": _TOWN_HALL_PRACTICE, "mission": _TOWN_HALL_MISSION}
 		"school":
-			return {
-				"tutorial": _SCHOOL_TUTORIAL,
-				"practice": _SCHOOL_PRACTICE,
-				"mission": _SCHOOL_MISSION
-			}
+			match level:
+				1: return {"tutorial": _SCHOOL_TUTORIAL_L1, "practice": _SCHOOL_PRACTICE_L1, "mission": _SCHOOL_MISSION_L1}
+				2: return {"tutorial": _SCHOOL_TUTORIAL_L2, "practice": _SCHOOL_PRACTICE_L2, "mission": _SCHOOL_MISSION_L2}
+				4: return {"tutorial": _SCHOOL_TUTORIAL_L4, "practice": _SCHOOL_PRACTICE_L4, "mission": _SCHOOL_MISSION_L4}
+				_: return {"tutorial": _SCHOOL_TUTORIAL, "practice": _SCHOOL_PRACTICE, "mission": _SCHOOL_MISSION}
 		"inn":
-			return {
-				"tutorial": _INN_TUTORIAL,
-				"practice": _INN_PRACTICE,
-				"mission": _INN_MISSION
-			}
+			match level:
+				1: return {"tutorial": _INN_TUTORIAL_L1, "practice": _INN_PRACTICE_L1, "mission": _INN_MISSION_L1}
+				2: return {"tutorial": _INN_TUTORIAL_L2, "practice": _INN_PRACTICE_L2, "mission": _INN_MISSION_L2}
+				4: return {"tutorial": _INN_TUTORIAL_L4, "practice": _INN_PRACTICE_L4, "mission": _INN_MISSION_L4}
+				_: return {"tutorial": _INN_TUTORIAL, "practice": _INN_PRACTICE, "mission": _INN_MISSION}
 		"chapel":
-			return {
-				"tutorial": _CHAPEL_TUTORIAL,
-				"practice": _CHAPEL_PRACTICE,
-				"mission": _CHAPEL_MISSION
-			}
+			match level:
+				1: return {"tutorial": _CHAPEL_TUTORIAL_L1, "practice": _CHAPEL_PRACTICE_L1, "mission": _CHAPEL_MISSION_L1}
+				2: return {"tutorial": _CHAPEL_TUTORIAL_L2, "practice": _CHAPEL_PRACTICE_L2, "mission": _CHAPEL_MISSION_L2}
+				4: return {"tutorial": _CHAPEL_TUTORIAL_L4, "practice": _CHAPEL_PRACTICE_L4, "mission": _CHAPEL_MISSION_L4}
+				_: return {"tutorial": _CHAPEL_TUTORIAL, "practice": _CHAPEL_PRACTICE, "mission": _CHAPEL_MISSION}
 		"library":
-			return {
-				"tutorial": _LIBRARY_TUTORIAL,
-				"practice": _LIBRARY_PRACTICE,
-				"mission": _LIBRARY_MISSION
-			}
+			match level:
+				1: return {"tutorial": _LIBRARY_TUTORIAL_L1, "practice": _LIBRARY_PRACTICE_L1, "mission": _LIBRARY_MISSION_L1}
+				2: return {"tutorial": _LIBRARY_TUTORIAL_L2, "practice": _LIBRARY_PRACTICE_L2, "mission": _LIBRARY_MISSION_L2}
+				4: return {"tutorial": _LIBRARY_TUTORIAL_L4, "practice": _LIBRARY_PRACTICE_L4, "mission": _LIBRARY_MISSION_L4}
+				_: return {"tutorial": _LIBRARY_TUTORIAL, "practice": _LIBRARY_PRACTICE, "mission": _LIBRARY_MISSION}
 		"well":
-			return {
-				"tutorial": _WELL_TUTORIAL, "practice": _WELL_PRACTICE, "mission": _WELL_MISSION
-			}
+			match level:
+				1: return {"tutorial": _WELL_TUTORIAL_L1, "practice": _WELL_PRACTICE_L1, "mission": _WELL_MISSION_L1}
+				2: return {"tutorial": _WELL_TUTORIAL_L2, "practice": _WELL_PRACTICE_L2, "mission": _WELL_MISSION_L2}
+				4: return {"tutorial": _WELL_TUTORIAL_L4, "practice": _WELL_PRACTICE_L4, "mission": _WELL_MISSION_L4}
+				_: return {"tutorial": _WELL_TUTORIAL, "practice": _WELL_PRACTICE, "mission": _WELL_MISSION}
 		"market":
-			return {
-				"tutorial": _MARKET_TUTORIAL,
-				"practice": _MARKET_PRACTICE,
-				"mission": _MARKET_MISSION
-			}
+			match level:
+				1: return {"tutorial": _MARKET_TUTORIAL_L1, "practice": _MARKET_PRACTICE_L1, "mission": _MARKET_MISSION_L1}
+				2: return {"tutorial": _MARKET_TUTORIAL_L2, "practice": _MARKET_PRACTICE_L2, "mission": _MARKET_MISSION_L2}
+				4: return {"tutorial": _MARKET_TUTORIAL_L4, "practice": _MARKET_PRACTICE_L4, "mission": _MARKET_MISSION_L4}
+				_: return {"tutorial": _MARKET_TUTORIAL, "practice": _MARKET_PRACTICE, "mission": _MARKET_MISSION}
 		"bakery":
-			return {
-				"tutorial": _BAKERY_TUTORIAL,
-				"practice": _BAKERY_PRACTICE,
-				"mission": _BAKERY_MISSION
-			}
+			match level:
+				1: return {"tutorial": _BAKERY_TUTORIAL_L1, "practice": _BAKERY_PRACTICE_L1, "mission": _BAKERY_MISSION_L1}
+				2: return {"tutorial": _BAKERY_TUTORIAL_L2, "practice": _BAKERY_PRACTICE_L2, "mission": _BAKERY_MISSION_L2}
+				4: return {"tutorial": _BAKERY_TUTORIAL_L4, "practice": _BAKERY_PRACTICE_L4, "mission": _BAKERY_MISSION_L4}
+				_: return {"tutorial": _BAKERY_TUTORIAL, "practice": _BAKERY_PRACTICE, "mission": _BAKERY_MISSION}
 		_:
 			return {}
 
 
-static func get_quest_for_building(building_id: String) -> Dictionary:
+static func get_quest_for_building(building_id: String, level: int = 3) -> Dictionary:
 	if not BUILDING_QUEST_MAP.has(building_id):
 		push_error("[QuestData] Unknown building_id: " + building_id)
 		return {}
 	var meta: Dictionary = BUILDING_QUEST_MAP[building_id].duplicate()
-	var stages: Dictionary = _lookup_stages(building_id)
+	var stages: Dictionary = _lookup_stages(building_id, level)
 	meta["tutorial"] = stages.get("tutorial", [])
 	meta["practice"] = stages.get("practice", [])
 	meta["mission"] = stages.get("mission", [])

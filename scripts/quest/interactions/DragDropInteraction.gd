@@ -56,18 +56,6 @@ func _build_ui() -> void:
 		inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		vbox.add_child(inst_label)
 
-	# Word display (syllable mode)
-	var mode: String = _question.get("mode", "syllable")
-	var word: String = _question.get("word", "")
-	if mode == "syllable" and not word.is_empty():
-		var word_label := Label.new()
-		word_label.text = word
-		word_label.add_theme_font_size_override("font_size", int(46 * _sy))
-		word_label.add_theme_color_override("font_color", StyleFactory.GOLD)
-		word_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		word_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_child(word_label)
-
 	# Hint (practice mode)
 	if _show_hints:
 		var hint: String = _question.get("hint", "")

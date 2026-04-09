@@ -12,6 +12,7 @@ const SFX_PATHS := {
 	"button_tap": "res://assets/audio/sfx/button_tap.ogg",
 	"stage_advance": "res://assets/audio/sfx/stage_advance.ogg",
 	"building_unlock": "res://assets/audio/sfx/building_unlock.ogg",
+	"chapel_bell": "res://assets/audio/sfx/chapel_bell.wav",
 }
 const MUSIC_PATH := "res://assets/audio/music/village_bgm.ogg"
 

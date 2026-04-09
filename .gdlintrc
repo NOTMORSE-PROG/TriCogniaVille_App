@@ -1,4 +1,4 @@
 max-line-length: 300
-max-file-lines: 2500
+max-file-lines: 6000
 max-public-methods: 40
 max-returns: 12

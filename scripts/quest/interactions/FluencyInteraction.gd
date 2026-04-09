@@ -233,8 +233,10 @@ func _build_ui() -> void:
 	elif _recognizer.is_available():
 		_set_state(State.IDLE)
 	else:
-		# Fallback: auto-pass with default fluency score
-		_auto_pass_fallback()
+		_set_state(State.IDLE)
+		_record_btn.disabled = true
+		_status_label.text = "Speech recording requires an Android device."
+		_status_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 1.0))
 
 
 # ── State Machine ─────────────────────────────────────────────────────────────
@@ -346,17 +348,9 @@ func _on_transcript_ready(text: String, confidence: float) -> void:
 
 	var fluency: int = _current_result.get("fluency_score", 0)
 
-	# Upload audio
-	var audio_b64 := _recognizer.get_audio_base64()
-	if not audio_b64.is_empty():
-		ApiClient.upload_audio(
-			audio_b64,
-			func(success: bool, data: Dictionary) -> void:
-				var audio_url: String = data.get("audioUrl", "") if success else ""
-				_submit_assessment(_current_result, text, confidence, audio_url)
-		)
-	else:
-		_submit_assessment(_current_result, text, confidence, "")
+	# Audio was already uploaded by /speech/transcribe — use cached URL
+	var audio_url := _recognizer.get_audio_url()
+	_submit_assessment(_current_result, text, confidence, audio_url)
 
 	fluency_score_submitted.emit(fluency)
 
@@ -380,7 +374,10 @@ func _on_recognition_error(reason: String) -> void:
 
 
 func _on_recognition_unavailable() -> void:
-	_auto_pass_fallback()
+	_set_state(State.IDLE)
+	_record_btn.disabled = true
+	_status_label.text = "Speech recording is not available on this device."
+	_status_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 1.0))
 
 
 func _on_continue_pressed() -> void:
@@ -412,17 +409,6 @@ func _populate_result() -> void:
 	_detail_label.text = _current_result.get("feedback_detail", "")
 
 	UIAnimations.fade_in_up(self, _result_panel)
-
-
-# ── Fallback ──────────────────────────────────────────────────────────────────
-
-
-func _auto_pass_fallback() -> void:
-	_status_label.text = "Voice check not available. Passage auto-accepted."
-	_status_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
-	_current_result = {"fluency_score": 75, "correct": true}
-	fluency_score_submitted.emit(75)
-	answer_submitted.emit(true)
 
 
 # ── Assessment Submission ─────────────────────────────────────────────────────

@@ -120,7 +120,8 @@ func start_quest(building_id: String, skip_tutorial: bool = false) -> void:
 		print("[QuestManager] Building already unlocked, ignoring start_quest.")
 		return
 
-	_current_quest_data = QuestData.get_quest_for_building(building_id)
+	var level: int = GameManager.current_student.get("reading_level", 3)
+	_current_quest_data = QuestData.get_quest_for_building(building_id, level)
 	if _current_quest_data.is_empty():
 		push_error("[QuestManager] Failed to load quest for: " + building_id)
 		return

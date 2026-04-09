@@ -10,6 +10,8 @@
 shader_type canvas_item;
 
 uniform float color_amount : hint_range(0.0, 1.0) = 1.0;
+// glow_amount: 0.0 = no celebration glow (default), 0.0–1.0 set by TownCelebration.
+uniform float glow_amount : hint_range(0.0, 1.0) = 0.0;
 
 void fragment() {
 	vec4 tex = texture(TEXTURE, UV);
@@ -34,6 +36,12 @@ void fragment() {
 	float edge_dist = length(UV - vec2(0.5)) * 1.2;
 	float edge_darken = smoothstep(0.5, 0.9, edge_dist) * 0.08 * color_amount;
 	col *= (1.0 - edge_darken);
+
+	// Celebration golden glow — pulsing gold overlay (default off: glow_amount=0.0)
+	float gold_pulse = sin(TIME * 3.0) * 0.5 + 0.5;
+	vec3 gold = vec3(0.95, 0.80, 0.25);
+	col = mix(col, gold, glow_amount * gold_pulse * 0.38);
+	col += glow_amount * gold_pulse * 0.06;
 
 	COLOR.rgb = col;
 	COLOR.a = tex.a;

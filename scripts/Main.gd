@@ -27,6 +27,7 @@ var _joystick: Control  # VirtualJoystick reference
 
 # ─── Quest system ────────────────────────────────────────────────────────────
 var _building_controllers: Dictionary = {}  # building_id → BuildingController
+var _town_livener: Node2D
 var _quest_overlay: Control
 var _quest_prompt: Control
 var _quest_tracker: Control
@@ -66,6 +67,7 @@ func _ready() -> void:
 	_build_ui()  # must come before _spawn_player (player needs joystick ref)
 	_spawn_player()
 	_build_ambient_particles()
+	_build_town_livener()
 	_connect_signals()
 	_build_quest_tracker()
 	_build_vignette()
@@ -1248,6 +1250,20 @@ func _build_ambient_particles() -> void:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
+# TOWN LIVENER
+# ═════════════════════════════════════════════════════════════════════════════
+func _build_town_livener() -> void:
+	var script = load("res://scripts/TownLivener.gd")
+	if script == null:
+		push_warning("[Main] TownLivener.gd not found — skipping progressive town visuals.")
+		return
+	_town_livener = script.new()
+	_town_livener.name = "TownLivener"
+	_ysort.add_child(_town_livener)
+	_town_livener.setup(_vp, _sx, _sy, _building_controllers)
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # SIGNALS
 # ═════════════════════════════════════════════════════════════════════════════
 func _connect_signals() -> void:
@@ -1361,6 +1377,9 @@ func _on_building_unlocked(building_id: String) -> void:
 
 func _on_all_buildings_unlocked() -> void:
 	print("[Main] Village fully restored!")
+	# Wait for TownLivener's celebration finale before the story ending sequence.
+	if is_instance_valid(_town_livener) and _town_livener.has_signal("celebration_finished"):
+		await _town_livener.celebration_finished
 	if StoryManager.should_show_ending():
 		_play_ending_sequence()
 

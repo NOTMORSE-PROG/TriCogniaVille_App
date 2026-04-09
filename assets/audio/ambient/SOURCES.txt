@@ -1,0 +1,54 @@
+AMBIENT AUDIO SOURCES — TriCognia Ville Progressive Town Livening
+================================================================
+
+All files must be placed in this directory as OGG Vorbis format.
+All sources below are CC0 or permissive (free for commercial use).
+
+FILE LIST:
+----------
+
+birds.ogg          — Tier 1 (Town Hall)
+  Source: Freesound.org — search "birds morning ambience"
+  Recommended: InspectorJ's "Birds, Morning" (CC-BY 4.0)
+  URL: https://freesound.org (search username: InspectorJ)
+  Target volume: -18 dB | Loop: yes
+
+wind_chimes.ogg    — Tier 2 (School)
+  Source: Freesound.org — search "wind chimes gentle loop"
+  Recommended: Benboncan's wind chime recordings (CC-BY 3.0)
+  Target volume: -22 dB | Loop: yes
+
+chatter.ogg        — Tier 3 (Inn)
+  Source: Freesound.org — search "distant crowd murmur"
+  Recommended: Corsica_S's crowd ambience (CC-BY 3.0)
+  Target volume: -24 dB | Loop: yes
+
+water_fountain.ogg — Tier 6 (Well)
+  Source: Freesound.org — search "water fountain loop"
+  Recommended: InspectorJ's "Water Fountain" (CC-BY 4.0)
+  Target volume: -20 dB | Loop: yes
+
+market_bustle.ogg  — Tier 7 (Market)
+  Source: Freesound.org — search "market ambience outdoor"
+  Recommended: Leandros.Ntounis marketplace ambience (CC0)
+  Target volume: -18 dB | Loop: yes
+
+celebration.ogg    — Tier 8 (Bakery finale)
+  Source: OpenGameArt.org — search "victory jingle" or "celebration fanfare"
+  Recommended: Rezoner "Victory Jingle" (CC0)
+  Alt: Kevin MacLeod "Happy Boy End Theme" (CC-BY 3.0) at incompetech.com
+  Target volume: -8 dB | Loop: no (one-shot fanfare)
+
+SFX (place in assets/audio/sfx/):
+----------------------------------
+
+chapel_bell.ogg    — Tier 4 (Chapel) one-shot
+  Source: Freesound.org — search "church bell single"
+  Filter by CC0 license
+  Target volume: default SFX pool (-3 dB)
+
+ATTRIBUTION NOTES:
+------------------
+CC-BY files require attribution in your game's credits screen.
+CC0 files require no attribution but it's appreciated.
+Pixabay License (pixabay.com/music) allows free commercial use, no attribution.
