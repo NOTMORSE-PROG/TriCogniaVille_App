@@ -375,7 +375,7 @@ func _load_current_question() -> void:
 			QuestManager.advance_stage()
 		return
 
-	var question: Dictionary = questions[idx]
+	var question: Dictionary = _personalize_quest_data(questions[idx])
 	var stage := QuestManager.get_current_stage()
 	var show_hints := stage == "practice" or stage == "tutorial"
 
@@ -1234,3 +1234,34 @@ func _set_tracker_visible(visible_state: bool) -> void:
 	var tracker := get_parent().get_node_or_null("QuestTracker")
 	if is_instance_valid(tracker):
 		tracker.visible = visible_state
+
+
+func _personalize_quest_data(data: Dictionary) -> Dictionary:
+	var student_name: String = GameManager.current_student.get("name", "")
+	if student_name.is_empty():
+		return data
+	var result := data.duplicate(true)
+	_substitute_name_in_dict(result, student_name)
+	return result
+
+
+func _substitute_name_in_dict(d: Dictionary, student_name: String) -> void:
+	for key in d.keys():
+		var val = d[key]
+		if val is String:
+			d[key] = val.replace("{name}", student_name)
+		elif val is Array:
+			_substitute_name_in_array(val, student_name)
+		elif val is Dictionary:
+			_substitute_name_in_dict(val, student_name)
+
+
+func _substitute_name_in_array(arr: Array, student_name: String) -> void:
+	for i in arr.size():
+		var val = arr[i]
+		if val is String:
+			arr[i] = val.replace("{name}", student_name)
+		elif val is Array:
+			_substitute_name_in_array(val, student_name)
+		elif val is Dictionary:
+			_substitute_name_in_dict(val, student_name)

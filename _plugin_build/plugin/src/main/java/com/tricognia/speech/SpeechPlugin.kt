@@ -28,6 +28,7 @@ class SpeechPlugin(godot: Godot) : GodotPlugin(godot) {
 
     companion object {
         private const val PERMISSION_REQUEST_CODE = 9001
+        private const val PERMISSION_ONLY_REQUEST_CODE = 9002
     }
 
     override fun getPluginName(): String = "SpeechPlugin"
@@ -49,6 +50,22 @@ class SpeechPlugin(godot: Godot) : GodotPlugin(godot) {
     fun isAvailable(): Boolean {
         activity ?: return false
         return true
+    }
+
+    /** Request RECORD_AUDIO permission without starting a recording.
+     *  Safe to call at any time; no-op if permission is already granted. */
+    @UsedByGodot
+    fun requestPermission() {
+        val activity = activity ?: return
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(Manifest.permission.RECORD_AUDIO),
+                PERMISSION_ONLY_REQUEST_CODE
+            )
+        }
     }
 
     @UsedByGodot
@@ -152,6 +169,9 @@ class SpeechPlugin(godot: Godot) : GodotPlugin(godot) {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        if (requestCode == PERMISSION_ONLY_REQUEST_CODE) {
+            return  // proactive permission request — no follow-up action needed
+        }
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 pendingLanguage?.let { startRecording(it) }

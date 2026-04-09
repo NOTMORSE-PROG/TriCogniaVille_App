@@ -194,6 +194,11 @@ func _ready() -> void:
 	_show_slide_instant(0)
 	_connect_controls()
 
+	# Proactively request microphone permission so it's granted before any speech quest.
+	var sr := SpeechRecognizer.new()
+	add_child(sr)
+	sr.request_permission()
+
 	# Entrance animation
 	_animate_entrance()
 

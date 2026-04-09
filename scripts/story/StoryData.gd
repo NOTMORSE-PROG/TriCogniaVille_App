@@ -114,7 +114,7 @@ const PROLOGUE_LORE_BY_LEVEL: Dictionary = {
 			"speaker": "Lumi",
 			"mood": "hopeful",
 			"text":
-			"But you're here now. A Readventurer. Someone who can read the words back into existence. Let's start with the Town Hall — it's where every voice began.",
+			"But you're here now. A {username}. Someone who can read the words back into existence. Let's start with the Town Hall — it's where every voice began.",
 			"choices": [],
 		},
 	],
@@ -148,7 +148,7 @@ const PROLOGUE_LORE_BY_LEVEL: Dictionary = {
 			"speaker": "Lumi",
 			"mood": "hopeful",
 			"text":
-			"But you've arrived — a true Readventurer, gifted with the rare ability to breathe words back into existence. The Town Hall is where it all began, and where our journey must start.",
+			"But you've arrived — a true {username}, gifted with the rare ability to breathe words back into existence. The Town Hall is where it all began, and where our journey must start.",
 			"choices": [],
 		},
 	],
@@ -844,7 +844,7 @@ const DIALOGUES: Dictionary = {
 					"speaker": "Mira",
 					"mood": "worried",
 					"text":
-					"You must be the Readventurer! Please — my choir can't read a single line without stumbling. Every word comes out broken.",
+					"You must be the {username}! Please — my choir can't read a single line without stumbling. Every word comes out broken.",
 					"choices": [],
 				},
 				{
@@ -885,7 +885,7 @@ const DIALOGUES: Dictionary = {
 					"speaker": "Mira",
 					"mood": "worried",
 					"text":
-					"The Readventurer — at last. My choir once sang through passages with effortless, expressive fluency. Now every sentence fragments. The silence has stolen their prosodic instinct.",
+					"The {username} — at last. My choir once sang through passages with effortless, expressive fluency. Now every sentence fragments. The silence has stolen their prosodic instinct.",
 					"choices": [],
 				},
 				{
@@ -1954,7 +1954,7 @@ const ENDING_FAREWELL_BY_LEVEL: Dictionary = {
 		{
 			"speaker": "Lumi",
 			"mood": "hopeful",
-			"text": "But remember... the best Readventurers never stop reading.",
+			"text": "But remember... the best {username}s never stop reading.",
 			"choices":
 			[
 				{"label": "I'll keep reading!", "next": "end"},
@@ -1979,7 +1979,7 @@ const ENDING_FAREWELL_BY_LEVEL: Dictionary = {
 		{
 			"speaker": "Lumi",
 			"mood": "hopeful",
-			"text": "Keep reading every day. You are a true Readventurer!",
+			"text": "Keep reading every day. You are a true {username}!",
 			"choices":
 			[
 				{"label": "I'll keep reading!", "next": "end"},
@@ -2007,7 +2007,7 @@ const ENDING_FAREWELL_BY_LEVEL: Dictionary = {
 			"speaker": "Lumi",
 			"mood": "hopeful",
 			"text":
-			"But the greatest Readventurers understand that the journey never truly ends — every book opens a new world. Keep reading.",
+			"But the greatest {username}s understand that the journey never truly ends — every book opens a new world. Keep reading.",
 			"choices":
 			[
 				{"label": "I'll keep reading!", "next": "end"},

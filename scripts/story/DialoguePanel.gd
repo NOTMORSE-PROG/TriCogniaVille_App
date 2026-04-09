@@ -503,7 +503,7 @@ func _on_choice_pressed(selected_btn: Button, next_key: String) -> void:
 		if branch_lines.size() > 0:
 			var personalized: Array[Dictionary] = []
 			var username: String = GameManager.current_student.get(
-				"username", GameManager.current_student.get("name", "Readventurer")
+				"username", GameManager.current_student.get("name", "")
 			)
 			for line in branch_lines:
 				var p: Dictionary = line.duplicate()

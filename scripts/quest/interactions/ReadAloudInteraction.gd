@@ -1,7 +1,6 @@
 extends Control
-## ReadAloudInteraction — Production read-aloud with Web Speech API assessment.
+## ReadAloudInteraction — Production read-aloud with backend Whisper assessment.
 ## States: IDLE → LISTENING → PROCESSING → RESULT (→ retry → IDLE)
-## Fallback: UNAVAILABLE → TIMER_WAIT → COMPLETE  (desktop / unsupported browser)
 ##
 ## Preserves setup() signature and answer_submitted signal so QuestOverlay
 ## requires zero changes.
@@ -10,7 +9,7 @@ signal answer_submitted(correct: bool)
 
 # ── State ─────────────────────────────────────────────────────────────────────
 
-enum State { IDLE, LISTENING, PROCESSING, RESULT, UNAVAILABLE, TIMER_WAIT, COMPLETE }
+enum State { IDLE, LISTENING, PROCESSING, RESULT }
 
 const MAX_ATTEMPTS := 3
 const SPINNER_INTERVAL := 0.1
@@ -291,15 +290,16 @@ func _build_ui() -> void:
 	_continue_btn.set_meta("action_center", action_center)
 
 	# ── Decide initial state ───────────────────────────────────────────────────
-	if QuestManager.AUTO_PASS_MIC_QUESTS:
-		_set_state(State.UNAVAILABLE)
-	elif _recognizer.is_available():
+	if _recognizer.is_available():
 		_set_state(State.IDLE)
+		_recognizer.request_permission()
 	else:
-		_set_state(State.IDLE)
-		_record_btn.disabled = true
-		_status_label.text = "Speech recording requires an Android device."
+		_status_label.text = "Microphone not available. Continuing..."
 		_status_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 1.0))
+		await get_tree().create_timer(3.0).timeout
+		if not is_instance_valid(self):
+			return
+		answer_submitted.emit(true)
 
 
 # ── State Machine ─────────────────────────────────────────────────────────────
@@ -349,11 +349,6 @@ func _update_ui_for_state() -> void:
 			_get_action_center().visible = true
 			# Hide "Try Again" if max attempts reached
 			_try_again_btn.visible = (_attempt_number < MAX_ATTEMPTS)
-
-		State.UNAVAILABLE:
-			_status_label.text = "Speech recording is not available on this device."
-			_status_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 1.0))
-
 
 func _get_action_center() -> Control:
 	if is_instance_valid(_continue_btn):
@@ -461,10 +456,12 @@ func _on_recognition_error(reason: String) -> void:
 
 
 func _on_recognition_unavailable() -> void:
-	_set_state(State.IDLE)
-	_record_btn.disabled = true
-	_status_label.text = "Speech recording is not available on this device."
+	_status_label.text = "Microphone not available. Continuing..."
 	_status_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 1.0))
+	await get_tree().create_timer(3.0).timeout
+	if not is_instance_valid(self):
+		return
+	answer_submitted.emit(true)
 
 
 func _on_try_again_pressed() -> void:

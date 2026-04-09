@@ -1,7 +1,7 @@
 class_name QuestData
 ## QuestData — Static data class holding all quest content from the PDF content guide.
 ## Maps buildings to weekly missions. Each building has 3 stages: tutorial, practice, mission.
-## All content is syllabus-aligned for Grade 7 learners (READVENTURE FINAL IT CONTENT GUIDE).
+## All content is syllabus-aligned for Grade 7 learners.
 
 # ── Sequential Unlock Order ─────────────────────────────────────────────────
 const UNLOCK_ORDER: Array[String] = [
@@ -405,7 +405,7 @@ const _SCHOOL_MISSION := [
 # ═════════════════════════════════════════════════════════════════════════════
 
 const _LIBRARY_PASSAGE := (
-	"The Readventurer entered a quiet part of the village where everything seemed still."
+	"The {name} entered a quiet part of the village where everything seemed still."
 	+ " The houses looked ancient, and the doors were fragile from years of neglect.\n"
 	+ "The air was silent, and even the narrow streets felt empty."
 	+ " Despite the quiet surroundings, a bright light flickered from one of the windows, giving a small sign of hope."
@@ -575,10 +575,10 @@ const _LIBRARY_MISSION := [
 const _WELL_PASSAGE := (
 	"One morning, a small dog wandered into the village."
 	+ " It looked weak and tired, as if it had been lost for many days.\n"
-	+ "The Readventurer found the dog near the river and gently carried it home."
+	+ "The {name} found the dog near the river and gently carried it home."
 	+ " He gave it food and water and allowed it to rest.\n"
 	+ "Later that day, a villager came searching for the dog."
-	+ " The Readventurer returned it safely, and the villager was grateful."
+	+ " The {name} returned it safely, and the villager was grateful."
 )
 
 const _WELL_TUTORIAL := [
@@ -592,7 +592,7 @@ const _WELL_TUTORIAL := [
 		["A boy going to school", "Helping a lost dog", "Building a house", "Playing a game"],
 		"correct_index": 1,
 		"feedback_correct": "Great! The main idea is about helping a lost dog.",
-		"feedback_wrong": "The passage is mostly about the Readventurer helping a lost dog.",
+		"feedback_wrong": "The passage is mostly about the {name} helping a lost dog.",
 	},
 ]
 
@@ -602,11 +602,11 @@ const _WELL_PRACTICE := [
 		"instruction": "Answer based on the passage.",
 		"passage": _WELL_PASSAGE,
 		"question": "Who found the dog?",
-		"options": ["A villager", "The Readventurer", "A child", "Nobody"],
+		"options": ["A villager", "The {name}", "A child", "Nobody"],
 		"correct_index": 1,
 		"hint": "Look at the second paragraph for the answer.",
-		"feedback_correct": "Correct! The Readventurer found the dog.",
-		"feedback_wrong": "The Readventurer found the dog near the river.",
+		"feedback_correct": "Correct! The {name} found the dog.",
+		"feedback_wrong": "The {name} found the dog near the river.",
 	},
 	{
 		"type": "drag_drop",
@@ -615,13 +615,13 @@ const _WELL_PRACTICE := [
 		"pieces":
 		[
 			"The dog was returned",
-			"The Readventurer found the dog",
+			"The {name} found the dog",
 			"A dog wandered into the village"
 		],
 		"correct_order":
 		[
 			"A dog wandered into the village",
-			"The Readventurer found the dog",
+			"The {name} found the dog",
 			"The dog was returned"
 		],
 		"hint": "What happened first? What happened last?",
@@ -637,10 +637,10 @@ const _WELL_MISSION := [
 		"instruction": "Answer the questions based on the passage.",
 		"passage": _WELL_PASSAGE,
 		"question": "Who found the dog?",
-		"options": ["A villager", "The Readventurer", "A child"],
+		"options": ["A villager", "The {name}", "A child"],
 		"correct_index": 1,
 		"feedback_correct": "Correct!",
-		"feedback_wrong": "The Readventurer found the dog.",
+		"feedback_wrong": "The {name} found the dog.",
 	},
 	{
 		"type": "mcq",
@@ -671,7 +671,7 @@ const _WELL_MISSION := [
 		[
 			"The dog ran away",
 			"The dog was returned to its owner",
-			"The dog stayed with the Readventurer"
+			"The dog stayed with the {name}"
 		],
 		"correct_index": 1,
 		"feedback_correct": "Correct!",
@@ -699,12 +699,12 @@ const _WELL_MISSION := [
 			"The dog wandered into the village",
 			"The dog was returned to its owner",
 			"He took care of the dog",
-			"The Readventurer found the dog",
+			"The {name} found the dog",
 		],
 		"correct_order":
 		[
 			"The dog wandered into the village",
-			"The Readventurer found the dog",
+			"The {name} found the dog",
 			"He took care of the dog",
 			"The owner searched for the dog",
 			"The dog was returned to its owner",
@@ -748,7 +748,7 @@ const _WELL_MISSION := [
 		"type": "mcq",
 		"instruction": "Answer the questions based on the passage.",
 		"passage": _WELL_PASSAGE,
-		"question": "What did the Readventurer give the dog?",
+		"question": "What did the {name} give the dog?",
 		"options": ["A toy", "Food and water", "A name"],
 		"correct_index": 1,
 		"feedback_correct": "Correct!",
@@ -765,7 +765,7 @@ const _MARKET_PASSAGE := (
 	"The sky slowly turned dark as heavy clouds gathered above the village."
 	+ " The wind began to move faster, shaking the trees and scattering dry leaves.\n"
 	+ "People closed their doors and hurried inside their homes."
-	+ " The Readventurer looked up and noticed the sudden change in the air."
+	+ " The {name} looked up and noticed the sudden change in the air."
 )
 
 const _MARKET_TUTORIAL := [
@@ -886,7 +886,7 @@ const _MARKET_MISSION := [
 		"type": "mcq",
 		"instruction": "Use clues from the passage to answer.",
 		"passage": _MARKET_PASSAGE,
-		"question": "Why is the Readventurer observing?",
+		"question": "Why is the {name} observing?",
 		"options":
 		["He is bored", "To understand the situation", "To paint a picture", "To count the clouds"],
 		"correct_index": 1,
@@ -922,14 +922,14 @@ const _MARKET_MISSION := [
 # ═════════════════════════════════════════════════════════════════════════════
 
 const _BAKERY_PASSAGE := (
-	"The young Readventurer stepped carefully into the forest, guided only by a faint glowing path."
+	"The young {name} stepped carefully into the forest, guided only by a faint glowing path."
 	+ " For many days, the village had remained silent, and no one knew why the voices had disappeared.\n"
-	+ "As the Readventurer moved deeper into the woods, he discovered a narrow pathway covered with leaves and broken branches."
+	+ "As the {name} moved deeper into the woods, he discovered a narrow pathway covered with leaves and broken branches."
 	+ " It seemed untouched for years. With courage and curiosity, he followed the path until he reached an ancient gate hidden behind tall trees.\n"
 	+ "Slowly, the gate opened, revealing a forgotten village called Luminara."
 	+ " The houses stood still, and the air felt quiet and heavy."
 	+ " It was said that the village lost its voice when its words were forgotten.\n"
-	+ "Determined to restore the village, the Readventurer began to read the lost words aloud."
+	+ "Determined to restore the village, the {name} began to read the lost words aloud."
 	+ " As each word was spoken clearly, the village started to awaken."
 	+ " Lights flickered, doors opened, and the silence slowly disappeared.\n"
 	+ "At last, the village was no longer quiet."
@@ -941,7 +941,7 @@ const _BAKERY_TUTORIAL := [
 		"type": "read_aloud",
 		"instruction":
 		"This is the final mission! First, let's practice reading some words aloud. Read this word clearly.",
-		"word": "Readventurer",
+		"word": "explorer",
 		"feedback_correct": "Great reading!",
 	},
 ]
@@ -964,11 +964,11 @@ const _BAKERY_PRACTICE := [
 		"instruction": "Read the passage, then answer.",
 		"passage": _BAKERY_PASSAGE,
 		"question": "Who is the main character?",
-		"options": ["A villager", "The Readventurer", "A traveler", "A teacher"],
+		"options": ["A villager", "The {name}", "A traveler", "A teacher"],
 		"correct_index": 1,
 		"hint": "The very first sentence tells you who.",
-		"feedback_correct": "Correct! The Readventurer is the main character.",
-		"feedback_wrong": "The main character is the Readventurer.",
+		"feedback_correct": "Correct! The {name} is the main character.",
+		"feedback_wrong": "The main character is the {name}.",
 	},
 ]
 
@@ -977,7 +977,7 @@ const _BAKERY_MISSION := [
 	{
 		"type": "read_aloud",
 		"instruction": "Read this word aloud clearly.",
-		"word": "Readventurer",
+		"word": "explorer",
 		"feedback_correct": "Great reading!",
 	},
 	{
@@ -1046,11 +1046,11 @@ const _BAKERY_MISSION := [
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
 		"passage": _BAKERY_PASSAGE,
-		"question": "Where did the Readventurer go?",
+		"question": "Where did the {name} go?",
 		"options": ["A mountain", "A forest", "A city"],
 		"correct_index": 1,
 		"feedback_correct": "Correct!",
-		"feedback_wrong": "The Readventurer went into the forest.",
+		"feedback_wrong": "The {name} went into the forest.",
 	},
 	{
 		"type": "mcq",
@@ -1076,7 +1076,7 @@ const _BAKERY_MISSION := [
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
 		"passage": _BAKERY_PASSAGE,
-		"question": "What did the Readventurer do to restore the village?",
+		"question": "What did the {name} do to restore the village?",
 		"options": ["Built houses", "Read words aloud", "Cleaned the forest"],
 		"correct_index": 1,
 		"feedback_correct": "Correct!",
@@ -1098,10 +1098,10 @@ const _BAKERY_MISSION := [
 		"instruction": "Answer based on the passage.",
 		"passage": _BAKERY_PASSAGE,
 		"question": "Who is the main character?",
-		"options": ["A villager", "The Readventurer", "A traveler"],
+		"options": ["A villager", "The {name}", "A traveler"],
 		"correct_index": 1,
-		"feedback_correct": "Correct! The Readventurer is the main character.",
-		"feedback_wrong": "The main character is the Readventurer.",
+		"feedback_correct": "Correct! The {name} is the main character.",
+		"feedback_wrong": "The main character is the {name}.",
 	},
 	{
 		"type": "mcq",
@@ -1112,7 +1112,7 @@ const _BAKERY_MISSION := [
 		"correct_index": 1,
 		"feedback_correct": "Correct! He discovered a narrow pathway.",
 		"feedback_wrong":
-		"The Readventurer discovered a pathway covered with leaves and broken branches.",
+		"The {name} discovered a pathway covered with leaves and broken branches.",
 	},
 	{
 		"type": "mcq",
@@ -1384,7 +1384,7 @@ const _INN_MISSION := [
 const _CHAPEL_PASSAGE := (
 	"The morning mist had settled over the village of Luminara.\n"
 	+ "A soft silence covered the stone path near the chapel.\n"
-	+ "The Readventurer stepped forward, moving carefully through the quiet air.\n"
+	+ "The {name} stepped forward, moving carefully through the quiet air.\n"
 	+ "Each footstep felt slow and deliberate, as if the village itself was listening.\n"
 	+ "Far ahead, a warm glow appeared from the chapel window.\n"
 	+ "He breathed deeply and walked on, one steady step at a time."
@@ -1556,7 +1556,7 @@ const _CHAPEL_MISSION := [
 	{
 		"type": "mcq",
 		"question":
-		"How should 'The Readventurer stepped forward, moving carefully through the quiet air.' be read?",
+		"How should 'The {name} stepped forward, moving carefully through the quiet air.' be read?",
 		"options":
 		[
 			"Word by word, stopping after each word",

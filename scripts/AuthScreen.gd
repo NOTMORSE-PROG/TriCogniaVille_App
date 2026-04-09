@@ -12,6 +12,7 @@ var _google_session_id: String = ""
 var _google_poll_timer: Timer
 var _google_polling: bool = false
 var _google_retry_btn: Button
+var _retry_delay_timer: SceneTreeTimer = null
 
 # ── Dynamically created view containers ───────────────────────────────────────
 var _landing_view: VBoxContainer
@@ -100,7 +101,7 @@ func _build_landing_view() -> void:
 	_landing_view.add_child(welcome_label)
 
 	var desc_label := Label.new()
-	desc_label.text = "Sign in to start your reading adventure"
+	desc_label.text = "Sign in to continue"
 	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	desc_label.add_theme_font_size_override("font_size", 30)
 	desc_label.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
@@ -556,6 +557,7 @@ func _start_google_poll() -> void:
 
 	_google_polling = true
 	_google_retry_btn.visible = false
+	_retry_delay_timer = null
 
 	_google_poll_timer = Timer.new()
 	_google_poll_timer.wait_time = 2.0
@@ -590,17 +592,23 @@ func _start_google_poll() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_IN and _google_polling:
-		_show_retry_option()
+		_loading_label.text = "Checking sign-in status..."
+		_google_retry_btn.visible = false
+		_retry_delay_timer = get_tree().create_timer(6.0)
+		_retry_delay_timer.timeout.connect(_maybe_show_retry)
 
 
-func _show_retry_option() -> void:
-	_loading_label.text = "Complete sign-in in your browser.\nIf you exited, tap Try Again."
-	_google_retry_btn.visible = true
+func _maybe_show_retry() -> void:
+	_retry_delay_timer = null
+	if _google_polling:
+		_loading_label.text = "Complete sign-in in your browser.\nIf you exited, tap Try Again."
+		_google_retry_btn.visible = true
 
 
 func _on_google_retry() -> void:
 	_google_polling = false
 	_google_retry_btn.visible = false
+	_retry_delay_timer = null
 	if _google_poll_timer:
 		_google_poll_timer.stop()
 		_google_poll_timer.queue_free()

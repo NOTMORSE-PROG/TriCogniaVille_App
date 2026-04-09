@@ -47,6 +47,13 @@ func is_available() -> bool:
 	return _plugin.isAvailable()
 
 
+## Ask the OS for RECORD_AUDIO permission without starting a recording.
+## Safe to call multiple times — no-op if already granted or plugin unavailable.
+func request_permission() -> void:
+	if _plugin != null:
+		_plugin.requestPermission()
+
+
 ## Start listening for speech.
 ## language: BCP-47 locale tag, e.g. "en-US"
 func start_recognition(language: String = "en-US") -> void:

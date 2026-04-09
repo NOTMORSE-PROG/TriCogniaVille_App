@@ -185,7 +185,7 @@ func _get_student_id() -> String:
 func _get_username() -> String:
 	var username: String = GameManager.current_student.get("username", "")
 	if username.is_empty():
-		username = GameManager.current_student.get("name", "Readventurer")
+		username = GameManager.current_student.get("name", "")
 	return username
 
 

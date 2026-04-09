@@ -228,15 +228,16 @@ func _build_ui() -> void:
 	_continue_btn.set_meta("action_center", action_center)
 
 	# ── Decide initial state ───────────────────────────────────────────────────
-	if QuestManager.AUTO_PASS_MIC_QUESTS:
-		_auto_pass_fallback()
-	elif _recognizer.is_available():
+	if _recognizer.is_available():
 		_set_state(State.IDLE)
+		_recognizer.request_permission()
 	else:
-		_set_state(State.IDLE)
-		_record_btn.disabled = true
-		_status_label.text = "Speech recording requires an Android device."
+		_status_label.text = "Microphone not available. Continuing..."
 		_status_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 1.0))
+		await get_tree().create_timer(3.0).timeout
+		if not is_instance_valid(self):
+			return
+		answer_submitted.emit(true)
 
 
 # ── State Machine ─────────────────────────────────────────────────────────────
@@ -374,10 +375,12 @@ func _on_recognition_error(reason: String) -> void:
 
 
 func _on_recognition_unavailable() -> void:
-	_set_state(State.IDLE)
-	_record_btn.disabled = true
-	_status_label.text = "Speech recording is not available on this device."
+	_status_label.text = "Microphone not available. Continuing..."
 	_status_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 1.0))
+	await get_tree().create_timer(3.0).timeout
+	if not is_instance_valid(self):
+		return
+	answer_submitted.emit(true)
 
 
 func _on_continue_pressed() -> void:
