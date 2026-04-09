@@ -3299,7 +3299,7 @@ const _CHAPEL_MISSION_L2 := [
 	{
 		"type": "mcq",
 		"instruction": "Choose the smooth phrasing.",
-		"question": "Which sounds smoother?",
+		"question": "Which is the smoother way to read 'The small dog ran across the yard'?",
 		"options": ["The / small / dog / ran", "The small dog ran across the yard"],
 		"correct_index": 1,
 		"feedback_correct": "Right! Reading in full phrases sounds much smoother.",
@@ -3326,7 +3326,7 @@ const _CHAPEL_MISSION_L2 := [
 	{
 		"type": "mcq",
 		"instruction": "Think about tone.",
-		"question": "What tone should you use for this passage?",
+		"question": "What tone fits 'The small dog ran across the yard. It looked happy and full of energy'?",
 		"options": ["Calm and steady", "Angry"],
 		"correct_index": 0,
 		"feedback_correct": "Right! A calm, steady tone matches this happy passage.",
@@ -3353,7 +3353,7 @@ const _CHAPEL_MISSION_L2 := [
 	{
 		"type": "mcq",
 		"instruction": "Choose the correct phrasing.",
-		"question": "Which sounds better?",
+		"question": "Which is the better way to read 'The boy watched and smiled'?",
 		"options": ["The / boy / watched", "The boy watched and smiled"],
 		"correct_index": 1,
 		"feedback_correct": "Right! Full phrases sound much better.",
