@@ -25,6 +25,7 @@ var _current_result: Dictionary = {}
 # UI nodes
 var _record_btn: Button = null
 var _stop_btn: Button = null
+var _controls_center: CenterContainer = null
 var _status_panel: PanelContainer = null
 var _status_label: Label = null
 var _result_panel: PanelContainer = null
@@ -32,7 +33,6 @@ var _score_bar: ProgressBar = null
 var _score_label: Label = null
 var _summary_label: Label = null
 var _detail_label: Label = null
-var _continue_btn: Button = null
 
 # Spinner animation
 var _spinner_chars: Array[String] = [
@@ -135,7 +135,8 @@ func _build_ui() -> void:
 	vbox.add_child(_status_panel)
 
 	# ── Controls ───────────────────────────────────────────────────────────────
-	var controls_center := CenterContainer.new()
+	_controls_center = CenterContainer.new()
+	var controls_center := _controls_center
 	vbox.add_child(controls_center)
 
 	var controls_hbox := HBoxContainer.new()
@@ -211,23 +212,6 @@ func _build_ui() -> void:
 
 	vbox.add_child(_result_panel)
 
-	# ── Continue button ────────────────────────────────────────────────────────
-	var action_center := CenterContainer.new()
-	action_center.visible = false
-	vbox.add_child(action_center)
-
-	_continue_btn = Button.new()
-	_continue_btn.text = "Continue"
-	_continue_btn.custom_minimum_size = Vector2(240 * _sx, 76 * _sy)
-	_continue_btn.add_theme_font_size_override("font_size", int(26 * _sy))
-	_continue_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
-	_continue_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
-	_continue_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
-	_continue_btn.add_theme_stylebox_override("pressed", StyleFactory.make_primary_button_pressed())
-	_continue_btn.pressed.connect(_on_continue_pressed)
-	action_center.add_child(_continue_btn)
-	_continue_btn.set_meta("action_center", action_center)
-
 	# ── Decide initial state ───────────────────────────────────────────────────
 	if _recognizer.is_available():
 		_set_state(State.IDLE)
@@ -254,8 +238,10 @@ func _update_ui_for_state() -> void:
 	_stop_btn.visible = false
 	if is_instance_valid(_result_panel):
 		_result_panel.visible = false
-	if is_instance_valid(_continue_btn) and _continue_btn.has_meta("action_center"):
-		(_continue_btn.get_meta("action_center") as Control).visible = false
+	if is_instance_valid(_controls_center):
+		_controls_center.visible = true
+	if is_instance_valid(_status_panel):
+		_status_panel.visible = true
 	set_process(false)
 
 	match _state:
@@ -272,14 +258,15 @@ func _update_ui_for_state() -> void:
 			set_process(true)
 
 		State.PROCESSING:
+			_controls_center.visible = false
 			_status_label.text = "Analyzing your reading..."
 			_status_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 			set_process(true)
 
 		State.RESULT:
+			_controls_center.visible = false
+			_status_panel.visible = false
 			_result_panel.visible = true
-			if is_instance_valid(_continue_btn) and _continue_btn.has_meta("action_center"):
-				(_continue_btn.get_meta("action_center") as Control).visible = true
 			_populate_result()
 
 
@@ -368,6 +355,8 @@ func _on_transcript_ready(text: String, confidence: float) -> void:
 	else:
 		AudioManager.play_sfx("wrong")
 
+	answer_submitted.emit(fluency >= cfg_pass)
+
 
 func _on_recognition_error(reason: String) -> void:
 	_set_state(State.IDLE)
@@ -382,14 +371,6 @@ func _on_recognition_unavailable() -> void:
 	if not is_instance_valid(self):
 		return
 	answer_submitted.emit(true)
-
-
-func _on_continue_pressed() -> void:
-	AudioManager.play_sfx("button_tap")
-	var fluency: int = _current_result.get("fluency_score", 0)
-	var cfg: Dictionary = QuestManager.get_assessment_config()
-	var cfg_pass: int = cfg.get("fluency_pass", 60)
-	answer_submitted.emit(fluency >= cfg_pass)
 
 
 # ── Result Display ────────────────────────────────────────────────────────────

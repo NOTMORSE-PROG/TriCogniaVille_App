@@ -1366,7 +1366,7 @@ func _on_quest_completed(building_id: String, passed: bool, _score: int) -> void
 			_town_livener.cutscene_active = true
 			var cutscene: Node = load("res://scripts/UnlockCutscene.gd").new()
 			add_child(cutscene)
-			cutscene.setup(_vp, _sx, _sy, bc, camera, player, _ysort, _town_livener)
+			cutscene.setup(_vp, _sx, _sy, bc, camera, player, _town_livener)
 			cutscene.cutscene_finished.connect(func() -> void:
 				_town_livener.cutscene_active = false
 				_set_joystick_active(true)
