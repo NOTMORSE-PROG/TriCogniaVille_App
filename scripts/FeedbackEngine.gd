@@ -79,14 +79,12 @@ static func assess(
 	result["total_expected"] = exp_words.size()
 
 	if exp_words.is_empty():
-		result["flag_review"] = true
 		result["feedback_summary"] = "No text to compare."
 		return result
 
 	if trans_words.is_empty():
 		result["feedback_summary"] = "We couldn't hear your reading. Please try again."
 		result["feedback_encouragement"] = "Make sure to speak clearly into the microphone."
-		result["flag_review"] = true
 		return result
 
 	var low_confidence := confidence < low_conf_threshold
@@ -225,11 +223,9 @@ static func assess(
 	elif score >= 50:
 		result["feedback_encouragement"] = "You can do it! Try once more."
 	else:
-		result["feedback_encouragement"] = "Your teacher will help you with the tricky parts."
-		result["flag_review"] = true
+		result["feedback_encouragement"] = "Don't give up! Every attempt makes you better."
 
-	if low_confidence:
-		result["flag_review"] = true
+	result["flag_review"] = false
 
 	return result
 

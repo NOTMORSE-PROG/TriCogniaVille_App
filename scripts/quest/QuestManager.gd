@@ -27,6 +27,9 @@ var _part_a_correct: int = 0  # Decoding: words with passing score (0-10)
 var _part_b_fluency: int = 0  # Fluency: FeedbackEngine fluency_score (0-100)
 var _part_c_correct: int = 0  # Comprehension: MCQ/etc correct count
 
+# Audio URLs uploaded during this quest session — deleted on abandon/quit
+var _session_audio_urls: Array[String] = []
+
 
 func _ready() -> void:
 	print("[QuestManager] Ready.")
@@ -249,10 +252,27 @@ func submit_fluency_score(fluency_score: int) -> void:
 		)
 
 
+## Register an audio URL uploaded during this quest session.
+## Called by ReadAloudInteraction after each successful transcription.
+func register_audio_url(url: String) -> void:
+	if not url.is_empty() and not _session_audio_urls.has(url):
+		_session_audio_urls.append(url)
+
+
+## Delete all session audio from Cloudinary — called on abandon/quit.
+func _cleanup_session_audio() -> void:
+	if _session_audio_urls.is_empty():
+		return
+	if ApiClient.is_authenticated:
+		ApiClient.delete_session_audio(_session_audio_urls.duplicate())
+	_session_audio_urls = []
+
+
 func abandon_quest() -> void:
 	if not _is_quest_active:
 		return
 	var building_id := _current_building_id
+	_cleanup_session_audio()
 	_reset_state()
 	print("[QuestManager] Quest abandoned: ", building_id)
 	AudioManager.start_village_music()
@@ -377,3 +397,4 @@ func _reset_state() -> void:
 	_part_a_correct = 0
 	_part_b_fluency = 0
 	_part_c_correct = 0
+	_session_audio_urls = []

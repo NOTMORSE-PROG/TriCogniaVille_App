@@ -197,6 +197,27 @@ func upload_audio(audio_b64: String, callback: Callable) -> void:
 	_post("/speech/upload", JSON.stringify({"audio": audio_b64}), callback)
 
 
+## Fire-and-forget: delete audio recordings from Cloudinary for an abandoned quest session.
+func delete_session_audio(audio_urls: Array) -> void:
+	if audio_urls.is_empty() or auth_token.is_empty():
+		return
+	var http := HTTPRequest.new()
+	add_child(http)
+	_http_nodes.append(http)
+	var url := base_url + API_PREFIX + "/speech/audio"
+	var headers := PackedStringArray([
+		"Content-Type: application/json",
+		"Authorization: Bearer " + auth_token,
+	])
+	http.request_completed.connect(
+		func(_r: int, _c: int, _h: PackedStringArray, _b: PackedByteArray) -> void:
+			_http_nodes.erase(http)
+			http.queue_free(),
+		CONNECT_ONE_SHOT
+	)
+	http.request(url, headers, HTTPClient.METHOD_DELETE, JSON.stringify({"audioUrls": audio_urls}))
+
+
 func transcribe_audio(audio_b64: String, language: String, callback: Callable) -> void:
 	var http := HTTPRequest.new()
 	http.timeout = 30.0  # Whisper round-trip takes 3-10s + Cloudinary upload

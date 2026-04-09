@@ -315,6 +315,11 @@ func _on_quest_started(building_id: String) -> void:
 	var quest := QuestManager.get_current_quest_data()
 	_building_label.text = QuestData.get_building_label(building_id)
 	_topic_label.text = quest.get("topic", "")
+	# Defensive reset — _question_scroll may be hidden if student abandoned mid tutorial-demo
+	if is_instance_valid(_question_scroll):
+		_question_scroll.visible = true
+	if is_instance_valid(_bottom_bar):
+		_bottom_bar.visible = true
 	_set_tracker_visible(false)
 	visible = true
 	modulate.a = 0.0
@@ -531,9 +536,7 @@ func _on_answer_submitted(correct: bool) -> void:
 		set_process(false)
 	_hint_nudge_label.visible = false
 
-	# Only record the answer when correct to avoid inflating wrong-answer counts on retries
-	if correct:
-		QuestManager.submit_answer(correct)
+	QuestManager.submit_answer(correct)
 
 	# Update mission progress bar
 	if correct and QuestManager.get_current_stage() == "mission":
@@ -1058,7 +1061,7 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 		)
 		quit_btn.pressed.connect(
 			func() -> void:
-				QuestManager._reset_state()
+				QuestManager.abandon_quest()
 				_hide_overlay()
 		)
 		btn_row.add_child(quit_btn)
