@@ -1048,7 +1048,7 @@ func _build_ui() -> void:
 	_profile_btn = load("res://scripts/ui/ProfileButton.gd").new()
 	_profile_btn.name = "ProfileBtn"
 	_profile_btn.setup(_sx, _sy, player_name, player_level)
-	_profile_btn.position = Vector2(12 * _sx, 8 * _sy)
+	_profile_btn.position = Vector2(24 * _sx, 20 * _sy)
 	_profile_btn.z_index = 100
 	_profile_btn.connect("tapped", _on_profile_btn_pressed)
 	canvas.add_child(_profile_btn)

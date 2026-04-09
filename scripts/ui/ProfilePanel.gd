@@ -111,12 +111,20 @@ func _style_nodes() -> void:
 	cb.border_width_left = 1
 	cb.border_width_right = 1
 	cb.border_color = Color(1, 1, 1, 0.2)
+	cb.content_margin_left = 16.0
+	cb.content_margin_right = 16.0
+	cb.content_margin_top = 16.0
+	cb.content_margin_bottom = 16.0
 	var cb_h := cb.duplicate() as StyleBoxFlat
 	cb_h.bg_color = Color(1, 1, 1, 0.18)
 	cb_h.border_color = StyleFactory.GOLD
 	var cb_p := cb.duplicate() as StyleBoxFlat
 	cb_p.bg_color = StyleFactory.TEXT_ERROR.darkened(0.3)
 	cb_p.border_color = StyleFactory.TEXT_ERROR
+	# Ensure focus/disabled states also have the correct content margins
+	var cb_f := cb.duplicate() as StyleBoxFlat
+	_close_btn.add_theme_stylebox_override("focus", cb_f)
+	_close_btn.add_theme_stylebox_override("disabled", cb_f)
 	_close_btn.add_theme_stylebox_override("normal", cb)
 	_close_btn.add_theme_stylebox_override("hover", cb_h)
 	_close_btn.add_theme_stylebox_override("pressed", cb_p)
@@ -186,13 +194,13 @@ func _apply_scale() -> void:
 	_panel.offset_right = card_w * 0.5
 	_panel.offset_top = -card_h * 0.5
 	_panel.offset_bottom = card_h * 0.5
-	_close_btn.custom_minimum_size = Vector2(56.0 * _sx, 56.0 * _sy)
+	_close_btn.custom_minimum_size = Vector2(88.0 * _sx, 88.0 * _sy)
 	_logout_btn.custom_minimum_size = Vector2(200.0 * _sx, 66.0 * _sy)
 	_avatar_ctrl.custom_minimum_size = Vector2(140.0 * _sx, 140.0 * _sy)
 	_xp_bar_bg.custom_minimum_size.x = vp.x * 0.82
 
 	_title_lbl.add_theme_font_size_override("font_size", int(22 * _sy))
-	_close_btn.add_theme_font_size_override("font_size", int(26 * _sy))
+	_close_btn.add_theme_font_size_override("font_size", int(32 * _sy))
 	_logout_btn.add_theme_font_size_override("font_size", int(22 * _sy))
 	_name_lbl.add_theme_font_size_override("font_size", int(34 * _sy))
 	_rl_lbl.add_theme_font_size_override("font_size", int(22 * _sy))
