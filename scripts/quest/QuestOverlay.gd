@@ -315,7 +315,8 @@ func _on_quest_started(building_id: String) -> void:
 	var quest := QuestManager.get_current_quest_data()
 	_building_label.text = QuestData.get_building_label(building_id)
 	_topic_label.text = quest.get("topic", "")
-	# Defensive reset — _question_scroll may be hidden if student abandoned mid tutorial-demo
+	# Defensive resets — state may be dirty from a previously abandoned quest
+	_transitioning = false
 	if is_instance_valid(_question_scroll):
 		_question_scroll.visible = true
 	if is_instance_valid(_bottom_bar):

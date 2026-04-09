@@ -28,7 +28,7 @@ func setup(sx: float, sy: float, player_name: String, level: int) -> void:
 		)
 
 	_frame_color = StyleFactory.get_level_frame_color(level)
-	var btn_size := 64.0 * sx
+	var btn_size := 96.0 * sx
 	custom_minimum_size = Vector2(btn_size, btn_size)
 	size = Vector2(btn_size, btn_size)
 	mouse_filter = Control.MOUSE_FILTER_STOP

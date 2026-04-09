@@ -49,6 +49,8 @@ var _spinner_idx := 0
 var _spinner_elapsed := 0.0
 
 # Audio + confidence for stats/playback
+var _inst_label: Label = null
+var _content_card: PanelContainer = null
 var _audio_url: String = ""
 var _current_confidence: float = 1.0
 var _audio_player: AudioStreamPlayer = null
@@ -92,19 +94,19 @@ func _build_ui() -> void:
 
 	# ── Instruction label ──────────────────────────────────────────────────────
 	var instruction: String = _question.get("instruction", "Read this aloud clearly.")
-	var inst_label := Label.new()
-	inst_label.text = instruction
-	inst_label.add_theme_font_size_override("font_size", int(34 * _sy))
-	inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
-	inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	inst_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(inst_label)
+	_inst_label = Label.new()
+	_inst_label.text = instruction
+	_inst_label.add_theme_font_size_override("font_size", int(34 * _sy))
+	_inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
+	_inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_inst_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(_inst_label)
 
 	# ── Content card ───────────────────────────────────────────────────────────
-	var card := PanelContainer.new()
-	card.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(16))
-	card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_content_card = PanelContainer.new()
+	_content_card.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(16))
+	_content_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var word: String = _question.get("word", "")
 	var passage: String = _question.get("passage", "")
@@ -116,7 +118,7 @@ func _build_ui() -> void:
 		word_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 		word_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		word_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(word_label)
+		_content_card.add_child(word_label)
 	elif not passage.is_empty():
 		var passage_label := RichTextLabel.new()
 		passage_label.text = passage
@@ -127,9 +129,9 @@ func _build_ui() -> void:
 		passage_label.add_theme_color_override("default_color", StyleFactory.TEXT_PRIMARY)
 		passage_label.custom_minimum_size = Vector2(0, 120 * _sy)
 		passage_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(passage_label)
+		_content_card.add_child(passage_label)
 
-	vbox.add_child(card)
+	vbox.add_child(_content_card)
 
 	# ── Attempt counter ────────────────────────────────────────────────────────
 	_attempt_label = Label.new()
@@ -304,6 +306,10 @@ func _update_ui_for_state() -> void:
 	if is_instance_valid(_controls_center):
 		_controls_center.visible = false
 	_get_action_center().visible = false
+	if is_instance_valid(_inst_label):
+		_inst_label.visible = true
+	if is_instance_valid(_content_card):
+		_content_card.visible = true
 	if is_instance_valid(_attempt_label):
 		_attempt_label.visible = false
 	set_process(false)
@@ -336,6 +342,10 @@ func _update_ui_for_state() -> void:
 			set_process(true)  # for spinner animation
 
 		State.RESULT:
+			if is_instance_valid(_inst_label):
+				_inst_label.visible = false
+			if is_instance_valid(_content_card):
+				_content_card.visible = false
 			_result_panel.visible = true
 			_populate_result_panel(_current_result)
 			_get_action_center().visible = true
