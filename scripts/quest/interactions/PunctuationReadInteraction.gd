@@ -1,40 +1,50 @@
 class_name PunctuationReadInteraction
 extends VBoxContainer
 ## PunctuationReadInteraction — Two-step linked interaction for Week 3 (Punctuation).
-## Step 1: Student reads the sentence aloud (mic, speech recognition).
-## Step 2: MCQ about the sentence's punctuation (fades in after read-aloud completes).
-## The MCQ result is the graded answer emitted via answer_submitted.
 ##
-## Preserves setup() / answer_submitted pattern for QuestOverlay dispatch.
+## Phases (one thing visible at a time — no stacking):
+##   READ    → sentence card + mic controls
+##   RESULT  → score panel replaces everything (like school ReadAloudInteraction)
+##   MCQ     → sentence card + question panel
+##   DONE    → MCQ answered, feedback visible, answer_submitted emitted
+##
+## Score only if BOTH the read-aloud passes AND the MCQ answer is correct.
 
 signal answer_submitted(correct: bool)
 
-# ── State ─────────────────────────────────────────────────────────────────────
+# ── Phase ─────────────────────────────────────────────────────────────────────
 
-enum Step { READ_ALOUD, MCQ }
+enum Phase { READ, RESULT, MCQ }
 
 const SPINNER_INTERVAL := 0.1
+const MAX_READ_ATTEMPTS := 3
 
-var _step: Step = Step.READ_ALOUD
+var _phase: Phase = Phase.READ
 var _sx: float = 1.0
 var _sy: float = 1.0
 var _question: Dictionary = {}
 var _show_hints: bool = false
-var _read_done: bool = false
+var _read_correct: bool = false
+var _read_attempt: int = 0
+var _is_processing := false
 
 # Speech
 var _recognizer: SpeechRecognizer = null
 
-# ── Read-Aloud UI nodes ───────────────────────────────────────────────────────
-var _sentence_label: RichTextLabel = null
-var _read_instruction: Label = null
-var _mic_status_panel: PanelContainer = null
+# ── READ phase nodes ───────────────────────────────────────────────────────────
+var _sentence_card: PanelContainer = null   # shown in READ + MCQ phases
+var _read_section: VBoxContainer = null     # everything below the sentence in READ phase
 var _mic_status_label: Label = null
 var _mic_btn: Button = null
 var _mic_stop_btn: Button = null
-var _read_feedback_label: Label = null
 
-# ── MCQ UI nodes ──────────────────────────────────────────────────────────────
+# ── RESULT phase nodes ─────────────────────────────────────────────────────────
+var _result_panel: PanelContainer = null
+var _result_score_label: Label = null
+var _result_summary_label: Label = null
+var _result_try_again_center: CenterContainer = null
+
+# ── MCQ phase nodes ────────────────────────────────────────────────────────────
 var _mcq_panel: PanelContainer = null
 var _mcq_question_label: Label = null
 var _mcq_hint_label: Label = null
@@ -42,13 +52,11 @@ var _mcq_options_vbox: VBoxContainer = null
 var _mcq_feedback_panel: PanelContainer = null
 var _mcq_feedback_icon: Label = null
 var _mcq_feedback_label: Label = null
-var _mcq_continue_btn: Button = null
 
-# Spinner animation
+# Spinner
 var _spinner_chars: Array[String] = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 var _spinner_idx := 0
 var _spinner_elapsed := 0.0
-var _is_processing := false
 
 
 # ── Setup ─────────────────────────────────────────────────────────────────────
@@ -81,38 +89,43 @@ func _build_ui() -> void:
 	_recognizer.recognition_error.connect(_on_recognition_error)
 	_recognizer.recognition_unavailable.connect(_on_recognition_unavailable)
 
-	# ── Sentence display card ──────────────────────────────────────────────────
-	var sentence_card := PanelContainer.new()
-	sentence_card.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(16))
-	sentence_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(sentence_card)
+	# ══ Sentence card (READ + MCQ phases) ═════════════════════════════════════
+	_sentence_card = PanelContainer.new()
+	_sentence_card.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(16))
+	_sentence_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_sentence_card)
 
-	_sentence_label = RichTextLabel.new()
-	_sentence_label.text = _question.get("sentence", "")
-	_sentence_label.fit_content = true
-	_sentence_label.bbcode_enabled = false
-	_sentence_label.scroll_active = false
-	_sentence_label.add_theme_font_size_override("normal_font_size", int(42 * _sy))
-	_sentence_label.add_theme_color_override("default_color", StyleFactory.GOLD)
-	_sentence_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_sentence_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	sentence_card.add_child(_sentence_label)
+	var sentence_label := RichTextLabel.new()
+	sentence_label.text = _question.get("sentence", "")
+	sentence_label.fit_content = true
+	sentence_label.bbcode_enabled = false
+	sentence_label.scroll_active = false
+	sentence_label.add_theme_font_size_override("normal_font_size", int(42 * _sy))
+	sentence_label.add_theme_color_override("default_color", StyleFactory.GOLD)
+	sentence_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	sentence_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_sentence_card.add_child(sentence_label)
 
-	# ── Read-aloud instruction ─────────────────────────────────────────────────
-	_read_instruction = Label.new()
-	_read_instruction.text = _question.get("instruction", "Read this sentence aloud. Then answer the question.")
-	_read_instruction.add_theme_font_size_override("font_size", int(34 * _sy))
-	_read_instruction.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
-	_read_instruction.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_read_instruction.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_read_instruction.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_read_instruction)
+	# ══ READ section (shown only in READ phase) ════════════════════════════════
+	_read_section = VBoxContainer.new()
+	_read_section.add_theme_constant_override("separation", int(12 * _sy))
+	_read_section.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	add_child(_read_section)
 
-	# ── Mic status panel ───────────────────────────────────────────────────────
-	_mic_status_panel = PanelContainer.new()
-	_mic_status_panel.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(12))
-	_mic_status_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_mic_status_panel.custom_minimum_size = Vector2(0, int(80 * _sy))
+	var read_instruction := Label.new()
+	read_instruction.text = _question.get("instruction", "Read this sentence aloud.")
+	read_instruction.add_theme_font_size_override("font_size", int(34 * _sy))
+	read_instruction.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
+	read_instruction.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	read_instruction.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	read_instruction.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_read_section.add_child(read_instruction)
+
+	var mic_status_panel := PanelContainer.new()
+	mic_status_panel.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(12))
+	mic_status_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mic_status_panel.custom_minimum_size = Vector2(0, int(80 * _sy))
+	_read_section.add_child(mic_status_panel)
 
 	_mic_status_label = Label.new()
 	_mic_status_label.text = "Tap the microphone to read aloud."
@@ -121,12 +134,10 @@ func _build_ui() -> void:
 	_mic_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_mic_status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_mic_status_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_mic_status_panel.add_child(_mic_status_label)
-	add_child(_mic_status_panel)
+	mic_status_panel.add_child(_mic_status_label)
 
-	# ── Mic button row ─────────────────────────────────────────────────────────
 	var mic_center := CenterContainer.new()
-	add_child(mic_center)
+	_read_section.add_child(mic_center)
 
 	var mic_hbox := HBoxContainer.new()
 	mic_hbox.add_theme_constant_override("separation", int(12 * _sx))
@@ -158,16 +169,47 @@ func _build_ui() -> void:
 	_mic_stop_btn.pressed.connect(_on_stop_pressed)
 	mic_hbox.add_child(_mic_stop_btn)
 
-	# ── Read feedback label ────────────────────────────────────────────────────
-	_read_feedback_label = Label.new()
-	_read_feedback_label.add_theme_font_size_override("font_size", int(28 * _sy))
-	_read_feedback_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_read_feedback_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_read_feedback_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_read_feedback_label.visible = false
-	add_child(_read_feedback_label)
+	# ══ RESULT section (shown only in RESULT phase) ════════════════════════════
+	_result_panel = PanelContainer.new()
+	_result_panel.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(14))
+	_result_panel.visible = false
+	_result_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_result_panel)
 
-	# ── MCQ panel (hidden until read step complete) ────────────────────────────
+	var result_vbox := VBoxContainer.new()
+	result_vbox.add_theme_constant_override("separation", int(8 * _sy))
+	_result_panel.add_child(result_vbox)
+
+	_result_score_label = Label.new()
+	_result_score_label.add_theme_font_size_override("font_size", int(52 * _sy))
+	_result_score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_result_score_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	result_vbox.add_child(_result_score_label)
+
+	_result_summary_label = Label.new()
+	_result_summary_label.add_theme_font_size_override("font_size", int(28 * _sy))
+	_result_summary_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
+	_result_summary_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_result_summary_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_result_summary_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	result_vbox.add_child(_result_summary_label)
+
+	_result_try_again_center = CenterContainer.new()
+	_result_try_again_center.visible = false
+	add_child(_result_try_again_center)
+
+	var try_again_btn := Button.new()
+	try_again_btn.text = "Try Again"
+	try_again_btn.custom_minimum_size = Vector2(int(240 * _sx), int(84 * _sy))
+	try_again_btn.add_theme_font_size_override("font_size", int(28 * _sy))
+	try_again_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
+	try_again_btn.add_theme_stylebox_override("normal", StyleFactory.make_glass_card(10))
+	try_again_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
+	try_again_btn.add_theme_stylebox_override("pressed", StyleFactory.make_primary_button_pressed())
+	try_again_btn.pressed.connect(_on_try_again_pressed)
+	_result_try_again_center.add_child(try_again_btn)
+
+	# ══ MCQ section (shown only in MCQ phase) ═════════════════════════════════
 	_mcq_panel = PanelContainer.new()
 	_mcq_panel.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(14))
 	_mcq_panel.visible = false
@@ -177,16 +219,6 @@ func _build_ui() -> void:
 	mcq_vbox.add_theme_constant_override("separation", int(10 * _sy))
 	_mcq_panel.add_child(mcq_vbox)
 
-	# Divider label
-	var divider := Label.new()
-	divider.text = "Now answer the question:"
-	divider.add_theme_font_size_override("font_size", int(28 * _sy))
-	divider.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
-	divider.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	mcq_vbox.add_child(divider)
-
-	# Question label
 	_mcq_question_label = Label.new()
 	_mcq_question_label.text = _question.get("question", "")
 	_mcq_question_label.add_theme_font_size_override("font_size", int(36 * _sy))
@@ -196,7 +228,6 @@ func _build_ui() -> void:
 	_mcq_question_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	mcq_vbox.add_child(_mcq_question_label)
 
-	# Hint label
 	_mcq_hint_label = Label.new()
 	_mcq_hint_label.text = _question.get("hint", "")
 	_mcq_hint_label.add_theme_font_size_override("font_size", int(24 * _sy))
@@ -207,7 +238,6 @@ func _build_ui() -> void:
 	_mcq_hint_label.visible = _show_hints and not _question.get("hint", "").is_empty()
 	mcq_vbox.add_child(_mcq_hint_label)
 
-	# Options
 	_mcq_options_vbox = VBoxContainer.new()
 	_mcq_options_vbox.add_theme_constant_override("separation", int(8 * _sy))
 	mcq_vbox.add_child(_mcq_options_vbox)
@@ -227,7 +257,7 @@ func _build_ui() -> void:
 		btn.pressed.connect(_on_option_pressed.bind(i))
 		_mcq_options_vbox.add_child(btn)
 
-	# Feedback panel
+	# Feedback (hidden until answered)
 	_mcq_feedback_panel = PanelContainer.new()
 	_mcq_feedback_panel.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(10))
 	_mcq_feedback_panel.visible = false
@@ -251,22 +281,32 @@ func _build_ui() -> void:
 	_mcq_feedback_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fb_hbox.add_child(_mcq_feedback_label)
 
-	# Continue button
-	var continue_center := CenterContainer.new()
-	continue_center.visible = false
-	mcq_vbox.add_child(continue_center)
 
-	_mcq_continue_btn = Button.new()
-	_mcq_continue_btn.text = "Continue"
-	_mcq_continue_btn.custom_minimum_size = Vector2(int(240 * _sx), int(84 * _sy))
-	_mcq_continue_btn.add_theme_font_size_override("font_size", int(28 * _sy))
-	_mcq_continue_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
-	_mcq_continue_btn.add_theme_stylebox_override("normal", StyleFactory.make_primary_button_normal())
-	_mcq_continue_btn.add_theme_stylebox_override("hover", StyleFactory.make_primary_button_hover())
-	_mcq_continue_btn.add_theme_stylebox_override("pressed", StyleFactory.make_primary_button_pressed())
-	_mcq_continue_btn.set_meta("continue_center", continue_center)
-	_mcq_continue_btn.pressed.connect(_on_mcq_continue_pressed)
-	continue_center.add_child(_mcq_continue_btn)
+# ── Phase transitions ─────────────────────────────────────────────────────────
+
+
+func _set_phase(p: Phase) -> void:
+	_phase = p
+	# Hide everything, then show only what this phase needs
+	_sentence_card.visible = false
+	_read_section.visible = false
+	_result_panel.visible = false
+	_result_try_again_center.visible = false
+	_mcq_panel.visible = false
+
+	match p:
+		Phase.READ:
+			_sentence_card.visible = true
+			_read_section.visible = true
+
+		Phase.RESULT:
+			# Sentence hidden — full attention on score, same as school
+			_result_panel.visible = true
+
+		Phase.MCQ:
+			# Sentence back as reference for answering the question
+			_sentence_card.visible = true
+			_mcq_panel.visible = true
 
 
 # ── Process (spinner) ─────────────────────────────────────────────────────────
@@ -283,12 +323,13 @@ func _process(delta: float) -> void:
 			_mic_status_label.text = _spinner_chars[_spinner_idx] + " Checking your reading..."
 
 
-# ── Mic Step Event Handlers ───────────────────────────────────────────────────
+# ── READ phase handlers ───────────────────────────────────────────────────────
 
 
 func _on_mic_pressed() -> void:
-	if _read_done:
+	if _phase != Phase.READ:
 		return
+	_read_attempt += 1
 	AudioManager.play_sfx("button_tap")
 	_mic_btn.disabled = true
 	_mic_btn.visible = false
@@ -297,12 +338,11 @@ func _on_mic_pressed() -> void:
 	_mic_status_label.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
 	_recognizer.start_recognition("en-US")
 
-	# Safety timeout: if nothing fires within 40s, advance to MCQ gracefully
+	# Safety timeout
 	await get_tree().create_timer(40.0).timeout
-	if not is_instance_valid(self):
+	if not is_instance_valid(self) or _phase != Phase.READ:
 		return
-	if not _read_done:
-		_finish_read_step(false, "Timed out — let's try the question.")
+	_go_to_mcq(false)
 
 
 func _on_stop_pressed() -> void:
@@ -311,62 +351,112 @@ func _on_stop_pressed() -> void:
 	_mic_stop_btn.visible = false
 	_is_processing = true
 	set_process(true)
+	_mic_status_label.text = "Checking your reading..."
+	_mic_status_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 
 
-func _on_transcript_ready(_text: String, _confidence: float) -> void:
+func _on_transcript_ready(text: String, confidence: float) -> void:
 	_is_processing = false
 	set_process(false)
-	await get_tree().create_timer(0.3).timeout
-	if not is_instance_valid(self):
-		return
-	_finish_read_step(true, "Great reading! Now answer the question below.")
+
+	var expected: String = _question.get("word", _question.get("sentence", ""))
+	var cfg: Dictionary = QuestManager.get_assessment_config()
+	var result: Dictionary
+
+	if expected.is_empty():
+		result = {"score": 100, "correct": true, "feedback_summary": "Great reading!"}
+	else:
+		var alternatives := _recognizer.get_alternatives()
+		if alternatives.size() > 1:
+			result = FeedbackEngine.best_match(expected, alternatives, confidence, cfg)
+		else:
+			result = FeedbackEngine.assess(expected, text, confidence, cfg)
+
+	var is_correct: bool = result.get("correct", false)
+	if is_correct:
+		_read_correct = true
+
+	_show_result(result)
+
+	if is_correct or _read_attempt >= MAX_READ_ATTEMPTS:
+		AudioManager.play_sfx("correct" if is_correct else "wrong")
+		if is_correct:
+			UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.08))
+		await get_tree().create_timer(1.5).timeout
+		if not is_instance_valid(self):
+			return
+		_go_to_mcq(is_correct)
+	else:
+		AudioManager.play_sfx("wrong")
+		_result_try_again_center.visible = true
+
+
+func _show_result(result: Dictionary) -> void:
+	var score: int = result.get("score", 0)
+	var score_color: Color
+	if score >= 75:
+		score_color = StyleFactory.SUCCESS_GREEN
+	elif score >= 50:
+		score_color = Color(1.0, 0.8, 0.2, 1.0)
+	else:
+		score_color = Color(0.9, 0.3, 0.3, 1.0)
+	_result_score_label.text = "%d%%" % score
+	_result_score_label.add_theme_color_override("font_color", score_color)
+	_result_summary_label.text = result.get("feedback_summary", "")
+	# Switch to RESULT phase — sentence + mic disappear, score takes their place
+	_set_phase(Phase.RESULT)
+
+
+func _on_try_again_pressed() -> void:
+	AudioManager.play_sfx("button_tap")
+	_result_try_again_center.visible = false
+	_set_phase(Phase.READ)
+	_mic_btn.visible = true
+	_mic_btn.disabled = false
+	_mic_stop_btn.visible = false
+	_mic_status_label.text = "Tap the microphone to read aloud."
+	_mic_status_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+
+
+func _go_to_mcq(_read_passed: bool) -> void:
+	_set_phase(Phase.MCQ)
 
 
 func _on_recognition_error(reason: String) -> void:
 	_is_processing = false
 	set_process(false)
-	if _read_done:
+	if _phase != Phase.READ:
 		return
-	# Show error but still advance — don't block the student
 	var msg: String
 	if "unavailable" in reason.to_lower() or "service" in reason.to_lower():
-		msg = "Voice check unavailable — let's try the question."
+		msg = "Voice check unavailable."
 	else:
-		msg = reason + " — Tap to try again, or skip to the question."
+		msg = reason + " — try again or skip."
 	_mic_status_label.text = msg
 	_mic_status_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5, 1.0))
 	_mic_btn.visible = true
 	_mic_btn.disabled = false
 	_mic_stop_btn.visible = false
-	# Show a "skip to question" button
 	_show_skip_button()
 
 
 func _on_recognition_unavailable() -> void:
 	_is_processing = false
 	set_process(false)
-	if _read_done:
+	if _phase != Phase.READ:
 		return
-	_finish_read_step(false, "Voice check not available — answering the question now.")
+	_read_correct = true  # benefit of the doubt — no hardware to assess
+	_go_to_mcq(true)
 
 
 func _show_skip_button() -> void:
-	if not is_instance_valid(_read_feedback_label):
-		return
-	_read_feedback_label.text = "↓ Tap 'Skip to Question' if speech isn't working."
-	_read_feedback_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
-	_read_feedback_label.visible = true
-
-	# Only add the skip button once
 	for child in get_children():
-		if child.get_meta("is_skip_btn", false):
+		if child.get_meta("is_skip_center", false):
 			return
-
 	var skip_center := CenterContainer.new()
+	skip_center.set_meta("is_skip_center", true)
 	add_child(skip_center)
-
 	var skip_btn := Button.new()
-	skip_btn.set_meta("is_skip_btn", true)
 	skip_btn.text = "Skip to Question"
 	skip_btn.custom_minimum_size = Vector2(int(300 * _sx), int(80 * _sy))
 	skip_btn.add_theme_font_size_override("font_size", int(24 * _sy))
@@ -375,92 +465,50 @@ func _show_skip_button() -> void:
 	skip_btn.add_theme_stylebox_override("hover", StyleFactory.make_glass_card(10))
 	skip_btn.pressed.connect(func() -> void:
 		AudioManager.play_sfx("button_tap")
-		_finish_read_step(false, "")
+		skip_center.queue_free()
+		_go_to_mcq(false)
 	)
 	skip_center.add_child(skip_btn)
 
 
-# ── Transition to MCQ ─────────────────────────────────────────────────────────
-
-
-func _finish_read_step(success: bool, message: String) -> void:
-	if _read_done:
-		return
-	_read_done = true
-	_step = Step.MCQ
-
-	# Hide mic controls
-	_mic_btn.visible = false
-	_mic_stop_btn.visible = false
-
-	if not message.is_empty():
-		_read_feedback_label.text = message
-		_read_feedback_label.add_theme_color_override(
-			"font_color",
-			StyleFactory.SUCCESS_GREEN if success else StyleFactory.TEXT_MUTED
-		)
-		_read_feedback_label.visible = true
-		if success:
-			AudioManager.play_sfx("correct")
-
-	_mic_status_label.text = "Reading complete! ✓" if success else "Now answer the question."
-	_mic_status_label.add_theme_color_override(
-		"font_color",
-		StyleFactory.SUCCESS_GREEN if success else StyleFactory.TEXT_MUTED
-	)
-
-	# Fade in MCQ panel
-	_mcq_panel.modulate.a = 0.0
-	_mcq_panel.visible = true
-	UIAnimations.fade_in_up(self, _mcq_panel)
-
-
-# ── MCQ Step Event Handlers ───────────────────────────────────────────────────
+# ── MCQ phase handlers ────────────────────────────────────────────────────────
 
 
 func _on_option_pressed(index: int) -> void:
-	# Store selection result for continue button
 	var correct_index: int = _question.get("correct_index", -1)
 	var is_correct := index == correct_index
-	_mcq_feedback_panel.set_meta("is_correct", is_correct)
+
+	# Question text no longer needed — collapse it
+	_mcq_question_label.visible = false
+	_mcq_hint_label.visible = false
 
 	# Disable all options
 	for btn in _mcq_options_vbox.get_children():
 		(btn as Button).disabled = true
 
-	# Highlight selected and correct options
+	# Colour-code selection
 	for i in _mcq_options_vbox.get_child_count():
 		var btn := _mcq_options_vbox.get_child(i) as Button
 		if i == correct_index:
-			var correct_style := StyleFactory.make_primary_button_normal()
-			correct_style.bg_color = StyleFactory.SUCCESS_GREEN.darkened(0.3)
-			btn.add_theme_stylebox_override("disabled", correct_style)
+			var s := StyleFactory.make_primary_button_normal()
+			s.bg_color = StyleFactory.SUCCESS_GREEN.darkened(0.3)
+			btn.add_theme_stylebox_override("disabled", s)
 		elif i == index and not is_correct:
-			var wrong_style := StyleFactory.make_primary_button_normal()
-			wrong_style.bg_color = Color(0.75, 0.2, 0.2, 1.0)
-			btn.add_theme_stylebox_override("disabled", wrong_style)
+			var s := StyleFactory.make_primary_button_normal()
+			s.bg_color = Color(0.75, 0.2, 0.2, 1.0)
+			btn.add_theme_stylebox_override("disabled", s)
 
 	# Show feedback
 	_mcq_feedback_icon.text = "✓" if is_correct else "✗"
 	_mcq_feedback_icon.add_theme_color_override(
 		"font_color", StyleFactory.SUCCESS_GREEN if is_correct else Color(0.9, 0.3, 0.3, 1.0)
 	)
-	var feedback_key := "feedback_correct" if is_correct else "feedback_wrong"
-	_mcq_feedback_label.text = _question.get(feedback_key, "")
+	_mcq_feedback_label.text = _question.get("feedback_correct" if is_correct else "feedback_wrong", "")
 	_mcq_feedback_panel.visible = true
-	UIAnimations.fade_in_up(self, _mcq_feedback_panel)
 
-	# Play sound
 	AudioManager.play_sfx("correct" if is_correct else "wrong")
 	if is_correct:
 		UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.08))
 
-	# Show continue button
-	if is_instance_valid(_mcq_continue_btn) and _mcq_continue_btn.has_meta("continue_center"):
-		(_mcq_continue_btn.get_meta("continue_center") as Control).visible = true
-
-
-func _on_mcq_continue_pressed() -> void:
-	AudioManager.play_sfx("button_tap")
-	var is_correct: bool = _mcq_feedback_panel.get_meta("is_correct", false)
-	answer_submitted.emit(is_correct)
+	# Score only if BOTH read passed AND MCQ correct
+	answer_submitted.emit(_read_correct and is_correct)
