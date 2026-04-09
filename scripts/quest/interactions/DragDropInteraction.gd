@@ -12,9 +12,9 @@ var _show_hints: bool = false
 var _question: Dictionary = {}
 
 var _placed_order: Array[String] = []
-var _word_bank: HBoxContainer
+var _word_bank: Container
 var _drop_zone_container: PanelContainer  # wraps _drop_zone for drop handling
-var _drop_zone: BoxContainer
+var _drop_zone: Container
 var _check_btn: Button
 var _reset_btn: Button
 var _feedback_panel: PanelContainer
@@ -87,9 +87,8 @@ func _build_ui() -> void:
 	drop_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(drop_label)
 
-	# Drop zone card — full-width, taller, with internal padding
+	# Drop zone card — full-width; height scales with piece count so all chips fit
 	_drop_zone_container = _make_drop_zone_panel()
-	_drop_zone_container.custom_minimum_size = Vector2(0, int(110 * _sy))
 	_drop_zone_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_drop_zone_container.mouse_filter = Control.MOUSE_FILTER_STOP
 	vbox.add_child(_drop_zone_container)
@@ -102,18 +101,37 @@ func _build_ui() -> void:
 	drop_margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_drop_zone_container.add_child(drop_margin)
 
+	var piece_count: int = (_question.get("pieces", []) as Array).size()
 	var mode: String = _question.get("mode", "syllable")
+	# Use 2-column grid only for non-syllable questions with 4+ pieces
+	var use_grid: bool = (mode != "syllable" and piece_count >= 4)
+
 	if mode == "syllable":
 		var hbox := HBoxContainer.new()
 		hbox.add_theme_constant_override("separation", int(6 * _sx))
 		hbox.alignment = BoxContainer.ALIGNMENT_CENTER
 		hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_drop_zone = hbox
+	elif use_grid:
+		var grid := GridContainer.new()
+		grid.columns = 2
+		grid.add_theme_constant_override("h_separation", int(8 * _sx))
+		grid.add_theme_constant_override("v_separation", int(6 * _sy))
+		grid.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_drop_zone = grid
 	else:
 		var vbox_drop := VBoxContainer.new()
 		vbox_drop.add_theme_constant_override("separation", int(6 * _sy))
 		vbox_drop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_drop_zone = vbox_drop
+
+	# Min height: grid uses rows of 2, vbox uses one row per piece
+	var zone_min_h: int
+	if use_grid:
+		zone_min_h = max(110, int(ceil(piece_count / 2.0)) * 52)
+	else:
+		zone_min_h = max(110, piece_count * 58)
+	_drop_zone_container.custom_minimum_size = Vector2(0, int(zone_min_h * _sy))
 
 	drop_margin.add_child(_drop_zone)
 
@@ -128,7 +146,7 @@ func _build_ui() -> void:
 	# Word bank wrapped in a droppable panel so zone chips can be dragged back
 	var word_bank_panel := _WordBankPanel.new()
 	word_bank_panel._interaction = self
-	word_bank_panel.custom_minimum_size = Vector2(0, int(100 * _sy))
+	word_bank_panel.custom_minimum_size = Vector2(0, int(80 * _sy))
 	word_bank_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	word_bank_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	word_bank_panel.add_theme_stylebox_override(
@@ -144,13 +162,22 @@ func _build_ui() -> void:
 	bank_margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	word_bank_panel.add_child(bank_margin)
 
-	_word_bank = HBoxContainer.new()
-	_word_bank.add_theme_constant_override("separation", int(8 * _sx))
-	_word_bank.alignment = BoxContainer.ALIGNMENT_CENTER
-	_word_bank.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bank_margin.add_child(_word_bank)
+	var bank_scroll := ScrollContainer.new()
+	bank_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	bank_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	bank_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bank_scroll.mouse_filter = Control.MOUSE_FILTER_PASS
+	bank_margin.add_child(bank_scroll)
 
-	# Populate bank
+	var hbox := HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", int(8 * _sx))
+	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bank_scroll.add_child(hbox)
+	_word_bank = hbox
+
+	# Populate bank — shuffle so pieces aren't always in correct order
 	var pieces: Array = _question.get("pieces", []).duplicate()
 	if pieces.is_empty():
 		push_error(
@@ -158,6 +185,7 @@ func _build_ui() -> void:
 		)
 		answer_submitted.emit(false)
 		return
+	pieces.shuffle()
 	for piece_text: String in pieces:
 		_add_chip_to_bank(piece_text)
 
@@ -254,7 +282,6 @@ func _add_chip_to_bank(text: String) -> void:
 	chip.chip_text = text
 	chip.from_bank = true
 	chip.text = text
-	# Width fits content — only enforce minimum height
 	chip.custom_minimum_size = Vector2(0, int(90 * _sy))
 	chip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	chip.add_theme_font_size_override("font_size", int(34 * _sy))
@@ -276,13 +303,13 @@ func _add_chip_to_bank(text: String) -> void:
 	chip.ready.connect(func() -> void: UIAnimations.make_interactive(chip))
 
 
-func _add_chip_to_zone(text: String) -> void:
+func _add_chip_to_zone(text: String, idx: int = -1) -> void:
 	var chip := DraggableChip.new()
 	chip.chip_text = text
 	chip.from_bank = false
-	chip.text = text
-	chip.custom_minimum_size = Vector2(0, int(70 * _sy))
-	chip.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	chip.text = "%d.  %s" % [idx + 1, text] if (idx >= 0 and _drop_zone is GridContainer) else text
+	chip.custom_minimum_size = Vector2(0, int(44 * _sy))
+	chip.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	chip.add_theme_font_size_override("font_size", int(34 * _sy))
 	chip.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 
@@ -300,7 +327,9 @@ func _add_chip_to_zone(text: String) -> void:
 	chip.pressed.connect(func() -> void: _on_zone_chip_pressed(text, chip))
 	chip.modulate.a = 0.0
 	_drop_zone.add_child(chip)
-	UIAnimations.fade_in_up(self, chip)
+	# Use modulate-only fade — VBoxContainer owns position so position tweens cause overlap
+	var tw := create_tween()
+	tw.tween_property(chip, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 
 # Creates a drop-zone PanelContainer that accepts DraggableChip drag data
@@ -324,7 +353,7 @@ func _on_bank_chip_pressed(text: String, chip: DraggableChip) -> void:
 	_word_bank.remove_child(chip)
 	chip.queue_free()
 	_placed_order.append(text)
-	_add_chip_to_zone(text)
+	_add_chip_to_zone(text, _placed_order.size() - 1)
 	_update_check_button()
 
 
@@ -397,8 +426,8 @@ func _on_chip_reordered(chip_data: Dictionary, global_drop_x: float) -> void:
 func _rebuild_drop_zone() -> void:
 	for child in _drop_zone.get_children():
 		child.queue_free()
-	for piece in _placed_order:
-		_add_chip_to_zone(piece)
+	for i in _placed_order.size():
+		_add_chip_to_zone(_placed_order[i], i)
 
 
 # Called from _DropTarget when a chip is dragged OUT of the zone (back to bank)
@@ -426,6 +455,7 @@ func _on_reset_pressed() -> void:
 	if _answered:
 		return
 	var pieces: Array = _question.get("pieces", []).duplicate()
+	pieces.shuffle()
 	_placed_order = []
 	for child in _drop_zone.get_children():
 		child.queue_free()
@@ -489,6 +519,15 @@ func _on_check_pressed() -> void:
 	else:
 		AudioManager.play_sfx("wrong")
 
+	# Grid mode: fade out the large answer box so the feedback takes centre stage
+	if _drop_zone is GridContainer:
+		var fade := create_tween()
+		fade.tween_property(_drop_zone_container, "modulate:a", 0.0, 0.4).set_delay(0.8)
+		fade.tween_callback(func() -> void:
+			if is_instance_valid(_drop_zone_container):
+				_drop_zone_container.visible = false
+		)
+
 	answer_submitted.emit(correct)
 
 
@@ -541,7 +580,7 @@ func apply_hint(level: int) -> void:
 						_word_bank.remove_child(child)
 						child.queue_free()
 						_placed_order.append(first_piece)
-						_add_chip_to_zone(first_piece)
+						_add_chip_to_zone(first_piece, _placed_order.size() - 1)
 						_update_check_button()
 						break
 		2:
@@ -552,7 +591,7 @@ func apply_hint(level: int) -> void:
 						_word_bank.remove_child(child)
 						child.queue_free()
 						_placed_order.append(second_piece)
-						_add_chip_to_zone(second_piece)
+						_add_chip_to_zone(second_piece, _placed_order.size() - 1)
 						_update_check_button()
 						break
 

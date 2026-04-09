@@ -3,6 +3,11 @@ extends Control
 ## Manages 3-stage flow: Tutorial → Practice → Mission → Results.
 ## Blocks all input below via MOUSE_FILTER_STOP.
 
+signal overlay_closed(building_id: String, passed: bool)
+
+var _last_completed_building_id: String = ""
+var _last_passed: bool = false
+
 var _tutorial_demo_shown: bool = false
 var _sx: float = 1.0
 var _sy: float = 1.0
@@ -357,6 +362,8 @@ func _on_stage_changed(stage: String) -> void:
 
 
 func _on_quest_completed(building_id: String, passed: bool, score: int) -> void:
+	_last_completed_building_id = building_id
+	_last_passed = passed
 	_show_result(building_id, passed, score)
 
 
@@ -1239,6 +1246,10 @@ func _hide_overlay() -> void:
 		func() -> void:
 			visible = false
 			modulate.a = 1.0
+			if _last_passed and not _last_completed_building_id.is_empty():
+				overlay_closed.emit(_last_completed_building_id, true)
+			_last_completed_building_id = ""
+			_last_passed = false
 	)
 
 

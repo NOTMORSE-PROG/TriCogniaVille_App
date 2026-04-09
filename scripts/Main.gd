@@ -1160,6 +1160,7 @@ func _connect_signals() -> void:
 	QuestManager.quest_started.connect(func(_bid: String) -> void: _set_joystick_active(false))
 	QuestManager.quest_completed.connect(_on_quest_completed)
 	QuestManager.quest_abandoned.connect(func(_bid: String) -> void: _set_joystick_active(true))
+	_quest_overlay.overlay_closed.connect(_on_overlay_closed)
 
 
 func _on_building_tapped(controller: BuildingController) -> void:
@@ -1233,40 +1234,40 @@ func _on_quest_prompt_start(building_id: String, skip_tutorial: bool = false) ->
 
 
 func _on_quest_completed(building_id: String, passed: bool, _score: int) -> void:
-	# Show outro dialogue before unlocking — joystick stays disabled during dialogue
-	if has_node("/root/StoryManager") and is_instance_valid(_dialogue_panel):
-		var outro := StoryManager.get_outro(building_id, passed)
-		if not outro.is_empty():
-			_dialogue_panel.show_sequence(outro)
-			await _dialogue_panel.dialogue_sequence_finished
-			StoryManager.mark_outro_seen(building_id)
 	if passed and _building_controllers.has(building_id):
-		var bc: BuildingController = _building_controllers[building_id]
-		# ── Cinematic unlock cutscene ──
-		var player := _ysort.get_node_or_null("Player")
-		var camera: Camera2D = null
-		if player:
-			for child in player.get_children():
-				if child is Camera2D:
-					camera = child
-					break
-		if player and camera and is_instance_valid(_town_livener):
-			_town_livener.cutscene_active = true
-			var cutscene: Node = load("res://scripts/UnlockCutscene.gd").new()
-			add_child(cutscene)
-			cutscene.setup(_vp, _sx, _sy, bc, camera, player, _town_livener)
-			cutscene.cutscene_finished.connect(func() -> void:
-				_town_livener.cutscene_active = false
-				_set_joystick_active(true)
-			)
-			cutscene.play()
-			_update_progress_bar()
-			return  # Joystick re-enabled by cutscene_finished callback
-		# Fallback if camera not found
+		_update_progress_bar()
+	# Joystick re-enabled by _on_overlay_closed (on pass) or immediately (on fail)
+	if not passed:
+		_set_joystick_active(true)
+
+
+func _on_overlay_closed(building_id: String, _passed: bool) -> void:
+	if not _building_controllers.has(building_id):
+		_set_joystick_active(true)
+		return
+	var bc: BuildingController = _building_controllers[building_id]
+	var player := _ysort.get_node_or_null("Player")
+	var camera: Camera2D = null
+	if player:
+		for child in player.get_children():
+			if child is Camera2D:
+				camera = child
+				break
+	if player and camera and is_instance_valid(_town_livener):
+		_town_livener.cutscene_active = true
+		var cutscene: Node = load("res://scripts/UnlockCutscene.gd").new()
+		add_child(cutscene)
+		cutscene.setup(_vp, _sx, _sy, bc, camera, player, _town_livener)
+		cutscene.cutscene_finished.connect(func() -> void:
+			_town_livener.cutscene_active = false
+			_set_joystick_active(true)
+		)
+		cutscene.play()
+	else:
+		# Fallback: no camera/player
 		bc.unlock()
 		_update_progress_bar()
-	# Re-enable joystick after dialogue completes
-	_set_joystick_active(true)
+		_set_joystick_active(true)
 
 
 func _on_building_unlocked(building_id: String) -> void:

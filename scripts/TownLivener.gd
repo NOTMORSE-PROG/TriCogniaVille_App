@@ -108,6 +108,7 @@ func apply_tier_animated(tier: int) -> Array[Dictionary]:
 		5: highlights = _build_tier_5(root)
 		6: highlights = _build_tier_6(root)
 		7: highlights = _build_tier_7(root)
+		8: highlights = _build_tier_8(root)
 
 	# Ambient audio layer
 	if AMBIENT_LAYERS.has(tier):
@@ -138,6 +139,7 @@ func _apply_tier(tier: int, animate: bool) -> void:
 		5: _build_tier_5(root)
 		6: _build_tier_6(root)
 		7: _build_tier_7(root)
+		8: _build_tier_8(root)
 
 	# Ambient audio layer
 	if AMBIENT_LAYERS.has(tier):
@@ -510,6 +512,16 @@ func _build_tier_7(root: Node2D) -> Array[Dictionary]:
 		{"pos": musician_pos, "label": "Music fills the air!"},
 		{"pos": market_pos + Vector2(0, 50 * _sy), "label": "The market is bustling!"},
 	]
+
+
+func _build_tier_8(root: Node2D) -> Array[Dictionary]:
+	# Village fully restored — a few final flourishes near the bakery
+	_add_flowers(root, Vector2(_vp.x * 0.72, _vp.y * 0.42))
+	_add_flowers(root, Vector2(_vp.x * 0.18, _vp.y * 0.66))
+	_add_idle_npc(root, Vector2(_vp.x * 0.70, _vp.y * 0.55), Color(1.0, 0.9, 0.75))
+	_add_idle_npc(root, Vector2(_vp.x * 0.20, _vp.y * 0.60), Color(0.75, 0.9, 1.0))
+	# Tour highlights deferred to TownCelebration
+	return []
 
 
 # ═════════════════════════════════════════════════════════════════════════════

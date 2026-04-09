@@ -110,7 +110,7 @@ func play() -> void:
 
 	# Phase 4: Village tour
 	var new_tier := GameManager.unlocked_buildings.size()
-	if new_tier <= 7:
+	if new_tier <= GameManager.TOTAL_BUILDINGS:
 		var highlights: Array[Dictionary] = _town_livener.apply_tier_animated(new_tier)
 		await get_tree().create_timer(0.3).timeout
 		await _phase_tour(highlights)
@@ -130,12 +130,6 @@ func play() -> void:
 func _phase_camera_pan() -> void:
 	var building_world := _bc.get_building_center_world_pos()
 	var target_offset := building_world - _player.global_position
-
-	# Clamp offset so camera stays within viewport limits
-	var cam_target := _player.global_position + target_offset
-	cam_target.x = clampf(cam_target.x, _vp.x * 0.5, _vp.x * 0.5)
-	cam_target.y = clampf(cam_target.y, _vp.y * 0.5, _vp.y * 0.5)
-	target_offset = cam_target - _player.global_position
 
 	# Clamp within camera limits
 	var half_vp := _vp * 0.5

@@ -11,6 +11,8 @@ var _answered: bool = false
 var _show_hints: bool = false
 var _question: Dictionary = {}
 
+var _shuffled_correct_index: int = -1
+
 var _passage_label: RichTextLabel
 var _question_label: Label
 var _hint_label: Label
@@ -105,6 +107,19 @@ func _build_ui() -> void:
 		push_error("[MCQInteraction] Question has no options: %s" % _question.get("question", "?"))
 		answer_submitted.emit(false)
 		return
+
+	# Shuffle options at render time so the correct answer isn't always first
+	var stored_correct: int = _question.get("correct_index", -1)
+	var idx_list := range(options.size())
+	idx_list.shuffle()
+	var shuffled: Array = []
+	_shuffled_correct_index = -1
+	for new_pos in idx_list.size():
+		shuffled.append(options[idx_list[new_pos]])
+		if idx_list[new_pos] == stored_correct:
+			_shuffled_correct_index = new_pos
+	options = shuffled
+
 	for i in options.size():
 		var btn := Button.new()
 		btn.text = options[i]
@@ -169,8 +184,7 @@ func _on_option_pressed(index: int) -> void:
 		return
 	_answered = true
 
-	var correct_index: int = _question.get("correct_index", -1)
-	var correct := index == correct_index
+	var correct := index == _shuffled_correct_index
 
 	# Disable all options
 	for child in _options_container.get_children():
@@ -192,8 +206,8 @@ func _on_option_pressed(index: int) -> void:
 		selected_btn.add_theme_stylebox_override("disabled", style)
 
 	# Highlight correct answer if wrong
-	if not correct and correct_index >= 0 and correct_index < _options_container.get_child_count():
-		var correct_btn: Button = _options_container.get_child(correct_index) as Button
+	if not correct and _shuffled_correct_index >= 0 and _shuffled_correct_index < _options_container.get_child_count():
+		var correct_btn: Button = _options_container.get_child(_shuffled_correct_index) as Button
 		if is_instance_valid(correct_btn):
 			var cs := StyleFactory.make_student_card_normal()
 			cs.bg_color = StyleFactory.SUCCESS_GREEN.darkened(0.6)
@@ -219,14 +233,13 @@ func _on_option_pressed(index: int) -> void:
 func apply_hint(level: int) -> void:
 	if _answered:
 		return
-	var correct_index: int = _question.get("correct_index", -1)
 	match level:
 		1:
 			# Eliminate one wrong option (grey it out)
 			for child in _options_container.get_children():
 				if child is Button and not child.disabled:
 					var idx := child.get_index()
-					if idx != correct_index:
+					if idx != _shuffled_correct_index:
 						child.disabled = true
 						child.modulate.a = 0.4
 						break  # Only eliminate one
