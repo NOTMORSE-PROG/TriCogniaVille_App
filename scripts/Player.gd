@@ -16,6 +16,10 @@ func _physics_process(_delta: float) -> void:
 	var dir := _get_direction()
 	velocity = velocity.lerp(dir * SPEED, 0.18)
 	move_and_slide()
+	# Clamp player within village bounds
+	var vp := get_viewport().get_visible_rect().size
+	position.x = clampf(position.x, 0.0, vp.x)
+	position.y = clampf(position.y, 0.0, vp.y)
 	# Flip sprite to face movement direction (horizontal only)
 	if dir.x != 0.0:
 		var spr := get_node_or_null("Sprite") as Sprite2D

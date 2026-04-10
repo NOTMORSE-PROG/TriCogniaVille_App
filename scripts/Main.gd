@@ -36,6 +36,9 @@ var _dialogue_panel: Control
 var _profile_panel: Control
 var _profile_btn: Control
 
+# ─── Free exploration (post-completion) ──────────────────────────────────────
+var _is_free_exploration: bool = false
+
 # ─── Preloaded shaders ───────────────────────────────────────────────────────
 var _foliage_shader: Shader
 
@@ -1213,6 +1216,10 @@ func _connect_signals() -> void:
 
 
 func _on_building_tapped(controller: BuildingController) -> void:
+	if _is_free_exploration:
+		if not QuestManager.is_quest_active():
+			_show_replay_prompt(controller.building_id)
+		return
 	if controller.is_unlocked:
 		return
 	if QuestManager.is_quest_active():
@@ -1283,6 +1290,12 @@ func _on_quest_prompt_start(building_id: String, skip_tutorial: bool = false) ->
 
 
 func _on_quest_completed(building_id: String, passed: bool, _score: int) -> void:
+	if _is_free_exploration:
+		# Replay: no progress update, no unlock. Re-enable joystick on fail so
+		# the overlay close handler can still run normally.
+		if not passed:
+			_set_joystick_active(true)
+		return
 	if passed and _building_controllers.has(building_id):
 		_update_progress_bar()
 	# Joystick re-enabled by _on_overlay_closed (on pass) or immediately (on fail)
@@ -1291,6 +1304,11 @@ func _on_quest_completed(building_id: String, passed: bool, _score: int) -> void
 
 
 func _on_overlay_closed(building_id: String, _passed: bool) -> void:
+	if _is_free_exploration:
+		# Skip the unlock cutscene — just return to free exploration.
+		_set_joystick_active(true)
+		AudioManager.start_village_music()
+		return
 	if not _building_controllers.has(building_id):
 		_set_joystick_active(true)
 		return
@@ -1694,6 +1712,184 @@ func _play_ending_sequence() -> void:
 	StoryManager.mark_ending_seen()
 	if is_instance_valid(_profile_btn):
 		_profile_btn.visible = true
+	_is_free_exploration = true
+	_enter_free_exploration()
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# FREE EXPLORATION  (post-completion mode)
+# ═════════════════════════════════════════════════════════════════════════════
+
+func _enter_free_exploration() -> void:
+	# Update progress label to "Village Restored ✓"
+	var canvas := get_node_or_null("UI")
+	if canvas:
+		var count := _find_node_by_name(canvas, "ProgressCount")
+		if is_instance_valid(count) and count is Label:
+			(count as Label).text = "Village Restored ✓"
+
+		# Reading level badge below profile button
+		var existing_badge := canvas.get_node_or_null("ReadingLevelBadge")
+		if not is_instance_valid(existing_badge):
+			var player_level: int = GameManager.current_student.get("reading_level", 1)
+			var badge := Label.new()
+			badge.name = "ReadingLevelBadge"
+			badge.text = _get_level_label(player_level)
+			badge.add_theme_font_size_override("font_size", int(11.0 * _sy))
+			badge.add_theme_color_override("font_color", StyleFactory.SKY_BLUE)
+			badge.position = Vector2(24 * _sx, 70 * _sy)
+			badge.z_index = 100
+			badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			canvas.add_child(badge)
+
+	# Update badge when server advances reading level
+	if not GameManager.level_up.is_connected(_on_level_up_exploration):
+		GameManager.level_up.connect(_on_level_up_exploration)
+
+	_set_joystick_active(true)
+	print("[Main] Free exploration mode active.")
+
+
+func _get_level_label(level: int) -> String:
+	match level:
+		1: return "Beginner  •  Level 1"
+		2: return "Developing  •  Level 2"
+		3: return "Grade Level  •  Level 3"
+		4: return "Advanced  •  Level 4"
+		_: return "Level %d" % level
+
+
+func _on_level_up_exploration(from_level: int, to_level: int) -> void:
+	print("[Main] Level up: %d → %d" % [from_level, to_level])
+	if not _is_free_exploration:
+		return
+	var canvas := get_node_or_null("UI")
+	if not canvas:
+		return
+	var badge := canvas.get_node_or_null("ReadingLevelBadge")
+	if is_instance_valid(badge) and badge is Label:
+		(badge as Label).text = _get_level_label(to_level)
+
+
+func _show_replay_prompt(building_id: String) -> void:
+	var building_label: String = ""
+	var building_color: Color = StyleFactory.GOLD
+	for b in BUILDING_DATA:
+		if b["id"] == building_id:
+			building_label = b["label"]
+			building_color = b["color"]
+			break
+
+	var player_level: int = GameManager.current_student.get("reading_level", 1)
+
+	var overlay := CanvasLayer.new()
+	overlay.name = "ReplayPrompt"
+	overlay.layer = 90
+	add_child(overlay)
+
+	# Dim background — blocks input to village while prompt is open
+	var dim := ColorRect.new()
+	dim.color = Color(0.0, 0.0, 0.0, 0.55)
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.add_child(dim)
+
+	# Center panel
+	var panel_w := 320.0 * _sx
+	var panel_h := 310.0 * _sy
+	var panel := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = StyleFactory.BG_CARD
+	sb.border_width_left = 2
+	sb.border_width_right = 2
+	sb.border_width_top = 2
+	sb.border_width_bottom = 2
+	sb.border_color = building_color
+	sb.corner_radius_top_left = int(16 * _sx)
+	sb.corner_radius_top_right = int(16 * _sx)
+	sb.corner_radius_bottom_left = int(16 * _sx)
+	sb.corner_radius_bottom_right = int(16 * _sx)
+	sb.content_margin_left = 20 * _sx
+	sb.content_margin_right = 20 * _sx
+	sb.content_margin_top = 18 * _sy
+	sb.content_margin_bottom = 18 * _sy
+	panel.add_theme_stylebox_override("panel", sb)
+	panel.custom_minimum_size = Vector2(panel_w, panel_h)
+	panel.position = Vector2(_vp.x * 0.5 - panel_w * 0.5, _vp.y * 0.5 - panel_h * 0.5)
+	overlay.add_child(panel)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", int(12 * _sy))
+	panel.add_child(vbox)
+
+	# Building name
+	var name_lbl := Label.new()
+	name_lbl.text = building_label
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_lbl.add_theme_font_size_override("font_size", int(20 * _sy))
+	name_lbl.add_theme_color_override("font_color", building_color)
+	vbox.add_child(name_lbl)
+
+	# Reading level
+	var level_lbl := Label.new()
+	level_lbl.text = "Playing at " + _get_level_label(player_level)
+	level_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	level_lbl.add_theme_font_size_override("font_size", int(12 * _sy))
+	level_lbl.add_theme_color_override("font_color", StyleFactory.SKY_BLUE)
+	vbox.add_child(level_lbl)
+
+	var sep := HSeparator.new()
+	vbox.add_child(sep)
+
+	# Stage buttons
+	var stages := [
+		{"id": "tutorial", "label": "Tutorial", "color": StyleFactory.STAGE_TUTORIAL_ACCENT},
+		{"id": "practice", "label": "Practice", "color": StyleFactory.STAGE_PRACTICE_ACCENT},
+		{"id": "mission", "label": "Mission", "color": StyleFactory.STAGE_MISSION_ACCENT},
+	]
+	for stage_data in stages:
+		var btn := Button.new()
+		btn.text = stage_data["label"]
+		btn.custom_minimum_size = Vector2(0, 44 * _sy)
+		btn.add_theme_font_size_override("font_size", int(15 * _sy))
+		var btn_sb := StyleBoxFlat.new()
+		var sc: Color = stage_data["color"]
+		btn_sb.bg_color = Color(sc.r, sc.g, sc.b, 0.15)
+		btn_sb.border_width_left = 1
+		btn_sb.border_width_right = 1
+		btn_sb.border_width_top = 1
+		btn_sb.border_width_bottom = 1
+		btn_sb.border_color = sc
+		btn_sb.corner_radius_top_left = int(8 * _sx)
+		btn_sb.corner_radius_top_right = int(8 * _sx)
+		btn_sb.corner_radius_bottom_left = int(8 * _sx)
+		btn_sb.corner_radius_bottom_right = int(8 * _sx)
+		btn_sb.content_margin_left = 12 * _sx
+		btn_sb.content_margin_right = 12 * _sx
+		btn_sb.content_margin_top = 6 * _sy
+		btn_sb.content_margin_bottom = 6 * _sy
+		btn.add_theme_stylebox_override("normal", btn_sb)
+		btn.add_theme_color_override("font_color", sc)
+		var sid: String = stage_data["id"]
+		btn.pressed.connect(func() -> void:
+			overlay.queue_free()
+			QuestManager.start_quest_replay(building_id, sid)
+		)
+		vbox.add_child(btn)
+
+	# Close button
+	var close_btn := Button.new()
+	close_btn.text = "Close"
+	close_btn.custom_minimum_size = Vector2(0, 36 * _sy)
+	close_btn.add_theme_font_size_override("font_size", int(13 * _sy))
+	close_btn.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+	close_btn.pressed.connect(func() -> void: overlay.queue_free())
+	vbox.add_child(close_btn)
+
+	dim.gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventMouseButton and event.pressed:
+			overlay.queue_free()
+	)
 
 
 func _update_progress_bar() -> void:
@@ -1777,6 +1973,14 @@ func _check_tutorial() -> void:
 	if GameManager.current_student.is_empty():
 		return
 	if not ApiClient.is_authenticated:
+		return
+	# Returning player who already completed the game — go straight to free exploration.
+	if (
+		GameManager.unlocked_buildings.size() >= GameManager.TOTAL_BUILDINGS
+		and not StoryManager.should_show_ending()
+	):
+		_is_free_exploration = true
+		_enter_free_exploration()
 		return
 	var no_buildings: bool = GameManager.unlocked_buildings.size() == 0
 	var tutorial_done: bool = GameManager.current_student.get("tutorial_done", 0) == 1

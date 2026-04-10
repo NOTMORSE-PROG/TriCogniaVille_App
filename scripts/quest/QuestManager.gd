@@ -27,6 +27,8 @@ var _part_a_correct: int = 0  # Decoding: words with passing score (0-10)
 var _part_b_fluency: int = 0  # Fluency: FeedbackEngine fluency_score (0-100)
 var _part_c_correct: int = 0  # Comprehension: MCQ/etc correct count
 
+var _is_replay: bool = false  # True when started via start_quest_replay — skips backend submission
+
 # Audio URLs uploaded during this quest session — deleted on abandon/quit
 var _session_audio_urls: Array[String] = []
 
@@ -155,6 +157,53 @@ func start_quest(building_id: String, skip_tutorial: bool = false) -> void:
 				_current_quest_data.get("topic", ""),
 				_current_quest_data.get("week", 0),
 				str(skip_tutorial),
+			]
+		)
+	)
+	AudioManager.stop_village_music()
+	AudioManager.play_sfx("quest_start")
+	quest_started.emit(building_id)
+	quest_stage_changed.emit(_current_stage)
+
+
+## Start a replay of an already-unlocked building in free exploration mode.
+## Bypasses the is_unlocked check. Does not submit to the backend.
+func start_quest_replay(building_id: String, stage: String) -> void:
+	if _is_quest_active:
+		print("[QuestManager] Quest already active, ignoring start_quest_replay.")
+		return
+	if GameManager.current_student.is_empty():
+		print("[QuestManager] No student logged in, ignoring start_quest_replay.")
+		return
+
+	var level: int = GameManager.current_student.get("reading_level", 3)
+	_current_quest_data = QuestData.get_quest_for_building(building_id, level)
+	if _current_quest_data.is_empty():
+		push_error("[QuestManager] Replay failed to load quest for: " + building_id)
+		return
+
+	_current_building_id = building_id
+	_is_quest_active = true
+	_is_replay = true
+	_current_stage = stage
+	_current_question_index = 0
+	_mission_score = 0
+	_mission_total = 0
+	_question_results = []
+	_part_a_correct = 0
+	_part_b_fluency = 0
+	_part_c_correct = 0
+	_shuffle_mission_questions()
+
+	print(
+		(
+			"[QuestManager] Replay started: %s (%s — Week %d) stage=%s level=%d"
+			% [
+				building_id,
+				_current_quest_data.get("topic", ""),
+				_current_quest_data.get("week", 0),
+				stage,
+				level,
 			]
 		)
 	)
@@ -361,7 +410,8 @@ func _finish_quest() -> void:
 	# `passed` from (buildingId, score, totalItems) — we don't send the client's
 	# verdict. The server response drives XP, level, unlock, and badges via
 	# GameManager.submit_quest_attempt.
-	if ApiClient.is_authenticated:
+	# Replays (free exploration) are practice-only and do not submit to the backend.
+	if ApiClient.is_authenticated and not _is_replay:
 		# `attempts` reflects how many times the player has tried THIS quest
 		# this run; for the first POST it's 1.
 		var payload := {
@@ -395,6 +445,7 @@ func _shuffle_mission_questions() -> void:
 
 func _reset_state() -> void:
 	_is_quest_active = false
+	_is_replay = false
 	_current_building_id = ""
 	_current_stage = ""
 	_current_quest_data = {}
