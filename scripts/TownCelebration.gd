@@ -59,7 +59,7 @@ func _apply_golden_glow() -> void:
 		if is_instance_valid(bc) and bc.is_unlocked:
 			var sprite = bc.get_node_or_null("Sprite2D")
 			if sprite and sprite.material is ShaderMaterial:
-				var tw := bc.create_tween()
+				var tw: Tween = bc.create_tween()
 				tw.tween_method(
 					func(v: float) -> void:
 						if is_instance_valid(sprite) and sprite.material is ShaderMaterial:
@@ -325,7 +325,7 @@ func _dismiss() -> void:
 		if is_instance_valid(bc):
 			var sprite = bc.get_node_or_null("Sprite2D")
 			if sprite and sprite.material is ShaderMaterial:
-				var tw := bc.create_tween()
+				var tw: Tween = bc.create_tween()
 				tw.tween_method(
 					func(v: float) -> void:
 						if is_instance_valid(sprite) and sprite.material is ShaderMaterial:

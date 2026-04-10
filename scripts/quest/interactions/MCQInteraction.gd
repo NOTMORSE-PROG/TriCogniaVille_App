@@ -79,10 +79,16 @@ func _build_ui() -> void:
 		inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		vbox.add_child(inst_label)
 
-	# Question
+	# Question — auto-shrink font for long question text
+	var q_text: String = _question.get("question", "")
+	var q_base_font: int = 22 if _compact else 40
+	if q_text.length() > 80:
+		q_base_font = int(q_base_font * 0.70)
+	elif q_text.length() > 55:
+		q_base_font = int(q_base_font * 0.82)
 	_question_label = Label.new()
-	_question_label.text = _question.get("question", "")
-	_question_label.add_theme_font_size_override("font_size", int((22 if _compact else 40) * _sy))
+	_question_label.text = q_text
+	_question_label.add_theme_font_size_override("font_size", int(q_base_font * _sy))
 	_question_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_question_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_question_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -123,11 +129,24 @@ func _build_ui() -> void:
 			_shuffled_correct_index = new_pos
 	options = shuffled
 
+	# Auto-scale font + height when any option text is long
+	var max_opt_len := 0
+	for opt_text in options:
+		max_opt_len = max(max_opt_len, (opt_text as String).length())
+	var base_font: int = 20 if _compact else 30
+	var base_h: float = 56.0 if _compact else 88.0
+	if max_opt_len > 70:
+		base_font = int(base_font * 0.70)
+		base_h *= 0.70
+	elif max_opt_len > 50:
+		base_font = int(base_font * 0.82)
+		base_h *= 0.82
+
 	for i in options.size():
 		var btn := Button.new()
 		btn.text = options[i]
-		btn.custom_minimum_size = Vector2(0, (56 if _compact else 88) * _sy)
-		btn.add_theme_font_size_override("font_size", int((20 if _compact else 30) * _sy))
+		btn.custom_minimum_size = Vector2(0, base_h * _sy)
+		btn.add_theme_font_size_override("font_size", int(base_font * _sy))
 		btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 		btn.add_theme_stylebox_override("normal", StyleFactory.make_student_card_normal())
 		btn.add_theme_stylebox_override("hover", StyleFactory.make_student_card_hover())
