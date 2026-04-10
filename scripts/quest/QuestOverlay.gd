@@ -425,7 +425,8 @@ func _load_current_question() -> void:
 			_question_container.add_child(mcq)
 			mcq.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			mcq.size_flags_vertical = Control.SIZE_EXPAND_FILL
-			mcq.setup(question, show_hints, _sx, _sy)
+			var qid: String = QuestManager.get_current_quest_data().get("quest_id", "")
+			mcq.setup(question, show_hints, _sx, _sy, qid == "week5_vocabulary")
 			mcq.answer_submitted.connect(_on_answer_submitted)
 			_interaction_node = mcq
 		"tap_target":
