@@ -4,9 +4,9 @@ class_name StoryData
 ## Mirrors QuestData pattern: static const data, no instance state.
 ##
 ## Each dialogue array is wrapped in a by_level dict with three keys:
-##   "default" → Level 3 (Developing Reader) — original content
-##   "l1"      → Levels 1 & 2 (Non-Reader / Emerging Reader) — simplified
-##   "l4"      → Level 4 (Independent Reader) — enriched vocabulary
+##   "default" → fallback content
+##   "l1"      → Level 1 (Beginner) — simplified
+##   "l3"      → Level 3 (Advanced) — enriched vocabulary
 ## StoryManager._get_level_variant() selects the correct key at runtime.
 
 # ── Dialogue Line Format ─────────────────────────────────────────────────────
@@ -70,7 +70,7 @@ const PROLOGUE_BY_LEVEL: Dictionary = {
 			],
 		},
 	],
-	"l4":
+	"l3":
 	[
 		{
 			"speaker": "Lumi",
@@ -135,7 +135,7 @@ const PROLOGUE_LORE_BY_LEVEL: Dictionary = {
 			"choices": [],
 		},
 	],
-	"l4":
+	"l3":
 	[
 		{
 			"speaker": "Lumi",
@@ -208,7 +208,7 @@ const DIALOGUES: Dictionary = {
 					],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -259,7 +259,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -308,7 +308,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -347,7 +347,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -404,7 +404,7 @@ const DIALOGUES: Dictionary = {
 					],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -448,7 +448,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -497,7 +497,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -537,7 +537,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -593,7 +593,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Taro",
@@ -639,7 +639,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Taro",
@@ -672,7 +672,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -704,7 +704,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Taro",
@@ -737,7 +737,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Taro",
@@ -782,7 +782,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Taro",
@@ -821,7 +821,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Taro",
@@ -879,7 +879,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Mira",
@@ -925,7 +925,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Mira",
@@ -957,7 +957,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -989,7 +989,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Mira",
@@ -1021,7 +1021,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Mira",
@@ -1066,7 +1066,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Mira",
@@ -1105,7 +1105,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Mira",
@@ -1163,7 +1163,7 @@ const DIALOGUES: Dictionary = {
 					],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1207,7 +1207,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1256,7 +1256,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1296,7 +1296,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1354,7 +1354,7 @@ const DIALOGUES: Dictionary = {
 					],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1398,7 +1398,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1447,7 +1447,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1487,7 +1487,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1545,7 +1545,7 @@ const DIALOGUES: Dictionary = {
 					],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1589,7 +1589,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1641,7 +1641,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1681,7 +1681,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1746,7 +1746,7 @@ const DIALOGUES: Dictionary = {
 					],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1797,7 +1797,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1835,7 +1835,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1868,7 +1868,7 @@ const DIALOGUES: Dictionary = {
 					"choices": [],
 				},
 			],
-			"l4":
+			"l3":
 			[
 				{
 					"speaker": "Lumi",
@@ -1987,7 +1987,7 @@ const ENDING_FAREWELL_BY_LEVEL: Dictionary = {
 			],
 		},
 	],
-	"l4":
+	"l3":
 	[
 		{
 			"speaker": "Lumi",
@@ -2036,7 +2036,7 @@ const FAREWELL_LORE_BY_LEVEL: Dictionary = {
 			"choices": [],
 		},
 	],
-	"l4":
+	"l3":
 	[
 		{
 			"speaker": "Lumi",

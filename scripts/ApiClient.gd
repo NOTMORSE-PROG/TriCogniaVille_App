@@ -174,8 +174,28 @@ func mark_tutorial_done(building_id: String, callback: Callable) -> void:
 
 
 ## Atomic onboarding finalize. Body: { username, characterGender, readingLevel }.
+## 409 is treated as success so NetworkGate forwards it to on_done instead of
+## showing the retry modal — the caller checks data.get("code") == "CONFLICT".
 func complete_onboarding(payload: Dictionary, callback: Callable) -> void:
-	_post("/onboarding/complete", JSON.stringify(payload), callback)
+	var http := _create_http_request()
+	var url := base_url + API_PREFIX + "/onboarding/complete"
+	http.request_completed.connect(
+		func(
+			_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray
+		) -> void:
+			var parsed := _parse_response(response_code, body)
+			if response_code == 401:
+				_clear_token()
+			# 409 = already onboarded; pass as success so the caller can silently
+			# proceed to Main rather than triggering the NetworkGate retry modal.
+			var success: bool = parsed[0] or response_code == 409
+			callback.call(success, parsed[1])
+			_cleanup_http(http)
+	)
+	var err := http.request(url, _get_headers(), HTTPClient.METHOD_POST, JSON.stringify(payload))
+	if err != OK:
+		callback.call(false, {"error": "Failed to send request"})
+		_cleanup_http(http)
 
 
 ## Boot hydration — single round trip pulling student + badges + stats +

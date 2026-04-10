@@ -644,11 +644,11 @@ const _WELL_MISSION := [
 		"type": "mcq",
 		"instruction": "Answer the questions based on the passage.",
 		"passage": _WELL_PASSAGE,
-		"question": "Who found the dog?",
-		"options": ["A villager", "The {name}", "A child"],
-		"correct_index": 1,
-		"feedback_correct": "Correct!",
-		"feedback_wrong": "The {name} found the dog.",
+		"question": "What did the {name} find near the river?",
+		"options": ["A stray dog", "A lost bag", "A wild bird"],
+		"correct_index": 0,
+		"feedback_correct": "Correct! The {name} found a stray dog.",
+		"feedback_wrong": "Look again — the {name} found a dog near the river.",
 	},
 	{
 		"type": "mcq",
@@ -1906,36 +1906,36 @@ const _INN_PRACTICE_L1 := [
 const _INN_MISSION_L1 := [
 	{
 		"type": "punctuation_read",
-		"sentence": "Stop.",
-		"word": "Stop",
+		"sentence": "Walk.",
+		"word": "Walk",
 		"instruction": "Read this sentence aloud. Then answer the question.",
-		"question": "What does the period mean?",
-		"options": ["pause", "stop at the end"],
-		"correct_index": 1,
-		"feedback_correct": "Right! A period means stop.",
-		"feedback_wrong": "A period tells you to stop at the end.",
+		"question": "What does the mark at the end mean?",
+		"options": ["stop", "shout"],
+		"correct_index": 0,
+		"feedback_correct": "Right! The period means stop.",
+		"feedback_wrong": "A period at the end means stop.",
 	},
 	{
 		"type": "punctuation_read",
 		"sentence": "Run!",
 		"word": "Run",
 		"instruction": "Read this sentence aloud. Then answer the question.",
-		"question": "How should you read this?",
+		"question": "What does the '!' tell you about your voice?",
 		"options": ["quiet voice", "strong voice"],
 		"correct_index": 1,
-		"feedback_correct": "Right! Say it with a strong voice!",
-		"feedback_wrong": "The '!' means strong voice!",
+		"feedback_correct": "Right! Use a strong voice!",
+		"feedback_wrong": "The '!' means strong voice.",
 	},
 	{
 		"type": "punctuation_read",
 		"sentence": "Are you ok?",
 		"word": "ok",
 		"instruction": "Read this sentence aloud. Then answer the question.",
-		"question": "Is this asking or telling?",
-		"options": ["asking", "telling"],
+		"question": "What kind of sentence is this?",
+		"options": ["a question", "a statement"],
 		"correct_index": 0,
-		"feedback_correct": "Right! The '?' means asking!",
-		"feedback_wrong": "The '?' means this is asking, not telling.",
+		"feedback_correct": "Right! It ends with '?' so it is a question!",
+		"feedback_wrong": "The '?' tells you it is a question.",
 	},
 	{
 		"type": "punctuation_read",
@@ -2336,10 +2336,10 @@ const _WELL_MISSION_L1 := [
 	{
 		"type": "mcq",
 		"instruction": "Think about the passage: " + _WELL_PASSAGE_L1,
-		"question": "Who found the dog?",
-		"options": ["a boy", "a girl"],
+		"question": "What does the boy find?",
+		"options": ["a dog", "a cat"],
 		"correct_index": 0,
-		"feedback_correct": "Right! A boy found the dog!",
+		"feedback_correct": "Right! The boy finds a dog!",
 		"feedback_wrong": "The passage says 'A boy finds a dog.'",
 	},
 	{
@@ -4082,9 +4082,9 @@ const _BAKERY_MISSION_L2 := [
 # Complex vocabulary, analysis-level questions, 4-choice MCQ
 # ═════════════════════════════════════════════════════════════════════════════
 
-# ── Passages (Level 4) ──────────────────────────────────────────────────────
+# ── Passages (Level 3 / Advanced) ───────────────────────────────────────────
 
-const _CHAPEL_PASSAGE_L4 := (
+const _CHAPEL_PASSAGE_L3 := (
 	"The ancient library stood at the heart of Luminara, its towering shelves disappearing into shadow."
 	+ " Dust particles danced in narrow beams of light that filtered through stained glass windows."
 	+ " The Cognian moved carefully between the rows, running his fingers along cracked leather spines.\n"
@@ -4096,7 +4096,7 @@ const _CHAPEL_PASSAGE_L4 := (
 	+ " Lights flickered in distant corners, and the air itself grew warm with possibility."
 )
 
-const _LIBRARY_PASSAGE_L4 := (
+const _LIBRARY_PASSAGE_L3 := (
 	"The village had endured a prolonged period of desolation."
 	+ " Its inhabitants, once prosperous and industrious, had gradually abandoned their dwellings as an inexplicable silence descended upon the narrow streets.\n"
 	+ "Only the most resilient remained, clinging to hope like the last embers of a dying fire."
@@ -4104,7 +4104,7 @@ const _LIBRARY_PASSAGE_L4 := (
 	+ "She believed that the village's salvation lay not in grand gestures but in the meticulous preservation of its stories."
 )
 
-const _WELL_PASSAGE_L4 := (
+const _WELL_PASSAGE_L3 := (
 	"The two factions of Luminara had not spoken to each other in years."
 	+ " The Northside blamed the Southside for the silence that had fallen over the village, claiming they had angered the ancient spirits."
 	+ " The Southside, in turn, accused the Northside of hoarding the last written records, letting the words decay in locked chambers.\n"
@@ -4116,7 +4116,7 @@ const _WELL_PASSAGE_L4 := (
 	+ "Only by reuniting the factions — by encouraging them to speak, to read, and to listen to one another — could the voice of Luminara be restored."
 )
 
-const _MARKET_PASSAGE_L4 := (
+const _MARKET_PASSAGE_L3 := (
 	"The keeper of the archive sat motionless at his desk, staring at a letter he could not bring himself to open."
 	+ " His hands trembled — not from cold, but from the weight of what the letter might contain."
 	+ " For months, rumours had circulated that the last remaining copy of the Founding Verses had been found in a distant province.\n"
@@ -4131,7 +4131,7 @@ const _MARKET_PASSAGE_L4 := (
 	+ " He broke the seal."
 )
 
-const _BAKERY_PASSAGE_L4 := (
+const _BAKERY_PASSAGE_L3 := (
 	"The restoration of Luminara did not happen in a single moment of triumph."
 	+ " It unfolded gradually, like dawn spreading across a valley."
 	+ " First came the whispers — hesitant voices testing the silence, unsure whether they would be heard.\n"
@@ -4154,7 +4154,7 @@ const _BAKERY_PASSAGE_L4 := (
 # Focus: Diphthongs, consonant clusters (spl, str, thr, scr), multi-syllable
 # ═════════════════════════════════════════════════════════════════════════════
 
-const _TOWN_HALL_TUTORIAL_L4 := [
+const _TOWN_HALL_TUTORIAL_L3 := [
 	{
 		"type": "mcq",
 		"instruction":
@@ -4179,7 +4179,7 @@ const _TOWN_HALL_TUTORIAL_L4 := [
 	},
 ]
 
-const _TOWN_HALL_PRACTICE_L4 := [
+const _TOWN_HALL_PRACTICE_L3 := [
 	{
 		"type": "mcq",
 		"instruction": "Identify the vowel sound in this word.",
@@ -4232,7 +4232,7 @@ const _TOWN_HALL_PRACTICE_L4 := [
 	},
 ]
 
-const _TOWN_HALL_MISSION_L4 := [
+const _TOWN_HALL_MISSION_L3 := [
 	# Part 1 — Vowel MCQ (4 items)
 	{
 		"type": "mcq",
@@ -4333,7 +4333,7 @@ const _TOWN_HALL_MISSION_L4 := [
 # Focus: 4-5 syllable words, complex splitting
 # ═════════════════════════════════════════════════════════════════════════════
 
-const _SCHOOL_TUTORIAL_L4 := [
+const _SCHOOL_TUTORIAL_L3 := [
 	{
 		"type": "drag_drop",
 		"instruction":
@@ -4347,7 +4347,7 @@ const _SCHOOL_TUTORIAL_L4 := [
 	},
 ]
 
-const _SCHOOL_PRACTICE_L4 := [
+const _SCHOOL_PRACTICE_L3 := [
 	{
 		"type": "drag_drop",
 		"instruction": "Split the word into syllables. Arrange them in the correct order.",
@@ -4395,7 +4395,7 @@ const _SCHOOL_PRACTICE_L4 := [
 	},
 ]
 
-const _SCHOOL_MISSION_L4 := [
+const _SCHOOL_MISSION_L3 := [
 	# Part 1 — Drag & Drop (5 items)
 	{
 		"type": "drag_drop",
@@ -4485,7 +4485,7 @@ const _SCHOOL_MISSION_L4 := [
 # Focus: Semicolons, em-dashes, subordinate clauses, dialogue punctuation
 # ═════════════════════════════════════════════════════════════════════════════
 
-const _INN_TUTORIAL_L4 := [
+const _INN_TUTORIAL_L3 := [
 	{
 		"type": "mcq",
 		"instruction":
@@ -4510,7 +4510,7 @@ const _INN_TUTORIAL_L4 := [
 	},
 ]
 
-const _INN_PRACTICE_L4 := [
+const _INN_PRACTICE_L3 := [
 	{
 		"type": "punctuation_read",
 		"sentence": "She read silently; he watched from the doorway.",
@@ -4561,7 +4561,7 @@ const _INN_PRACTICE_L4 := [
 	},
 ]
 
-const _INN_MISSION_L4 := [
+const _INN_MISSION_L3 := [
 	{
 		"type": "punctuation_read",
 		"sentence": "Though he searched for hours, he could not find what he had lost; the trail had gone cold.",
@@ -4679,7 +4679,7 @@ const _INN_MISSION_L4 := [
 # Focus: Expression, pacing, tone in literary prose
 # ═════════════════════════════════════════════════════════════════════════════
 
-const _CHAPEL_TUTORIAL_L4 := [
+const _CHAPEL_TUTORIAL_L3 := [
 	{
 		"type": "mcq",
 		"instruction":
@@ -4705,7 +4705,7 @@ const _CHAPEL_TUTORIAL_L4 := [
 	},
 ]
 
-const _CHAPEL_PRACTICE_L4 := [
+const _CHAPEL_PRACTICE_L3 := [
 	{
 		"type": "fluency_check",
 		"instruction": "Read these sentences with expression. Slow down for the atmosphere and emphasise key words.",
@@ -4741,12 +4741,12 @@ const _CHAPEL_PRACTICE_L4 := [
 	},
 ]
 
-const _CHAPEL_MISSION_L4 := [
+const _CHAPEL_MISSION_L3 := [
 	{
 		"type": "fluency_check",
 		"instruction":
 		"Read the full passage aloud with expression. Adjust your pace for suspense, your tone for mood, and your emphasis for meaning.",
-		"passage": _CHAPEL_PASSAGE_L4,
+		"passage": _CHAPEL_PASSAGE_L3,
 		"feedback_correct": "Excellent reading! You brought the library to life with your voice.",
 	},
 	{
@@ -4885,12 +4885,12 @@ const _CHAPEL_MISSION_L4 := [
 # Focus: Academic vocabulary through context clues
 # ═════════════════════════════════════════════════════════════════════════════
 
-const _LIBRARY_TUTORIAL_L4 := [
+const _LIBRARY_TUTORIAL_L3 := [
 	{
 		"type": "mcq",
 		"instruction":
 		"At this level, you will encounter academic vocabulary — words used in formal writing. Use context clues to determine meaning. Look at the words and ideas AROUND the unfamiliar word.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "Using context clues, what does 'desolation' most likely mean?",
 		"options": ["Celebration and joy", "Emptiness and ruin", "Growth and progress", "Confusion and noise"],
 		"correct_index": 1,
@@ -4900,11 +4900,11 @@ const _LIBRARY_TUTORIAL_L4 := [
 	},
 ]
 
-const _LIBRARY_PRACTICE_L4 := [
+const _LIBRARY_PRACTICE_L3 := [
 	{
 		"type": "mcq",
 		"instruction": "Use context clues from the passage to determine the meaning.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'prolonged' mean in 'a prolonged period of desolation'?",
 		"options": ["Short and sudden", "Extended over a long time", "Surprising", "Intense but brief"],
 		"correct_index": 1,
@@ -4915,7 +4915,7 @@ const _LIBRARY_PRACTICE_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Use context clues from the passage to determine the meaning.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'industrious' mean?",
 		"options": ["Lazy and careless", "Hard-working and productive", "Wealthy and powerful", "Quiet and reserved"],
 		"correct_index": 1,
@@ -4926,7 +4926,7 @@ const _LIBRARY_PRACTICE_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Use context clues from the passage to determine the meaning.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'resilient' mean in this context?",
 		"options": ["Frightened and unsure", "Able to recover and endure hardship", "Angry and defiant", "Old and tired"],
 		"correct_index": 1,
@@ -4936,11 +4936,11 @@ const _LIBRARY_PRACTICE_L4 := [
 	},
 ]
 
-const _LIBRARY_MISSION_L4 := [
+const _LIBRARY_MISSION_L3 := [
 	{
 		"type": "mcq",
 		"instruction": "Based on the passage, determine the meaning of the word.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'desolation' mean?",
 		"options": ["Happiness and celebration", "Emptiness, ruin, and abandonment", "Rapid growth", "A state of confusion"],
 		"correct_index": 1,
@@ -4950,7 +4950,7 @@ const _LIBRARY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Based on the passage, determine the meaning of the word.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'prolonged' mean?",
 		"options": ["Sudden and brief", "Extended over a long time", "Unexpected", "Mild and gentle"],
 		"correct_index": 1,
@@ -4960,7 +4960,7 @@ const _LIBRARY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Based on the passage, determine the meaning of the word.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'prosperous' mean?",
 		"options": ["Poor and struggling", "Successful and wealthy", "Isolated and alone", "Fearful and anxious"],
 		"correct_index": 1,
@@ -4970,7 +4970,7 @@ const _LIBRARY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Based on the passage, determine the meaning of the word.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'industrious' mean?",
 		"options": ["Lazy and idle", "Hard-working and productive", "Artistic and creative", "Dangerous and reckless"],
 		"correct_index": 1,
@@ -4980,7 +4980,7 @@ const _LIBRARY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Based on the passage, determine the meaning of the word.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'inexplicable' mean?",
 		"options": ["Easy to understand", "Impossible to explain", "Very loud", "Extremely beautiful"],
 		"correct_index": 1,
@@ -4990,7 +4990,7 @@ const _LIBRARY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Based on the passage, determine the meaning of the word.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'resilient' mean?",
 		"options": ["Weak and fragile", "Able to endure and recover from hardship", "Loud and demanding", "Young and inexperienced"],
 		"correct_index": 1,
@@ -5000,7 +5000,7 @@ const _LIBRARY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Based on the passage, determine the meaning of the word.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'tenacity' mean?",
 		"options": ["Talent for music", "Persistent determination", "Physical strength", "Quiet patience"],
 		"correct_index": 1,
@@ -5010,7 +5010,7 @@ const _LIBRARY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Based on the passage, determine the meaning of the word.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'meticulous' mean?",
 		"options": ["Careless and hasty", "Extremely careful and precise", "Secretive and hidden", "Generous and kind"],
 		"correct_index": 1,
@@ -5020,7 +5020,7 @@ const _LIBRARY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Based on the passage, determine the meaning of the word.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'preservation' mean?",
 		"options": ["The act of destroying something", "The act of keeping something safe and intact", "The act of discovering something new", "The act of forgetting something"],
 		"correct_index": 1,
@@ -5030,7 +5030,7 @@ const _LIBRARY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Based on the passage, determine the meaning of the word.",
-		"passage": _LIBRARY_PASSAGE_L4,
+		"passage": _LIBRARY_PASSAGE_L3,
 		"question": "What does 'salvation' mean?",
 		"options": ["The cause of a problem", "Rescue or deliverance from danger or difficulty", "A form of punishment", "A type of celebration"],
 		"correct_index": 1,
@@ -5044,12 +5044,12 @@ const _LIBRARY_MISSION_L4 := [
 # Focus: Main idea in complex multi-event narratives, cause and effect
 # ═════════════════════════════════════════════════════════════════════════════
 
-const _WELL_TUTORIAL_L4 := [
+const _WELL_TUTORIAL_L3 := [
 	{
 		"type": "mcq",
 		"instruction":
 		"In complex narratives, the main idea is not always stated directly. You must look at ALL the events together and ask: what is the passage really about? What is the author's central message?",
-		"passage": _WELL_PASSAGE_L4,
+		"passage": _WELL_PASSAGE_L3,
 		"question": "What is this passage mostly about?",
 		"options":
 		[
@@ -5064,11 +5064,11 @@ const _WELL_TUTORIAL_L4 := [
 	},
 ]
 
-const _WELL_PRACTICE_L4 := [
+const _WELL_PRACTICE_L3 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _WELL_PASSAGE_L4,
+		"passage": _WELL_PASSAGE_L3,
 		"question": "What did the Cognian discover was the true cause of the silence?",
 		"options": ["The Northside hoarded records", "The Southside angered spirits", "Both factions stopped sharing stories aloud", "A curse from outside the village"],
 		"correct_index": 2,
@@ -5100,12 +5100,12 @@ const _WELL_PRACTICE_L4 := [
 	},
 ]
 
-const _WELL_MISSION_L4 := [
+const _WELL_MISSION_L3 := [
 	# Part A — MCQ (5 items)
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _WELL_PASSAGE_L4,
+		"passage": _WELL_PASSAGE_L3,
 		"question": "What is the main idea of the passage?",
 		"options":
 		[
@@ -5121,7 +5121,7 @@ const _WELL_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _WELL_PASSAGE_L4,
+		"passage": _WELL_PASSAGE_L3,
 		"question": "Why did the Northside blame the Southside?",
 		"options": ["They stole the written records", "They claimed the Southside angered ancient spirits", "They refused to trade at the market", "They left the village first"],
 		"correct_index": 1,
@@ -5131,7 +5131,7 @@ const _WELL_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _WELL_PASSAGE_L4,
+		"passage": _WELL_PASSAGE_L3,
 		"question": "What did the Southside accuse the Northside of doing?",
 		"options": ["Destroying the village gate", "Hoarding the last written records and letting words decay", "Refusing to speak to anyone", "Leaving the village at night"],
 		"correct_index": 1,
@@ -5141,7 +5141,7 @@ const _WELL_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _WELL_PASSAGE_L4,
+		"passage": _WELL_PASSAGE_L3,
 		"question": "What was the true cause of the silence?",
 		"options": ["A natural disaster", "Both factions stopped sharing stories aloud", "The ancient spirits were angry", "The records were destroyed"],
 		"correct_index": 1,
@@ -5151,7 +5151,7 @@ const _WELL_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _WELL_PASSAGE_L4,
+		"passage": _WELL_PASSAGE_L3,
 		"question": "What is the author's message about the role of communication?",
 		"options":
 		[
@@ -5191,7 +5191,7 @@ const _WELL_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _WELL_PASSAGE_L4,
+		"passage": _WELL_PASSAGE_L3,
 		"question": "What had happened to the village markets?",
 		"options": ["They were busier than ever", "They stood empty, their stalls serving as barriers", "They were burned down", "They were moved outside the village"],
 		"correct_index": 1,
@@ -5201,7 +5201,7 @@ const _WELL_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _WELL_PASSAGE_L4,
+		"passage": _WELL_PASSAGE_L3,
 		"question": "How did the Cognian approach the problem?",
 		"options": ["By choosing one faction's side", "Through patient listening and careful questioning", "By using force to unite them", "By ignoring both sides"],
 		"correct_index": 1,
@@ -5211,7 +5211,7 @@ const _WELL_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _WELL_PASSAGE_L4,
+		"passage": _WELL_PASSAGE_L3,
 		"question": "What does the passage suggest about blame?",
 		"options":
 		[
@@ -5227,7 +5227,7 @@ const _WELL_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _WELL_PASSAGE_L4,
+		"passage": _WELL_PASSAGE_L3,
 		"question": "What does 'the language itself had begun to fade' suggest?",
 		"options":
 		[
@@ -5247,12 +5247,12 @@ const _WELL_MISSION_L4 := [
 # Focus: Author's purpose, character motivation, foreshadowing
 # ═════════════════════════════════════════════════════════════════════════════
 
-const _MARKET_TUTORIAL_L4 := [
+const _MARKET_TUTORIAL_L3 := [
 	{
 		"type": "mcq",
 		"instruction":
 		"Advanced inference means reading between the lines at a deeper level. You must consider: What does the author suggest without saying it directly? What motivates a character's actions? What do subtle details foreshadow?",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "What does the keeper's trembling hands suggest about his emotional state?",
 		"options":
 		[
@@ -5267,11 +5267,11 @@ const _MARKET_TUTORIAL_L4 := [
 	},
 ]
 
-const _MARKET_PRACTICE_L4 := [
+const _MARKET_PRACTICE_L3 := [
 	{
 		"type": "mcq",
 		"instruction": "Use clues from the passage to make inferences.",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "Why does the author include the detail about the failed expedition three years ago?",
 		"options": ["To describe the keeper's travel hobby", "To explain why the keeper is afraid to hope — he has been disappointed before", "To show that the keeper is an adventurer", "To introduce a new character"],
 		"correct_index": 1,
@@ -5282,7 +5282,7 @@ const _MARKET_PRACTICE_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Use clues from the passage to make inferences.",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "What does the detail 'the parchment smelled faintly of cedar' suggest?",
 		"options": ["The letter was written in a forest", "The letter comes from somewhere distant and possibly significant — cedar suggests careful preservation", "Cedar is the keeper's favourite smell", "The letter is fake"],
 		"correct_index": 1,
@@ -5292,11 +5292,11 @@ const _MARKET_PRACTICE_L4 := [
 	},
 ]
 
-const _MARKET_MISSION_L4 := [
+const _MARKET_MISSION_L3 := [
 	{
 		"type": "mcq",
 		"instruction": "Use clues from the passage to make inferences.",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "What does the author suggest about the keeper's character through the detail 'staring at a letter he could not bring himself to open'?",
 		"options":
 		[
@@ -5312,7 +5312,7 @@ const _MARKET_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Use clues from the passage to make inferences.",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "What is the significance of the 'unfamiliar crest' on the wax seal?",
 		"options":
 		[
@@ -5328,7 +5328,7 @@ const _MARKET_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Use clues from the passage to make inferences.",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "Why does the author describe the assistant's expression as 'unreadable but her posture tense'?",
 		"options":
 		[
@@ -5344,7 +5344,7 @@ const _MARKET_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Use clues from the passage to make inferences.",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "What does the keeper's search for 'reassurance, perhaps, or permission to hope' in his assistant's face reveal?",
 		"options":
 		[
@@ -5360,7 +5360,7 @@ const _MARKET_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Use clues from the passage to make inferences.",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "What is the author's purpose in ending the passage with 'He broke the seal'?",
 		"options":
 		[
@@ -5376,7 +5376,7 @@ const _MARKET_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Use clues from the passage to make inferences.",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "What does the phrase 'the weight of what the letter might contain' suggest about the Founding Verses?",
 		"options":
 		[
@@ -5392,7 +5392,7 @@ const _MARKET_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Use clues from the passage to make inferences.",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "Why does the author include the details about 'the long journey, the false leads, the empty vault'?",
 		"options":
 		[
@@ -5408,7 +5408,7 @@ const _MARKET_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Use clues from the passage to make inferences.",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "What can you infer about the relationship between the keeper and his assistant?",
 		"options":
 		[
@@ -5424,7 +5424,7 @@ const _MARKET_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Use clues from the passage to make inferences.",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "What is the overall mood of this passage?",
 		"options":
 		[
@@ -5440,7 +5440,7 @@ const _MARKET_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Use clues from the passage to make inferences.",
-		"passage": _MARKET_PASSAGE_L4,
+		"passage": _MARKET_PASSAGE_L3,
 		"question": "What does the author suggest about hope through this passage?",
 		"options":
 		[
@@ -5460,7 +5460,7 @@ const _MARKET_MISSION_L4 := [
 # Comprehensive: Read-Aloud + Fluency + Analysis-level comprehension
 # ═════════════════════════════════════════════════════════════════════════════
 
-const _BAKERY_TUTORIAL_L4 := [
+const _BAKERY_TUTORIAL_L3 := [
 	{
 		"type": "read_aloud",
 		"instruction":
@@ -5476,7 +5476,7 @@ const _BAKERY_TUTORIAL_L4 := [
 	},
 ]
 
-const _BAKERY_PRACTICE_L4 := [
+const _BAKERY_PRACTICE_L3 := [
 	{
 		"type": "read_aloud",
 		"instruction": "Read this word aloud clearly.",
@@ -5492,7 +5492,7 @@ const _BAKERY_PRACTICE_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Read the passage, then answer.",
-		"passage": _BAKERY_PASSAGE_L4,
+		"passage": _BAKERY_PASSAGE_L3,
 		"question": "Who preserved the stories throughout the years of silence?",
 		"options": ["The Cognian", "The children", "An elderly woman", "The village elders"],
 		"correct_index": 2,
@@ -5502,7 +5502,7 @@ const _BAKERY_PRACTICE_L4 := [
 	},
 ]
 
-const _BAKERY_MISSION_L4 := [
+const _BAKERY_MISSION_L3 := [
 	# Part A — Read-Aloud words (10 items)
 	{
 		"type": "read_aloud",
@@ -5568,14 +5568,14 @@ const _BAKERY_MISSION_L4 := [
 	{
 		"type": "fluency_check",
 		"instruction": "Read the full passage aloud with expression. Adjust your pace for the emotional shifts — from hesitant whispers to triumphant restoration.",
-		"passage": _BAKERY_PASSAGE_L4,
+		"passage": _BAKERY_PASSAGE_L3,
 		"feedback_correct": "Excellent reading! You brought the restoration of Luminara to life.",
 	},
 	# Part C — Analysis-level comprehension MCQ (10 items)
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _BAKERY_PASSAGE_L4,
+		"passage": _BAKERY_PASSAGE_L3,
 		"question": "Why does the author compare the restoration to 'dawn spreading across a valley'?",
 		"options":
 		[
@@ -5591,7 +5591,7 @@ const _BAKERY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _BAKERY_PASSAGE_L4,
+		"passage": _BAKERY_PASSAGE_L3,
 		"question": "Why did the children speak 'freely, unburdened by the memory of loss'?",
 		"options":
 		[
@@ -5607,7 +5607,7 @@ const _BAKERY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _BAKERY_PASSAGE_L4,
+		"passage": _BAKERY_PASSAGE_L3,
 		"question": "Why did some elders weep from grief rather than relief?",
 		"options":
 		[
@@ -5623,7 +5623,7 @@ const _BAKERY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _BAKERY_PASSAGE_L4,
+		"passage": _BAKERY_PASSAGE_L3,
 		"question": "What does 'Each word she spoke seemed to mend something invisible' mean?",
 		"options":
 		[
@@ -5639,7 +5639,7 @@ const _BAKERY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _BAKERY_PASSAGE_L4,
+		"passage": _BAKERY_PASSAGE_L3,
 		"question": "What is the significance of the Cognian standing 'at the edge of the gathering, watching'?",
 		"options":
 		[
@@ -5655,7 +5655,7 @@ const _BAKERY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _BAKERY_PASSAGE_L4,
+		"passage": _BAKERY_PASSAGE_L3,
 		"question": "What does the passage suggest literacy is?",
 		"options":
 		[
@@ -5671,7 +5671,7 @@ const _BAKERY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _BAKERY_PASSAGE_L4,
+		"passage": _BAKERY_PASSAGE_L3,
 		"question": "Why does the author describe the woman's voice as 'frail' yet carrying 'extraordinary power'?",
 		"options":
 		[
@@ -5687,7 +5687,7 @@ const _BAKERY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _BAKERY_PASSAGE_L4,
+		"passage": _BAKERY_PASSAGE_L3,
 		"question": "What is the significance of the bell ringing at the end?",
 		"options":
 		[
@@ -5703,7 +5703,7 @@ const _BAKERY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _BAKERY_PASSAGE_L4,
+		"passage": _BAKERY_PASSAGE_L3,
 		"question": "What does the final line — 'not through magic, but through the persistent, meticulous act of reading, speaking, and sharing words' — tell us about the author's message?",
 		"options":
 		[
@@ -5719,7 +5719,7 @@ const _BAKERY_MISSION_L4 := [
 	{
 		"type": "mcq",
 		"instruction": "Answer based on the passage.",
-		"passage": _BAKERY_PASSAGE_L4,
+		"passage": _BAKERY_PASSAGE_L3,
 		"question": "What is the main theme of the entire passage?",
 		"options":
 		[
@@ -5741,63 +5741,63 @@ const _BAKERY_MISSION_L4 := [
 # ── Static Helpers ──────────────────────────────────────────────────────────
 
 
-static func _lookup_stages(building_id: String, level: int = 3) -> Dictionary:
-	# Level-specific question lookup. Levels 1, 2, 4 fall back to default (L3)
-	# if no level-specific constants are defined yet.
+static func _lookup_stages(building_id: String, level: int = 1) -> Dictionary:
+	# Level-specific question lookup. 3 levels: 1 (Beginner), 2 (Developing), 3 (Advanced).
+	# Unknown levels fall back to L2 content.
 	match building_id:
 		"town_hall":
 			match level:
 				1: return {"tutorial": _TOWN_HALL_TUTORIAL_L1, "practice": _TOWN_HALL_PRACTICE_L1, "mission": _TOWN_HALL_MISSION_L1}
 				2: return {"tutorial": _TOWN_HALL_TUTORIAL_L2, "practice": _TOWN_HALL_PRACTICE_L2, "mission": _TOWN_HALL_MISSION_L2}
-				4: return {"tutorial": _TOWN_HALL_TUTORIAL_L4, "practice": _TOWN_HALL_PRACTICE_L4, "mission": _TOWN_HALL_MISSION_L4}
-				_: return {"tutorial": _TOWN_HALL_TUTORIAL, "practice": _TOWN_HALL_PRACTICE, "mission": _TOWN_HALL_MISSION}
+				3: return {"tutorial": _TOWN_HALL_TUTORIAL_L3, "practice": _TOWN_HALL_PRACTICE_L3, "mission": _TOWN_HALL_MISSION_L3}
+				_: return {"tutorial": _TOWN_HALL_TUTORIAL_L2, "practice": _TOWN_HALL_PRACTICE_L2, "mission": _TOWN_HALL_MISSION_L2}
 		"school":
 			match level:
 				1: return {"tutorial": _SCHOOL_TUTORIAL_L1, "practice": _SCHOOL_PRACTICE_L1, "mission": _SCHOOL_MISSION_L1}
 				2: return {"tutorial": _SCHOOL_TUTORIAL_L2, "practice": _SCHOOL_PRACTICE_L2, "mission": _SCHOOL_MISSION_L2}
-				4: return {"tutorial": _SCHOOL_TUTORIAL_L4, "practice": _SCHOOL_PRACTICE_L4, "mission": _SCHOOL_MISSION_L4}
-				_: return {"tutorial": _SCHOOL_TUTORIAL, "practice": _SCHOOL_PRACTICE, "mission": _SCHOOL_MISSION}
+				3: return {"tutorial": _SCHOOL_TUTORIAL_L3, "practice": _SCHOOL_PRACTICE_L3, "mission": _SCHOOL_MISSION_L3}
+				_: return {"tutorial": _SCHOOL_TUTORIAL_L2, "practice": _SCHOOL_PRACTICE_L2, "mission": _SCHOOL_MISSION_L2}
 		"inn":
 			match level:
 				1: return {"tutorial": _INN_TUTORIAL_L1, "practice": _INN_PRACTICE_L1, "mission": _INN_MISSION_L1}
 				2: return {"tutorial": _INN_TUTORIAL_L2, "practice": _INN_PRACTICE_L2, "mission": _INN_MISSION_L2}
-				4: return {"tutorial": _INN_TUTORIAL_L4, "practice": _INN_PRACTICE_L4, "mission": _INN_MISSION_L4}
-				_: return {"tutorial": _INN_TUTORIAL, "practice": _INN_PRACTICE, "mission": _INN_MISSION}
+				3: return {"tutorial": _INN_TUTORIAL_L3, "practice": _INN_PRACTICE_L3, "mission": _INN_MISSION_L3}
+				_: return {"tutorial": _INN_TUTORIAL_L2, "practice": _INN_PRACTICE_L2, "mission": _INN_MISSION_L2}
 		"chapel":
 			match level:
 				1: return {"tutorial": _CHAPEL_TUTORIAL_L1, "practice": _CHAPEL_PRACTICE_L1, "mission": _CHAPEL_MISSION_L1}
 				2: return {"tutorial": _CHAPEL_TUTORIAL_L2, "practice": _CHAPEL_PRACTICE_L2, "mission": _CHAPEL_MISSION_L2}
-				4: return {"tutorial": _CHAPEL_TUTORIAL_L4, "practice": _CHAPEL_PRACTICE_L4, "mission": _CHAPEL_MISSION_L4}
-				_: return {"tutorial": _CHAPEL_TUTORIAL, "practice": _CHAPEL_PRACTICE, "mission": _CHAPEL_MISSION}
+				3: return {"tutorial": _CHAPEL_TUTORIAL_L3, "practice": _CHAPEL_PRACTICE_L3, "mission": _CHAPEL_MISSION_L3}
+				_: return {"tutorial": _CHAPEL_TUTORIAL_L2, "practice": _CHAPEL_PRACTICE_L2, "mission": _CHAPEL_MISSION_L2}
 		"library":
 			match level:
 				1: return {"tutorial": _LIBRARY_TUTORIAL_L1, "practice": _LIBRARY_PRACTICE_L1, "mission": _LIBRARY_MISSION_L1}
 				2: return {"tutorial": _LIBRARY_TUTORIAL_L2, "practice": _LIBRARY_PRACTICE_L2, "mission": _LIBRARY_MISSION_L2}
-				4: return {"tutorial": _LIBRARY_TUTORIAL_L4, "practice": _LIBRARY_PRACTICE_L4, "mission": _LIBRARY_MISSION_L4}
-				_: return {"tutorial": _LIBRARY_TUTORIAL, "practice": _LIBRARY_PRACTICE, "mission": _LIBRARY_MISSION}
+				3: return {"tutorial": _LIBRARY_TUTORIAL_L3, "practice": _LIBRARY_PRACTICE_L3, "mission": _LIBRARY_MISSION_L3}
+				_: return {"tutorial": _LIBRARY_TUTORIAL_L2, "practice": _LIBRARY_PRACTICE_L2, "mission": _LIBRARY_MISSION_L2}
 		"well":
 			match level:
 				1: return {"tutorial": _WELL_TUTORIAL_L1, "practice": _WELL_PRACTICE_L1, "mission": _WELL_MISSION_L1}
 				2: return {"tutorial": _WELL_TUTORIAL_L2, "practice": _WELL_PRACTICE_L2, "mission": _WELL_MISSION_L2}
-				4: return {"tutorial": _WELL_TUTORIAL_L4, "practice": _WELL_PRACTICE_L4, "mission": _WELL_MISSION_L4}
-				_: return {"tutorial": _WELL_TUTORIAL, "practice": _WELL_PRACTICE, "mission": _WELL_MISSION}
+				3: return {"tutorial": _WELL_TUTORIAL_L3, "practice": _WELL_PRACTICE_L3, "mission": _WELL_MISSION_L3}
+				_: return {"tutorial": _WELL_TUTORIAL_L2, "practice": _WELL_PRACTICE_L2, "mission": _WELL_MISSION_L2}
 		"market":
 			match level:
 				1: return {"tutorial": _MARKET_TUTORIAL_L1, "practice": _MARKET_PRACTICE_L1, "mission": _MARKET_MISSION_L1}
 				2: return {"tutorial": _MARKET_TUTORIAL_L2, "practice": _MARKET_PRACTICE_L2, "mission": _MARKET_MISSION_L2}
-				4: return {"tutorial": _MARKET_TUTORIAL_L4, "practice": _MARKET_PRACTICE_L4, "mission": _MARKET_MISSION_L4}
-				_: return {"tutorial": _MARKET_TUTORIAL, "practice": _MARKET_PRACTICE, "mission": _MARKET_MISSION}
+				3: return {"tutorial": _MARKET_TUTORIAL_L3, "practice": _MARKET_PRACTICE_L3, "mission": _MARKET_MISSION_L3}
+				_: return {"tutorial": _MARKET_TUTORIAL_L2, "practice": _MARKET_PRACTICE_L2, "mission": _MARKET_MISSION_L2}
 		"bakery":
 			match level:
 				1: return {"tutorial": _BAKERY_TUTORIAL_L1, "practice": _BAKERY_PRACTICE_L1, "mission": _BAKERY_MISSION_L1}
 				2: return {"tutorial": _BAKERY_TUTORIAL_L2, "practice": _BAKERY_PRACTICE_L2, "mission": _BAKERY_MISSION_L2}
-				4: return {"tutorial": _BAKERY_TUTORIAL_L4, "practice": _BAKERY_PRACTICE_L4, "mission": _BAKERY_MISSION_L4}
-				_: return {"tutorial": _BAKERY_TUTORIAL, "practice": _BAKERY_PRACTICE, "mission": _BAKERY_MISSION}
+				3: return {"tutorial": _BAKERY_TUTORIAL_L3, "practice": _BAKERY_PRACTICE_L3, "mission": _BAKERY_MISSION_L3}
+				_: return {"tutorial": _BAKERY_TUTORIAL_L2, "practice": _BAKERY_PRACTICE_L2, "mission": _BAKERY_MISSION_L2}
 		_:
 			return {}
 
 
-static func get_quest_for_building(building_id: String, level: int = 3) -> Dictionary:
+static func get_quest_for_building(building_id: String, level: int = 1) -> Dictionary:
 	if not BUILDING_QUEST_MAP.has(building_id):
 		push_error("[QuestData] Unknown building_id: " + building_id)
 		return {}

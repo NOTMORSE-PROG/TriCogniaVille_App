@@ -170,11 +170,11 @@ func get_farewell_lore() -> Array[Dictionary]:
 
 
 func _get_level_variant(by_level: Dictionary) -> Array:
-	var level: int = GameManager.current_student.get("reading_level", 3)
+	var level: int = GameManager.current_student.get("reading_level", 1)
 	if level <= 2 and by_level.has("l1"):
 		return by_level["l1"]
-	if level == 4 and by_level.has("l4"):
-		return by_level["l4"]
+	if level == 3 and by_level.has("l3"):
+		return by_level["l3"]
 	return by_level.get("default", [])
 
 

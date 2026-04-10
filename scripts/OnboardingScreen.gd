@@ -1,7 +1,7 @@
 extends Control
 ## OnboardingScreen — Beautiful welcome slides + placement quiz.
 ## Shown only once per student (onboarding_done == 0).
-## Quiz assigns reading level 1-4, saved to DB on completion.
+## Quiz assigns reading level 1-3, saved to DB on completion.
 
 # ── Placement Quiz Data ────────────────────────────────────────────────────────
 const QUIZ_QUESTIONS: Array[Dictionary] = [
@@ -61,21 +61,19 @@ const QUIZ_QUESTIONS: Array[Dictionary] = [
 ]
 
 const LEVEL_NAMES: Dictionary = {
-	1: "Non-Reader", 2: "Emerging Reader", 3: "Developing Reader", 4: "Independent Reader"
+	1: "Non-Reader", 2: "Emerging Reader", 3: "Independent Reader"
 }
 
 const LEVEL_DESCRIPTIONS: Dictionary = {
 	1: "We will start with simple words and short stories to build your confidence.",
 	2: "You are making great progress! We will practice reading sentences together.",
-	3: "You are a growing reader! We will tackle longer passages and new vocabulary.",
-	4: "Excellent! You will face the most challenging quests in the village!"
+	3: "Excellent! You will face the most challenging quests in the village!"
 }
 
 const LEVEL_COLORS: Dictionary = {
 	1: Color(0.914, 0.388, 0.431),  # coral
 	2: Color(0.392, 0.769, 0.910),  # sky blue
-	3: Color(0.357, 0.851, 0.635),  # seafoam
-	4: Color(0.886, 0.725, 0.290),  # gold
+	3: Color(0.886, 0.725, 0.290),  # gold
 }
 
 # Accent colors per slide for illustration panels
@@ -857,11 +855,9 @@ func _show_results() -> void:
 func _score_to_level(s: int) -> int:
 	if s <= 1:
 		return 1
-	if s == 2:
+	if s <= 3:
 		return 2
-	if s <= 4:
-		return 3
-	return 4
+	return 3
 
 
 func _on_start_adventure_pressed() -> void:
@@ -881,6 +877,10 @@ func _on_start_adventure_pressed() -> void:
 	NetworkGate.run(
 		func(cb: Callable) -> void: ApiClient.complete_onboarding(payload, cb),
 		func(data: Dictionary) -> void:
+			if data.get("code", "") == "CONFLICT":
+				# Server says onboarding was already completed — proceed silently.
+				_finish_onboarding_transition()
+				return
 			if data.has("error"):
 				return  # Modal stays open / cancel returns the player to picker
 			if data.has("student"):

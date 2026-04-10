@@ -129,7 +129,7 @@ func start_quest(building_id: String, skip_tutorial: bool = false) -> void:
 		print("[QuestManager] Building already unlocked, ignoring start_quest.")
 		return
 
-	var level: int = GameManager.current_student.get("reading_level", 3)
+	var level: int = GameManager.current_student.get("reading_level", 1)
 	_current_quest_data = QuestData.get_quest_for_building(building_id, level)
 	if _current_quest_data.is_empty():
 		push_error("[QuestManager] Failed to load quest for: " + building_id)
@@ -176,7 +176,7 @@ func start_quest_replay(building_id: String, stage: String) -> void:
 		print("[QuestManager] No student logged in, ignoring start_quest_replay.")
 		return
 
-	var level: int = GameManager.current_student.get("reading_level", 3)
+	var level: int = GameManager.current_student.get("reading_level", 1)
 	_current_quest_data = QuestData.get_quest_for_building(building_id, level)
 	if _current_quest_data.is_empty():
 		push_error("[QuestManager] Replay failed to load quest for: " + building_id)

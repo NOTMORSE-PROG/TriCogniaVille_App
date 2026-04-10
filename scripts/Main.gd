@@ -1076,44 +1076,6 @@ func _build_ui() -> void:
 	_dialogue_panel.setup(_sx, _sy)
 	canvas.add_child(_dialogue_panel)
 
-	# ── DEV: Bakery Cutscene trigger button (bottom-right) ──
-	var dev_btn := Button.new()
-	dev_btn.name = "DevBakeryCutsceneBtn"
-	dev_btn.text = "▶ Celebration"
-	dev_btn.add_theme_font_size_override("font_size", int(14 * _sy))
-	dev_btn.add_theme_color_override("font_color", Color.WHITE)
-	var dev_btn_style := StyleBoxFlat.new()
-	dev_btn_style.bg_color = Color("#E94560")
-	dev_btn_style.corner_radius_top_left = 6
-	dev_btn_style.corner_radius_top_right = 6
-	dev_btn_style.corner_radius_bottom_left = 6
-	dev_btn_style.corner_radius_bottom_right = 6
-	dev_btn_style.content_margin_left = 10.0
-	dev_btn_style.content_margin_right = 10.0
-	dev_btn_style.content_margin_top = 6.0
-	dev_btn_style.content_margin_bottom = 6.0
-	dev_btn.add_theme_stylebox_override("normal", dev_btn_style)
-	dev_btn.anchor_left = 1.0
-	dev_btn.anchor_right = 1.0
-	dev_btn.anchor_top = 1.0
-	dev_btn.anchor_bottom = 1.0
-	dev_btn.offset_left = -180 * _sx
-	dev_btn.offset_top = -48 * _sy
-	dev_btn.offset_right = -12 * _sx
-	dev_btn.offset_bottom = -12 * _sy
-	dev_btn.pressed.connect(_on_dev_bakery_cutscene_pressed)
-	canvas.add_child(dev_btn)
-
-
-func _on_dev_bakery_cutscene_pressed() -> void:
-	if not is_instance_valid(_town_livener):
-		return
-	_town_livener._launch_celebration()
-	if _town_livener.has_signal("celebration_finished"):
-		await _town_livener.celebration_finished
-	_play_ending_sequence()
-
-
 func _on_profile_btn_pressed() -> void:
 	if is_instance_valid(_profile_panel):
 		_profile_panel.show_profile()
@@ -1754,8 +1716,7 @@ func _get_level_label(level: int) -> String:
 	match level:
 		1: return "Beginner  •  Level 1"
 		2: return "Developing  •  Level 2"
-		3: return "Grade Level  •  Level 3"
-		4: return "Advanced  •  Level 4"
+		3: return "Advanced  •  Level 3"
 		_: return "Level %d" % level
 
 
