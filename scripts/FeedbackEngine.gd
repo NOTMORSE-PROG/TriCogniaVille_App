@@ -9,11 +9,12 @@ class_name FeedbackEngine
 # ── Default Config (overridable via config dict) ────────────────────────────
 const DEFAULT_CONFIG := {
 	"pass_threshold": 75,
-	"phonetic_credit": 0.7,
-	"soundex_credit": 0.8,
-	"phonetic_max_dist_short": 2,
-	"phonetic_max_dist_long": 3,
-	"sub_max_dist_long": 4,
+	"phonetic_credit": 0.5,
+	"soundex_credit": 0.5,
+	"phonetic_max_dist_short": 1,
+	"phonetic_max_dist_long": 2,
+	"soundex_max_dist": 2,
+	"sub_max_dist_long": 3,
 	"low_confidence_threshold": 0.50,
 	"low_confidence_penalty": 0.80,
 }
@@ -55,6 +56,7 @@ static func assess(
 	var soundex_credit: float = cfg["soundex_credit"]
 	var phonetic_max_short: int = cfg["phonetic_max_dist_short"]
 	var phonetic_max_long: int = cfg["phonetic_max_dist_long"]
+	var soundex_max: int = cfg.get("soundex_max_dist", 2)
 	var sub_max_long: int = cfg["sub_max_dist_long"]
 	var low_conf_threshold: float = cfg["low_confidence_threshold"]
 	var low_conf_penalty: float = cfg["low_confidence_penalty"]
@@ -91,7 +93,7 @@ static func assess(
 
 	# Align words using two-pass greedy matching (exact → phonetic/sub)
 	var alignment := _align_words(
-		exp_words, trans_words, phonetic_max_short, phonetic_max_long, sub_max_long
+		exp_words, trans_words, phonetic_max_short, phonetic_max_long, sub_max_long, soundex_max
 	)
 
 	var exact_count := 0
@@ -377,9 +379,10 @@ static func _levenshtein(a: String, b: String) -> int:
 static func _align_words(
 	exp_words: Array,
 	trans_words: Array,
-	phonetic_max_short: int = 2,
-	phonetic_max_long: int = 3,
-	sub_max_long: int = 4
+	phonetic_max_short: int = 1,
+	phonetic_max_long: int = 2,
+	sub_max_long: int = 3,
+	soundex_max: int = 2
 ) -> Array:
 	var matched_trans: Dictionary = {}
 
@@ -403,28 +406,27 @@ static func _align_words(
 			continue
 		var ew: String = exp_words[i]
 		var ew_soundex := _soundex(ew)
-		var ew_accented := _apply_accent_map(ew)
 		var best_j := -1
 		var best_dist := 9999
 		var best_type := "omitted"
-
 		for j in range(trans_words.size()):
 			if matched_trans.has(j):
 				continue
 			var tw: String = trans_words[j]
 
-			# Check Soundex match first (strongest phonetic signal)
+			# Soundex match — only accept if words are also reasonably close in
+			# spelling, otherwise "cat"/"cut", "name"/"numb" etc. falsely match
 			if _soundex(tw) == ew_soundex and ew_soundex != "0000":
-				if best_type != "soundex" or true:
+				var sdist := _levenshtein(ew, tw)
+				if sdist <= soundex_max:
 					best_j = j
-					best_dist = 0
+					best_dist = sdist
 					best_type = "soundex"
-					break  # Soundex is a strong match — take it immediately
+					break
 
-			# Levenshtein on both raw and accent-normalized forms
-			var dist_raw := _levenshtein(ew, tw)
-			var dist_accent := _levenshtein(ew_accented, _apply_accent_map(tw))
-			var dist := mini(dist_raw, dist_accent)
+			# Levenshtein on raw forms only — accent normalization is too lenient
+			# for pronunciation training (e.g. "tink" would match "think")
+			var dist := _levenshtein(ew, tw)
 
 			if dist < best_dist:
 				best_dist = dist
