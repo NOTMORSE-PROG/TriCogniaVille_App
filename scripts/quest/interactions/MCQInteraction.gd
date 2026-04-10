@@ -43,7 +43,7 @@ func _build_ui() -> void:
 	var vbox := VBoxContainer.new()
 	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	vbox.add_theme_constant_override("separation", int((8 if _compact else 12) * _sy))
+	vbox.add_theme_constant_override("separation", int((5 if _compact else 12) * _sy))
 	add_child(vbox)
 	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
@@ -61,9 +61,9 @@ func _build_ui() -> void:
 		_passage_label.fit_content = true
 		_passage_label.bbcode_enabled = false
 		_passage_label.scroll_active = false
-		_passage_label.add_theme_font_size_override("normal_font_size", int((24 if _compact else 34) * _sy))
+		_passage_label.add_theme_font_size_override("normal_font_size", int((18 if _compact else 34) * _sy))
 		_passage_label.add_theme_color_override("default_color", StyleFactory.TEXT_SECONDARY)
-		_passage_label.custom_minimum_size = Vector2(0, (80 if _compact else 130) * _sy)
+		_passage_label.custom_minimum_size = Vector2(0, (60 if _compact else 130) * _sy)
 		_passage_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		passage_card.add_child(_passage_label)
 		vbox.add_child(passage_card)
@@ -73,7 +73,7 @@ func _build_ui() -> void:
 	if not instruction.is_empty():
 		var inst_label := Label.new()
 		inst_label.text = instruction
-		inst_label.add_theme_font_size_override("font_size", int((34 if _compact else 48) * _sy))
+		inst_label.add_theme_font_size_override("font_size", int((26 if _compact else 48) * _sy))
 		inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 		inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -82,7 +82,7 @@ func _build_ui() -> void:
 	# Question
 	_question_label = Label.new()
 	_question_label.text = _question.get("question", "")
-	_question_label.add_theme_font_size_override("font_size", int((30 if _compact else 40) * _sy))
+	_question_label.add_theme_font_size_override("font_size", int((22 if _compact else 40) * _sy))
 	_question_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_question_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_question_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -126,8 +126,8 @@ func _build_ui() -> void:
 	for i in options.size():
 		var btn := Button.new()
 		btn.text = options[i]
-		btn.custom_minimum_size = Vector2(0, (66 if _compact else 88) * _sy)
-		btn.add_theme_font_size_override("font_size", int((24 if _compact else 30) * _sy))
+		btn.custom_minimum_size = Vector2(0, (56 if _compact else 88) * _sy)
+		btn.add_theme_font_size_override("font_size", int((20 if _compact else 30) * _sy))
 		btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 		btn.add_theme_stylebox_override("normal", StyleFactory.make_student_card_normal())
 		btn.add_theme_stylebox_override("hover", StyleFactory.make_student_card_hover())
