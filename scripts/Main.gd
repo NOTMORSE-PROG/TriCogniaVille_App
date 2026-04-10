@@ -1073,6 +1073,43 @@ func _build_ui() -> void:
 	_dialogue_panel.setup(_sx, _sy)
 	canvas.add_child(_dialogue_panel)
 
+	# ── DEV: Bakery Cutscene trigger button (bottom-right) ──
+	var dev_btn := Button.new()
+	dev_btn.name = "DevBakeryCutsceneBtn"
+	dev_btn.text = "▶ Celebration"
+	dev_btn.add_theme_font_size_override("font_size", int(14 * _sy))
+	dev_btn.add_theme_color_override("font_color", Color.WHITE)
+	var dev_btn_style := StyleBoxFlat.new()
+	dev_btn_style.bg_color = Color("#E94560")
+	dev_btn_style.corner_radius_top_left = 6
+	dev_btn_style.corner_radius_top_right = 6
+	dev_btn_style.corner_radius_bottom_left = 6
+	dev_btn_style.corner_radius_bottom_right = 6
+	dev_btn_style.content_margin_left = 10.0
+	dev_btn_style.content_margin_right = 10.0
+	dev_btn_style.content_margin_top = 6.0
+	dev_btn_style.content_margin_bottom = 6.0
+	dev_btn.add_theme_stylebox_override("normal", dev_btn_style)
+	dev_btn.anchor_left = 1.0
+	dev_btn.anchor_right = 1.0
+	dev_btn.anchor_top = 1.0
+	dev_btn.anchor_bottom = 1.0
+	dev_btn.offset_left = -180 * _sx
+	dev_btn.offset_top = -48 * _sy
+	dev_btn.offset_right = -12 * _sx
+	dev_btn.offset_bottom = -12 * _sy
+	dev_btn.pressed.connect(_on_dev_bakery_cutscene_pressed)
+	canvas.add_child(dev_btn)
+
+
+func _on_dev_bakery_cutscene_pressed() -> void:
+	if not is_instance_valid(_town_livener):
+		return
+	_town_livener._launch_celebration()
+	if _town_livener.has_signal("celebration_finished"):
+		await _town_livener.celebration_finished
+	_play_ending_sequence()
+
 
 func _on_profile_btn_pressed() -> void:
 	if is_instance_valid(_profile_panel):
@@ -1157,10 +1194,22 @@ func _build_town_livener() -> void:
 func _connect_signals() -> void:
 	GameManager.building_unlocked.connect(_on_building_unlocked)
 	GameManager.all_buildings_unlocked.connect(_on_all_buildings_unlocked)
-	QuestManager.quest_started.connect(func(_bid: String) -> void: _set_joystick_active(false))
+	QuestManager.quest_started.connect(func(_bid: String) -> void:
+		_set_joystick_active(false)
+		if is_instance_valid(_profile_btn):
+			_profile_btn.visible = false
+	)
 	QuestManager.quest_completed.connect(_on_quest_completed)
-	QuestManager.quest_abandoned.connect(func(_bid: String) -> void: _set_joystick_active(true))
+	QuestManager.quest_abandoned.connect(func(_bid: String) -> void:
+		_set_joystick_active(true)
+		if is_instance_valid(_profile_btn):
+			_profile_btn.visible = true
+	)
 	_quest_overlay.overlay_closed.connect(_on_overlay_closed)
+	_quest_overlay.overlay_closed.connect(func(_bid: String, _passed: bool) -> void:
+		if is_instance_valid(_profile_btn):
+			_profile_btn.visible = true
+	)
 
 
 func _on_building_tapped(controller: BuildingController) -> void:
@@ -1257,7 +1306,7 @@ func _on_overlay_closed(building_id: String, _passed: bool) -> void:
 		_town_livener.cutscene_active = true
 		var cutscene: Node = load("res://scripts/UnlockCutscene.gd").new()
 		add_child(cutscene)
-		cutscene.setup(_vp, _sx, _sy, bc, camera, player, _town_livener)
+		cutscene.setup(_vp, _sx, _sy, bc, camera, player, _town_livener, _building_controllers)
 		cutscene.cutscene_finished.connect(func() -> void:
 			_town_livener.cutscene_active = false
 			_set_joystick_active(true)
@@ -1289,6 +1338,9 @@ func _on_building_unlocked(building_id: String) -> void:
 
 func _on_all_buildings_unlocked() -> void:
 	print("[Main] Village fully restored!")
+	# Hide profile button for the entire celebration + ending sequence
+	if is_instance_valid(_profile_btn):
+		_profile_btn.visible = false
 	# Wait for any active unlock cutscene to finish first
 	var active_cutscene := get_node_or_null("UnlockCutscene")
 	if active_cutscene and active_cutscene.has_signal("cutscene_finished"):
@@ -1312,6 +1364,18 @@ func _play_ending_sequence() -> void:
 	var original_cam_offset := camera.offset if camera else Vector2.ZERO
 	var original_cam_smooth := camera.position_smoothing_speed if camera else 6.0
 	var montage_skipped := false
+
+	# Expand camera limits for cinematic panning — defaults are viewport-sized
+	# which clamps any offset to zero and prevents movement.
+	var original_limit_left := camera.limit_left if camera else 0
+	var original_limit_right := camera.limit_right if camera else int(_vp.x)
+	var original_limit_top := camera.limit_top if camera else 0
+	var original_limit_bottom := camera.limit_bottom if camera else int(_vp.y)
+	if camera:
+		camera.limit_left = -int(_vp.x)
+		camera.limit_right = int(_vp.x * 2)
+		camera.limit_top = -int(_vp.y)
+		camera.limit_bottom = int(_vp.y * 2)
 
 	# ── 1. Dim the village slightly (keep it visible for camera tour) ──
 	var tw := create_tween()
@@ -1346,6 +1410,44 @@ func _play_ending_sequence() -> void:
 	var montage_data := StoryManager.get_ending_montage()
 	if camera:
 		camera.position_smoothing_speed = 20.0
+
+	# Create persistent banner nodes once — update content each iteration to avoid
+	# queue_free() deferred stale-node overlap causing wrong building info to show.
+	var banner_bg := ColorRect.new()
+	banner_bg.color = Color(0.04, 0.08, 0.15, 0.80)
+	banner_bg.size = Vector2(_vp.x, _vp.y * 0.16)
+	banner_bg.position = Vector2(0, _vp.y * 0.84)
+	banner_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	banner_bg.modulate.a = 0.0
+	banner_canvas.add_child(banner_bg)
+
+	var name_label := Label.new()
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_label.add_theme_font_size_override("font_size", int(33 * _sy))
+	name_label.add_theme_color_override("font_color", StyleFactory.GOLD)
+	name_label.size = Vector2(_vp.x, 40 * _sy)
+	name_label.position = Vector2(0, _vp.y * 0.845)
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	name_label.modulate.a = 0.0
+	banner_canvas.add_child(name_label)
+
+	var accent_bar := ColorRect.new()
+	accent_bar.size = Vector2(160 * _sx, 4 * _sy)
+	accent_bar.position = Vector2((_vp.x - 160 * _sx) * 0.5, _vp.y * 0.885)
+	accent_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	accent_bar.modulate.a = 0.0
+	banner_canvas.add_child(accent_bar)
+
+	var line_label := Label.new()
+	line_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	line_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	line_label.add_theme_font_size_override("font_size", int(22 * _sy))
+	line_label.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
+	line_label.size = Vector2(_vp.x * 0.8, 40 * _sy)
+	line_label.position = Vector2(_vp.x * 0.1, _vp.y * 0.90)
+	line_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	line_label.modulate.a = 0.0
+	banner_canvas.add_child(line_label)
 
 	var building_index := 0
 	for entry in montage_data:
@@ -1409,74 +1511,32 @@ func _play_ending_sequence() -> void:
 		if is_instance_valid(_town_livener):
 			_town_livener.cheer_npcs_near(bc.get_building_center_world_pos(), 150.0 * _sx)
 
-		# ── Show floating banner at bottom of screen ──
-		var banner_bg := ColorRect.new()
-		banner_bg.color = Color(0.04, 0.08, 0.15, 0.80)
-		banner_bg.size = Vector2(_vp.x, _vp.y * 0.16)
-		banner_bg.position = Vector2(0, _vp.y * 0.84)
-		banner_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		banner_canvas.add_child(banner_bg)
-
-		# Building name
-		var name_label := Label.new()
+		# ── Update persistent banner content then fade in ──
 		name_label.text = building_label
-		name_label.add_theme_font_size_override("font_size", int(33 * _sy))
-		name_label.add_theme_color_override("font_color", StyleFactory.GOLD)
-		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name_label.size = Vector2(_vp.x, 40 * _sy)
-		name_label.position = Vector2(0, _vp.y * 0.845)
-		name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		banner_canvas.add_child(name_label)
-
-		# Accent bar
-		var accent_bar := ColorRect.new()
 		accent_bar.color = building_color
-		accent_bar.size = Vector2(160 * _sx, 4 * _sy)
-		accent_bar.position = Vector2((_vp.x - 160 * _sx) * 0.5, _vp.y * 0.885)
-		accent_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		banner_canvas.add_child(accent_bar)
-
-		# Keeper quote
-		var line_label := Label.new()
 		line_label.text = keeper_line
-		line_label.add_theme_font_size_override("font_size", int(22 * _sy))
-		line_label.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
-		line_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		line_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		line_label.size = Vector2(_vp.x * 0.8, 40 * _sy)
-		line_label.position = Vector2(_vp.x * 0.1, _vp.y * 0.90)
-		line_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		banner_canvas.add_child(line_label)
 
-		# Animate banner in
-		UIAnimations.fade_in_up(self, banner_bg, 0.0)
-		UIAnimations.fade_in_up(self, name_label, 0.1)
-		UIAnimations.fade_in_up(self, accent_bar, 0.2)
-		UIAnimations.fade_in_up(self, line_label, 0.3)
+		var fin_tw := create_tween().set_parallel(true)
+		for node: Control in [banner_bg, name_label, accent_bar, line_label]:
+			fin_tw.tween_property(node, "modulate:a", 1.0, 0.4)
+		await fin_tw.finished
 
 		# Hold on this building
 		await get_tree().create_timer(3.0).timeout
 
 		if montage_skipped:
-			# Clean up banner elements before breaking
-			for node in [banner_bg, name_label, accent_bar, line_label]:
-				if is_instance_valid(node):
-					node.queue_free()
 			break
 
-		# Fade banner out
-		var fade_tw := create_tween().set_parallel(true)
-		for node in [banner_bg, name_label, accent_bar, line_label]:
-			fade_tw.tween_property(node, "modulate:a", 0.0, 0.4)
-		await fade_tw.finished
-		for node in [banner_bg, name_label, accent_bar, line_label]:
-			if is_instance_valid(node):
-				node.queue_free()
+		# Fade banner out before moving to next building
+		var fout_tw := create_tween().set_parallel(true)
+		for node: Control in [banner_bg, name_label, accent_bar, line_label]:
+			fout_tw.tween_property(node, "modulate:a", 0.0, 0.4)
+		await fout_tw.finished
 
 		await get_tree().create_timer(0.3).timeout
 		building_index += 1
 
-	# ── 4. Pan camera back to player ──
+	# ── 4. Pan camera back to player and restore limits ──
 	if camera:
 		var cam_back := create_tween()
 		cam_back.tween_property(camera, "offset", Vector2.ZERO, 0.8).set_trans(
@@ -1484,6 +1544,10 @@ func _play_ending_sequence() -> void:
 		).set_ease(Tween.EASE_IN_OUT)
 		await cam_back.finished
 		camera.position_smoothing_speed = original_cam_smooth
+		camera.limit_left = original_limit_left
+		camera.limit_right = original_limit_right
+		camera.limit_top = original_limit_top
+		camera.limit_bottom = original_limit_bottom
 
 	# Remove skip button
 	if is_instance_valid(skip_btn):
@@ -1568,11 +1632,11 @@ func _play_ending_sequence() -> void:
 	UIAnimations.flash_screen_on_layer(ending_canvas, _vp, Color(0.886, 0.725, 0.290, 0.08), 0.4)
 
 	var title_rtl := RichTextLabel.new()
-	title_rtl.text = "The End... for now."
+	title_rtl.bbcode_enabled = true
+	title_rtl.text = "[center]The End... for now.[/center]"
 	title_rtl.add_theme_font_size_override("normal_font_size", int(56 * _sy))
 	title_rtl.add_theme_color_override("default_color", StyleFactory.GOLD)
 	title_rtl.fit_content = true
-	title_rtl.bbcode_enabled = false
 	title_rtl.scroll_active = false
 	title_rtl.autowrap_mode = TextServer.AUTOWRAP_OFF
 	title_rtl.size = Vector2(_vp.x * 0.8, 80 * _sy)
@@ -1605,9 +1669,8 @@ func _play_ending_sequence() -> void:
 	subtitle.add_theme_font_size_override("font_size", int(23 * _sy))
 	subtitle.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.anchor_left = 0.1
-	subtitle.anchor_right = 0.9
-	subtitle.anchor_top = 0.50
+	subtitle.position = Vector2(_vp.x * 0.1, _vp.y * 0.50)
+	subtitle.size = Vector2(_vp.x * 0.8, 60 * _sy)
 	subtitle.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ending_canvas.add_child(subtitle)
 	UIAnimations.fade_in_up(self, subtitle, 0.0)
@@ -1629,6 +1692,8 @@ func _play_ending_sequence() -> void:
 
 	AudioManager.play_sfx("building_unlock")
 	StoryManager.mark_ending_seen()
+	if is_instance_valid(_profile_btn):
+		_profile_btn.visible = true
 
 
 func _update_progress_bar() -> void:

@@ -91,6 +91,10 @@ func get_assessment_config() -> Dictionary:
 # ── Sequential Unlock Logic ──────────────────────────────────────────────────
 
 
+func get_next_building() -> String:
+	return QuestData.get_next_unlockable(GameManager.unlocked_buildings)
+
+
 func can_start_quest(building_id: String) -> Dictionary:
 	if GameManager.is_unlocked(building_id):
 		return {"can_start": false, "reason": "already_unlocked", "next_building": ""}
@@ -333,6 +337,8 @@ func _finish_quest() -> void:
 		passed = final_score >= pass_score
 		_mission_score = final_score
 		_mission_total = 100
+		if final_score == 100:
+			xp_reward = _current_quest_data.get("xp_perfect", xp_reward)
 		print(
 			(
 				"[QuestManager] Weighted score: A=%d B=%d C=%d → %d%% (pass=%d)"
@@ -341,6 +347,8 @@ func _finish_quest() -> void:
 		)
 	else:
 		passed = _mission_score >= threshold
+		if _mission_score == _mission_total:
+			xp_reward = _current_quest_data.get("xp_perfect", xp_reward)
 
 	print(
 		(

@@ -17,6 +17,7 @@ const BUILDING_QUEST_MAP := {
 		"topic": "Decoding",
 		"types": ["mcq", "tap_target", "read_aloud"],
 		"xp": 100,
+		"xp_perfect": 125,
 		"pass_threshold": 7,
 	},
 	"school":
@@ -26,6 +27,7 @@ const BUILDING_QUEST_MAP := {
 		"topic": "Syllabication",
 		"types": ["drag_drop", "read_aloud"],
 		"xp": 120,
+		"xp_perfect": 145,
 		"pass_threshold": 7,
 	},
 	"inn":
@@ -35,6 +37,7 @@ const BUILDING_QUEST_MAP := {
 		"topic": "Punctuation",
 		"types": ["mcq", "punctuation_read"],
 		"xp": 130,
+		"xp_perfect": 155,
 		"pass_threshold": 7,
 	},
 	"chapel":
@@ -44,6 +47,7 @@ const BUILDING_QUEST_MAP := {
 		"topic": "Fluency",
 		"types": ["fluency_check", "mcq"],
 		"xp": 140,
+		"xp_perfect": 165,
 		"pass_threshold": 7,
 	},
 	"library":
@@ -53,6 +57,7 @@ const BUILDING_QUEST_MAP := {
 		"topic": "Vocabulary",
 		"types": ["mcq", "tap_target"],
 		"xp": 150,
+		"xp_perfect": 175,
 		"pass_threshold": 7,
 	},
 	"well":
@@ -62,6 +67,7 @@ const BUILDING_QUEST_MAP := {
 		"topic": "Main Idea",
 		"types": ["mcq", "drag_drop"],
 		"xp": 160,
+		"xp_perfect": 185,
 		"pass_threshold": 7,
 	},
 	"market":
@@ -71,6 +77,7 @@ const BUILDING_QUEST_MAP := {
 		"topic": "Inference",
 		"types": ["mcq"],
 		"xp": 170,
+		"xp_perfect": 195,
 		"pass_threshold": 7,
 	},
 	"bakery":
@@ -80,6 +87,7 @@ const BUILDING_QUEST_MAP := {
 		"topic": "Final Mission",
 		"types": ["read_aloud", "fluency_check", "mcq"],
 		"xp": 200,
+		"xp_perfect": 225,
 		"pass_threshold": 18,
 		"assessment":
 		{

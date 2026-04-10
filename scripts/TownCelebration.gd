@@ -130,7 +130,8 @@ func _show_overlay() -> void:
 
 	# Trophy emoji inside
 	var trophy := Label.new()
-	trophy.text = "\U0001F3C6"
+	trophy.text = "★"
+	trophy.add_theme_color_override("font_color", StyleFactory.GOLD)
 	trophy.add_theme_font_size_override("font_size", int(72 * _sy))
 	trophy.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	trophy.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -171,7 +172,7 @@ func _show_overlay() -> void:
 	stats_container.anchor_left = 0.08
 	stats_container.anchor_right = 0.92
 	stats_container.anchor_top = 0.53
-	stats_container.size = Vector2(_vp.x * 0.84, 130 * _sy)
+	stats_container.custom_minimum_size = Vector2(0, 130 * _sy)
 	stats_container.alignment = BoxContainer.ALIGNMENT_CENTER
 	stats_container.add_theme_constant_override("separation", int(24 * _sx))
 	stats_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -179,12 +180,12 @@ func _show_overlay() -> void:
 	stats_container.modulate.a = 0.0
 
 	var student := GameManager.current_student
-	var quests_done: int = student.get("quests_completed", student.get("questsCompleted", 0))
-	var badges_count: int = student.get("badges_count", student.get("badgesCount", GameManager.unlocked_buildings.size()))
+	var xp: int = student.get("xp", 0)
+	var reading_level: int = student.get("reading_level", 1)
 
-	_add_stat_card(stats_container, "\U0001F3D8\uFE0F", 8, "Buildings", StyleFactory.GOLD)
-	_add_stat_card(stats_container, "\U0001F4DA", quests_done, "Quests", StyleFactory.ACCENT_CORAL)
-	_add_stat_card(stats_container, "\U0001F3C5", badges_count, "Badges", StyleFactory.SKY_BLUE)
+	_add_stat_card(stats_container, "⌂", GameManager.unlocked_buildings.size(), "Buildings", StyleFactory.GOLD)
+	_add_stat_card(stats_container, "✦", xp, "XP", StyleFactory.ACCENT_CORAL)
+	_add_stat_card(stats_container, "◆", reading_level, "Level", StyleFactory.SKY_BLUE)
 
 	# ── Tap to continue hint ────────────────────────────────────────────────
 	var hint := Label.new()
@@ -338,6 +339,8 @@ func _dismiss() -> void:
 	tw.tween_property(self, "offset", Vector2.ZERO, 0.0)  # dummy to get a tween started
 	# Modulate all children out
 	for child in get_children():
+		if not child is CanvasItem:
+			continue
 		var ctw := child.create_tween()
 		ctw.tween_property(child, "modulate:a", 0.0, 0.6)
 

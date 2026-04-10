@@ -6,7 +6,7 @@ extends CanvasLayer
 ## Usage (from Main.gd):
 ##   var cs = UnlockCutscene.new()
 ##   add_child(cs)
-##   cs.setup(vp, sx, sy, bc, camera, player, town_livener)
+##   cs.setup(vp, sx, sy, bc, camera, player, town_livener, building_controllers)
 ##   cs.play()
 ##   await cs.cutscene_finished
 
@@ -48,6 +48,7 @@ var _building_color: Color
 var _camera: Camera2D
 var _player: Node2D
 var _town_livener: Node2D
+var _all_bcs: Dictionary  # all building controllers for next-building reveal
 var _vp: Vector2
 var _sx: float
 var _sy: float
@@ -55,6 +56,11 @@ var _sy: float
 # ─── State ───────────────────────────────────────────────────────────────────
 var _original_cam_offset: Vector2
 var _original_cam_smooth_speed: float
+var _original_cam_zoom: Vector2
+var _original_limit_left: int
+var _original_limit_right: int
+var _original_limit_top: int
+var _original_limit_bottom: int
 var _banner_layer: CanvasLayer
 
 
@@ -66,7 +72,7 @@ func _init() -> void:
 func setup(
 	vp: Vector2, sx: float, sy: float,
 	building_controller: BuildingController, camera: Camera2D,
-	player: Node2D, town_livener: Node2D
+	player: Node2D, town_livener: Node2D, all_building_controllers: Dictionary = {}
 ) -> void:
 	_vp = vp
 	_sx = sx
@@ -78,6 +84,7 @@ func setup(
 	_camera = camera
 	_player = player
 	_town_livener = town_livener
+	_all_bcs = all_building_controllers
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -91,10 +98,21 @@ func play() -> void:
 	# Store camera state
 	_original_cam_offset = _camera.offset
 	_original_cam_smooth_speed = _camera.position_smoothing_speed
+	_original_cam_zoom = _camera.zoom
+	_original_limit_left = _camera.limit_left
+	_original_limit_right = _camera.limit_right
+	_original_limit_top = _camera.limit_top
+	_original_limit_bottom = _camera.limit_bottom
 
-	# Phase 1: Camera pan to building (0.5s)
+	# Expand camera limits so offset panning isn't clamped to zero
+	_camera.limit_left = -int(_vp.x)
+	_camera.limit_right = int(_vp.x * 2)
+	_camera.limit_top = -int(_vp.y)
+	_camera.limit_bottom = int(_vp.y * 2)
+
+	# Phase 1: Camera zoom-in to building (0.7s)
 	_phase_camera_pan()
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(0.7).timeout
 
 	# Phase 2: Padlock fade + color reveal + SFX
 	_phase_padlock_fade()
@@ -108,12 +126,12 @@ func play() -> void:
 	_dismiss_banner()
 	await get_tree().create_timer(0.5).timeout
 
-	# Phase 4: Village tour
+	# Phase 4: Apply tier visuals + pan to next locked building
 	var new_tier := GameManager.unlocked_buildings.size()
 	if new_tier <= GameManager.TOTAL_BUILDINGS:
-		var highlights: Array[Dictionary] = _town_livener.apply_tier_animated(new_tier)
-		await get_tree().create_timer(0.3).timeout
-		await _phase_tour(highlights)
+		_town_livener.apply_tier_animated(new_tier)
+	await get_tree().create_timer(0.3).timeout
+	await _phase_next_building()
 
 	# Phase 5: Restore
 	await _phase_restore()
@@ -139,8 +157,9 @@ func _phase_camera_pan() -> void:
 	target_offset = final_pos - _player.global_position
 
 	_camera.position_smoothing_speed = 20.0
-	var tw := create_tween()
-	tw.tween_property(_camera, "offset", target_offset, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	var tw := create_tween().set_parallel(true)
+	tw.tween_property(_camera, "offset", target_offset, 0.7).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_camera, "zoom", Vector2(1.6, 1.6), 0.7).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
 
 
 func _phase_padlock_fade() -> void:
@@ -246,41 +265,108 @@ func _dismiss_banner() -> void:
 		)
 
 
-func _phase_tour(highlights: Array[Dictionary]) -> void:
-	if highlights.is_empty():
+func _phase_next_building() -> void:
+	# Find the next locked building in quest order
+	var next_id: String = QuestManager.get_next_building()
+	if next_id.is_empty():
+		return  # All buildings unlocked — no "next" to reveal
+
+	var next_bc: BuildingController = _all_bcs.get(next_id)
+	if not is_instance_valid(next_bc):
 		return
 
-	# Tour at most 2 highlights
-	var count := mini(highlights.size(), 2)
-	for i in range(count):
-		var hl: Dictionary = highlights[i]
-		var hl_pos: Vector2 = hl["pos"]
+	var next_label: String = next_bc.building_label
+	var next_color: Color = next_bc.building_color
 
-		# Pan camera to highlight
-		var target_offset := hl_pos - _player.global_position
-		var half_vp := _vp * 0.5
-		var min_pos := Vector2(_camera.limit_left, _camera.limit_top) + half_vp
-		var max_pos := Vector2(_camera.limit_right, _camera.limit_bottom) - half_vp
-		var final_pos := (_player.global_position + target_offset).clamp(min_pos, max_pos)
-		target_offset = final_pos - _player.global_position
+	# Smoothly zoom out a little and pan to the next building
+	var next_world := next_bc.get_building_center_world_pos()
+	var target_offset := next_world - _player.global_position
 
-		var pan_tw := create_tween()
-		pan_tw.tween_property(_camera, "offset", target_offset, 0.4).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
-		await pan_tw.finished
+	var pan_tw := create_tween().set_parallel(true)
+	pan_tw.tween_property(_camera, "offset", target_offset, 1.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	pan_tw.tween_property(_camera, "zoom", Vector2(1.15, 1.15), 1.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	await pan_tw.finished
 
-		# Hold on highlight
-		await get_tree().create_timer(0.8).timeout
+	# Show "Next Quest" callout banner
+	var callout_layer := CanvasLayer.new()
+	callout_layer.layer = 16
+	add_child(callout_layer)
+
+	var callout_bg := ColorRect.new()
+	callout_bg.color = Color(0.04, 0.08, 0.15, 0.82)
+	callout_bg.size = Vector2(_vp.x * 0.44, 90 * _sy)
+	callout_bg.position = Vector2((_vp.x - _vp.x * 0.44) * 0.5, _vp.y * 0.13)
+	callout_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	callout_layer.add_child(callout_bg)
+
+	var eyebrow := Label.new()
+	eyebrow.text = "Next Quest"
+	eyebrow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	eyebrow.add_theme_font_size_override("font_size", int(16 * _sy))
+	eyebrow.add_theme_color_override("font_color", next_color)
+	eyebrow.size = Vector2(callout_bg.size.x, 26 * _sy)
+	eyebrow.position = Vector2(callout_bg.position.x, callout_bg.position.y + 10 * _sy)
+	eyebrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	callout_layer.add_child(eyebrow)
+
+	var next_name := Label.new()
+	next_name.text = next_label
+	next_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	next_name.add_theme_font_size_override("font_size", int(28 * _sy))
+	next_name.add_theme_color_override("font_color", Color.WHITE)
+	next_name.size = Vector2(callout_bg.size.x, 40 * _sy)
+	next_name.position = Vector2(callout_bg.position.x, callout_bg.position.y + 38 * _sy)
+	next_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	callout_layer.add_child(next_name)
+
+	var accent := ColorRect.new()
+	accent.color = next_color
+	accent.size = Vector2(callout_bg.size.x, 3 * _sy)
+	accent.position = Vector2(callout_bg.position.x, callout_bg.position.y + callout_bg.size.y - 3 * _sy)
+	accent.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	callout_layer.add_child(accent)
+
+	# Animate callout in
+	callout_layer.modulate.a = 0.0
+	var fin_tw := create_tween()
+	fin_tw.tween_property(callout_layer, "modulate:a", 1.0, 0.35)
+	await fin_tw.finished
+
+	# Brief glow pulse on the next building to draw attention
+	var next_sprite := next_bc.get_building_sprite()
+	if is_instance_valid(next_sprite) and next_sprite.material is ShaderMaterial:
+		var mat := next_sprite.material as ShaderMaterial
+		var glow_tw := create_tween()
+		glow_tw.tween_method(func(v: float) -> void:
+			if is_instance_valid(mat): mat.set_shader_parameter("glow_amount", v),
+			0.0, 0.5, 0.6)
+		glow_tw.tween_method(func(v: float) -> void:
+			if is_instance_valid(mat): mat.set_shader_parameter("glow_amount", v),
+			0.5, 0.0, 0.8)
+
+	await get_tree().create_timer(2.0).timeout
+
+	# Fade callout out
+	var fout_tw := create_tween()
+	fout_tw.tween_property(callout_layer, "modulate:a", 0.0, 0.3)
+	await fout_tw.finished
+	callout_layer.queue_free()
 
 
 func _phase_restore() -> void:
-	# Pan camera back
-	var cam_tw := create_tween()
+	# Pan + zoom back
+	var cam_tw := create_tween().set_parallel(true)
 	cam_tw.tween_property(_camera, "offset", Vector2.ZERO, 0.8).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	cam_tw.tween_property(_camera, "zoom", _original_cam_zoom, 0.8).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 
-	# Restore camera smoothing speed
+	# Restore camera smoothing speed and limits
 	get_tree().create_timer(0.8).timeout.connect(func() -> void:
 		if is_instance_valid(_camera):
 			_camera.position_smoothing_speed = _original_cam_smooth_speed
+			_camera.limit_left = _original_limit_left
+			_camera.limit_right = _original_limit_right
+			_camera.limit_top = _original_limit_top
+			_camera.limit_bottom = _original_limit_bottom
 	)
 
 	await get_tree().create_timer(1.0).timeout

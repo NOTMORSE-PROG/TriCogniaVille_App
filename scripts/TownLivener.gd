@@ -647,7 +647,7 @@ func _cheer_single_npc(npc: Node2D, start_delay: float) -> void:
 
 		# Stretch up (arms raised) + return
 		var scale_tw := npc.create_tween()
-		scale_tw.set_delay(start_delay * 0.3)
+		scale_tw.tween_interval(start_delay * 0.3)
 		scale_tw.tween_property(npc, "scale", Vector2(1.0, 1.18), 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		scale_tw.tween_property(npc, "scale", orig_scale, 0.25).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 
