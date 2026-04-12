@@ -18,21 +18,25 @@ func _ready() -> void:
 	# tts_get_voices_for_language() returns PackedStringArray of voice ID strings.
 	# tts_get_voices() returns Array[Dictionary] with "name" and "id" keys.
 	# Prefer en-US; fall back to any English voice, then any available voice.
+	# On Android, voice enumeration often returns empty even when TTS is functional
+	# (the system selects a default voice when the voice ID is ""). We mark
+	# _available = true whenever the TTS API exists and fall back to an empty
+	# voice ID so Android's TTS engine picks its own default.
 	var us_voices: PackedStringArray = DisplayServer.tts_get_voices_for_language("en-US")
 	if not us_voices.is_empty():
 		_voice_id = us_voices[0]
-		_available = true
 	else:
 		var en_voices: PackedStringArray = DisplayServer.tts_get_voices_for_language("en")
 		if not en_voices.is_empty():
 			_voice_id = en_voices[0]
-			_available = true
 		else:
 			var all_voices: Array = DisplayServer.tts_get_voices()
 			if not all_voices.is_empty():
 				_voice_id = all_voices[0].get("id", "")
-				_available = not _voice_id.is_empty()
-	print("[TTSManager] Available: ", _available, " | Voice: ", _voice_id)
+			# If no voices are enumerated (common on Android), leave _voice_id empty.
+			# tts_speak with an empty voice ID lets the platform choose its default.
+	_available = true
+	print("[TTSManager] Available: ", _available, " | Voice: '", _voice_id, "'")
 
 
 ## Returns true if TTS is supported and a voice was found.

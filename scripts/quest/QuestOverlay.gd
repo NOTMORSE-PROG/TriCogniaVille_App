@@ -475,7 +475,7 @@ func _load_current_question() -> void:
 			var mcq: Node = _MCQ_SCRIPT.new()
 			_question_container.add_child(mcq)
 			mcq.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			mcq.size_flags_vertical = Control.SIZE_EXPAND_FILL
+			mcq.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 			var qid: String = QuestManager.get_current_quest_data().get("quest_id", "")
 			var compact_quests: Array = ["week5_vocabulary", "week6_main_idea", "week7_inference", "week8_final_mission"]
 			mcq.setup(question, show_hints, _sx, _sy, qid in compact_quests)

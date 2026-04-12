@@ -1,7 +1,8 @@
-extends Control
+extends VBoxContainer
 ## MCQInteraction — Multiple-choice question interaction component.
 ## Displays passage (optional) + question + options with feedback.
-## Pattern follows OnboardingScreen MCQ implementation.
+## Extends VBoxContainer directly so content height is naturally reported
+## to the parent ScrollContainer — enabling scroll when content overflows.
 
 signal answer_submitted(correct: bool)
 
@@ -21,8 +22,8 @@ var _feedback_panel: PanelContainer
 var _feedback_icon: Label
 var _feedback_text: Label
 
-
 var _compact: bool = false
+
 
 func setup(question: Dictionary, show_hints: bool, sx: float = 1.0, sy: float = 1.0, compact: bool = false) -> void:
 	_sx = sx
@@ -35,17 +36,13 @@ func setup(question: Dictionary, show_hints: bool, sx: float = 1.0, sy: float = 
 
 
 func _build_ui() -> void:
-	# Clear existing children
 	for child in get_children():
 		remove_child(child)
 		child.queue_free()
 
-	var vbox := VBoxContainer.new()
-	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	vbox.add_theme_constant_override("separation", int((5 if _compact else 12) * _sy))
-	add_child(vbox)
-	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	add_theme_constant_override("separation", int((5 if _compact else 12) * _sy))
 
 	# Passage (optional)
 	var passage: String = _question.get("passage", "")
@@ -81,7 +78,7 @@ func _build_ui() -> void:
 		_passage_label.custom_minimum_size = Vector2(0, 0)
 		_passage_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		passage_card.add_child(_passage_label)
-		vbox.add_child(passage_card)
+		add_child(passage_card)
 
 	# Instruction
 	var instruction: String = _question.get("instruction", "")
@@ -102,7 +99,7 @@ func _build_ui() -> void:
 		inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 		inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_child(inst_label)
+		add_child(inst_label)
 
 	# Question — auto-shrink font for long question text
 	var q_text: String = _question.get("question", "")
@@ -117,7 +114,7 @@ func _build_ui() -> void:
 	_question_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_question_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_question_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(_question_label)
+	add_child(_question_label)
 
 	# Hint (practice mode only)
 	if _show_hints:
@@ -129,12 +126,12 @@ func _build_ui() -> void:
 			_hint_label.add_theme_color_override("font_color", StyleFactory.SKY_BLUE)
 			_hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			_hint_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			vbox.add_child(_hint_label)
+			add_child(_hint_label)
 
 	# Options
 	_options_container = VBoxContainer.new()
 	_options_container.add_theme_constant_override("separation", int(8 * _sy))
-	vbox.add_child(_options_container)
+	add_child(_options_container)
 
 	var options: Array = _question.get("options", [])
 	if options.is_empty():
@@ -183,7 +180,6 @@ func _build_ui() -> void:
 		var captured_idx := i
 		btn.pressed.connect(func() -> void: _on_option_pressed(captured_idx))
 
-		# Defer make_interactive so size is calculated
 		btn.ready.connect(func() -> void: UIAnimations.make_interactive(btn))
 
 	# Feedback panel (hidden initially)
@@ -208,9 +204,9 @@ func _build_ui() -> void:
 	fb_vbox.add_child(_feedback_text)
 
 	_feedback_panel.add_child(fb_vbox)
-	vbox.add_child(_feedback_panel)
+	add_child(_feedback_panel)
 
-	# Stagger modulate-only entrance (no position.y — VBoxContainer manages layout)
+	# Stagger modulate-only entrance
 	var stagger_idx := 0
 	for child in _options_container.get_children():
 		if child is Control:
@@ -262,10 +258,8 @@ func _on_option_pressed(index: int) -> void:
 			cs.border_color = StyleFactory.SUCCESS_GREEN
 			correct_btn.add_theme_stylebox_override("disabled", cs)
 
-	# Show feedback
 	_show_feedback(correct)
 
-	# Effects + SFX
 	if correct:
 		AudioManager.play_sfx("correct")
 		UIAnimations.flash_screen(self, Color(0.357, 0.851, 0.635, 0.08))
@@ -282,16 +276,14 @@ func apply_hint(level: int) -> void:
 		return
 	match level:
 		1:
-			# Eliminate one wrong option (grey it out)
 			for child in _options_container.get_children():
 				if child is Button and not child.disabled:
 					var idx := child.get_index()
 					if idx != _shuffled_correct_index:
 						child.disabled = true
 						child.modulate.a = 0.4
-						break  # Only eliminate one
+						break
 		2:
-			# Highlight a keyword in the question text
 			if is_instance_valid(_question_label):
 				var tw := create_tween().set_loops(3)
 				tw.tween_property(_question_label, "modulate:a", 0.5, 0.3)
@@ -317,7 +309,6 @@ func _show_feedback(correct: bool) -> void:
 		Tween.EASE_OUT
 	)
 
-	# Hide the choices after a brief moment so the feedback takes their place
 	await get_tree().create_timer(0.9).timeout
 	if is_instance_valid(_options_container):
 		var fade := create_tween()
