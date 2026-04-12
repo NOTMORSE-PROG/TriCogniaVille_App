@@ -5,6 +5,13 @@ extends Control
 
 signal overlay_closed(building_id: String, passed: bool)
 
+const _MCQ_SCRIPT := preload("res://scripts/quest/interactions/MCQInteraction.gd")
+const _TAP_SCRIPT := preload("res://scripts/quest/interactions/TapTargetInteraction.gd")
+const _DD_SCRIPT := preload("res://scripts/quest/interactions/DragDropInteraction.gd")
+const _RA_SCRIPT := preload("res://scripts/quest/interactions/ReadAloudInteraction.gd")
+const _FL_SCRIPT := preload("res://scripts/quest/interactions/FluencyInteraction.gd")
+const _PR_SCRIPT := preload("res://scripts/quest/interactions/PunctuationReadInteraction.gd")
+
 var _last_completed_building_id: String = ""
 var _last_passed: bool = false
 
@@ -933,7 +940,7 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 			lumi_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			lumi_hbox.add_child(lumi_text)
 
-			UIAnimations.fade_in(self, lumi_card, 0.3)
+			UIAnimations.fade_in_up(self, lumi_card, 0.3)
 
 	# ── Question Breakdown ──
 	if question_results.size() > 0:
@@ -1051,7 +1058,7 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 				g_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				g_row.add_child(g_lbl)
 
-			UIAnimations.fade_in(self, ref_card, 0.5)
+			UIAnimations.fade_in_up(self, ref_card, 0.5)
 
 	# ── Action Buttons ──
 	var btn_row := HBoxContainer.new()
