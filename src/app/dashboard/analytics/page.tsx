@@ -119,7 +119,8 @@ export default function AnalyticsPage() {
                 const labels = [
                   "Non-Reader",
                   "Emerging",
-                  "Independent",
+                  "Fluent",
+                  "Advanced",
                 ];
                 return (
                   <div key={level} className="flex items-center gap-3">

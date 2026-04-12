@@ -43,7 +43,7 @@ export const teacherLoginSchema = z.object({
 
 export const updateProfileSchema = z.object({
   name: z.string().min(1).max(100).trim().optional(),
-  readingLevel: z.number().int().min(1).max(3).optional(),
+  readingLevel: z.number().int().min(1).max(4).optional(),
   onboardingDone: z.boolean().optional(),
   username: z.string().min(2).max(50).trim().optional(),
   characterGender: z.enum(["male", "female"]).optional(),
