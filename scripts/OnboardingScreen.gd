@@ -61,13 +61,13 @@ const QUIZ_QUESTIONS: Array[Dictionary] = [
 ]
 
 const LEVEL_NAMES: Dictionary = {
-	1: "Non-Reader", 2: "Emerging Reader", 3: "Independent Reader"
+	1: "Non-Reader", 2: "Emerging Reader", 3: "Fluent Reader"
 }
 
 const LEVEL_DESCRIPTIONS: Dictionary = {
 	1: "We will start with simple words and short stories to build your confidence.",
 	2: "You are making great progress! We will practice reading sentences together.",
-	3: "Excellent! You will face the most challenging quests in the village!"
+	3: "Excellent! You have strong reading skills. You will take on fluent-level quests in the village!"
 }
 
 const LEVEL_COLORS: Dictionary = {

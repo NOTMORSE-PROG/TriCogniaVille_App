@@ -118,6 +118,13 @@ func _build_ui() -> void:
 
 		vbox.add_child(card)
 
+		# 🔊 Let student hear the passage before recording
+		var speak_center := CenterContainer.new()
+		speak_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(speak_center)
+		var speak_btn := TTSManager.make_speak_button(passage, _sx, _sy)
+		speak_center.add_child(speak_btn)
+
 	# ── Status panel ───────────────────────────────────────────────────────────
 	_status_panel = PanelContainer.new()
 	_status_panel.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(12))

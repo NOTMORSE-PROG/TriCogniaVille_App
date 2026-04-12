@@ -33,6 +33,7 @@ ApiClient="*res://scripts/ApiClient.gd"
 NetworkGate="*res://scripts/NetworkGate.gd"
 QuestManager="*res://scripts/quest/QuestManager.gd"
 AudioManager="*res://scripts/AudioManager.gd"
+TTSManager="*res://scripts/TTSManager.gd"
 StoryManager="*res://scripts/story/StoryManager.gd"
 
 [display]

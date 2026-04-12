@@ -50,16 +50,28 @@ func _build_ui() -> void:
 		inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		vbox.add_child(inst_label)
 
-	# Word label
+	# Word label + 🔊 pronunciation button
 	var word: String = _question.get("word", "")
 	if not word.is_empty():
+		var word_center := CenterContainer.new()
+		word_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(word_center)
+
+		var word_hbox := HBoxContainer.new()
+		word_hbox.add_theme_constant_override("separation", int(10 * _sx))
+		word_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		word_center.add_child(word_hbox)
+
 		var word_label := Label.new()
 		word_label.text = word
 		word_label.add_theme_font_size_override("font_size", int(60 * _sy))
 		word_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 		word_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		word_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_child(word_label)
+		word_hbox.add_child(word_label)
+
+		var speak_btn := TTSManager.make_speak_button(word, _sx, _sy)
+		word_hbox.add_child(speak_btn)
 
 	# Segment buttons
 	var center := CenterContainer.new()

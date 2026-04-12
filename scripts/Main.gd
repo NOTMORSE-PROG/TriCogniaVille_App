@@ -1690,20 +1690,6 @@ func _enter_free_exploration() -> void:
 		if is_instance_valid(count) and count is Label:
 			(count as Label).text = "Village Restored ✓"
 
-		# Reading level badge below profile button
-		var existing_badge := canvas.get_node_or_null("ReadingLevelBadge")
-		if not is_instance_valid(existing_badge):
-			var player_level: int = GameManager.current_student.get("reading_level", 1)
-			var badge := Label.new()
-			badge.name = "ReadingLevelBadge"
-			badge.text = _get_level_label(player_level)
-			badge.add_theme_font_size_override("font_size", int(11.0 * _sy))
-			badge.add_theme_color_override("font_color", StyleFactory.SKY_BLUE)
-			badge.position = Vector2(24 * _sx, 70 * _sy)
-			badge.z_index = 100
-			badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			canvas.add_child(badge)
-
 	# Update badge when server advances reading level
 	if not GameManager.level_up.is_connected(_on_level_up_exploration):
 		GameManager.level_up.connect(_on_level_up_exploration)
@@ -1716,20 +1702,13 @@ func _get_level_label(level: int) -> String:
 	match level:
 		1: return "Beginner  •  Level 1"
 		2: return "Developing  •  Level 2"
-		3: return "Advanced  •  Level 3"
+		3: return "Fluent  •  Level 3"
+		4: return "Advanced  •  Level 4"
 		_: return "Level %d" % level
 
 
 func _on_level_up_exploration(from_level: int, to_level: int) -> void:
 	print("[Main] Level up: %d → %d" % [from_level, to_level])
-	if not _is_free_exploration:
-		return
-	var canvas := get_node_or_null("UI")
-	if not canvas:
-		return
-	var badge := canvas.get_node_or_null("ReadingLevelBadge")
-	if is_instance_valid(badge) and badge is Label:
-		(badge as Label).text = _get_level_label(to_level)
 
 
 func _show_replay_prompt(building_id: String) -> void:

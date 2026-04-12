@@ -1,6 +1,7 @@
 extends Node
 ## AudioManager — AutoLoad singleton for all game audio.
 ## Manages village background music and sound effects.
+## Exposes music_enabled / sfx_enabled toggles with settings persistence.
 
 const SFX_POOL_SIZE := 4
 const SFX_PATHS := {
@@ -14,11 +15,17 @@ const SFX_PATHS := {
 	"building_unlock": "res://assets/audio/sfx/building_unlock.ogg",
 	"chapel_bell": "res://assets/audio/sfx/chapel_bell.wav",
 }
-const MUSIC_PATH := "res://assets/audio/music/village_bgm.ogg"
+const MUSIC_PATH    := "res://assets/audio/music/village_bgm.ogg"
+const SETTINGS_PATH := "user://settings.cfg"
+
+# ── Public toggle state ──────────────────────────────────────────────────────
+var music_enabled: bool = true
+var sfx_enabled:   bool = true
 
 # ── BGM ─────────────────────────────────────────────────────────────────────
 var _music_player: AudioStreamPlayer
 var _music_playing: bool = false
+var _music_tween: Tween  # Tracks the active volume tween so it can be killed
 
 # ── SFX Pool ────────────────────────────────────────────────────────────────
 var _sfx_players: Array[AudioStreamPlayer] = []
@@ -28,6 +35,7 @@ var _sfx_streams: Dictionary = {}
 
 
 func _ready() -> void:
+	_load_audio_settings()
 	# BGM player
 	_music_player = AudioStreamPlayer.new()
 	_music_player.bus = "Master"
@@ -57,6 +65,8 @@ func _ready() -> void:
 
 
 func play_sfx(sfx_name: String) -> void:
+	if not sfx_enabled:
+		return
 	if not _sfx_streams.has(sfx_name):
 		return
 	var player := _get_free_sfx_player()
@@ -67,6 +77,8 @@ func play_sfx(sfx_name: String) -> void:
 
 
 func start_village_music() -> void:
+	if not music_enabled:
+		return
 	if _music_playing:
 		return
 	if not ResourceLoader.exists(MUSIC_PATH):
@@ -87,10 +99,11 @@ func start_village_music() -> void:
 	_music_player.volume_db = -40.0
 	_music_player.play()
 	# Gentle 3-second bloom fade-in — warm, not abrupt
-	var tw := create_tween()
-	tw.tween_property(_music_player, "volume_db", -10.0, 3.0).set_trans(Tween.TRANS_QUAD).set_ease(
-		Tween.EASE_OUT
-	)
+	_kill_music_tween()
+	_music_tween = create_tween()
+	_music_tween.tween_property(_music_player, "volume_db", -10.0, 3.0).set_trans(
+		Tween.TRANS_QUAD
+	).set_ease(Tween.EASE_OUT)
 
 
 func stop_village_music() -> void:
@@ -98,11 +111,12 @@ func stop_village_music() -> void:
 		return
 	_music_playing = false
 	# Gentle 1.5s fade-out
-	var tw := create_tween()
-	tw.tween_property(_music_player, "volume_db", -40.0, 1.5).set_trans(Tween.TRANS_QUAD).set_ease(
-		Tween.EASE_IN
-	)
-	tw.tween_callback(func() -> void: _music_player.stop())
+	_kill_music_tween()
+	_music_tween = create_tween()
+	_music_tween.tween_property(_music_player, "volume_db", -40.0, 1.5).set_trans(
+		Tween.TRANS_QUAD
+	).set_ease(Tween.EASE_IN)
+	_music_tween.tween_callback(func() -> void: _music_player.stop())
 
 
 func _on_music_finished() -> void:
@@ -112,11 +126,61 @@ func _on_music_finished() -> void:
 
 
 func fade_music(target_db: float, duration: float = 0.5) -> void:
-	var tw := create_tween()
-	tw.tween_property(_music_player, "volume_db", target_db, duration)
+	_kill_music_tween()
+	_music_tween = create_tween()
+	_music_tween.tween_property(_music_player, "volume_db", target_db, duration)
 
 
 # ── Private ─────────────────────────────────────────────────────────────────
+
+
+## Enable or disable background music. Fades smoothly then stops/starts the player.
+func set_music_enabled(enabled: bool) -> void:
+	music_enabled = enabled
+	if enabled:
+		# Re-start from silence — start_village_music handles the fade-in.
+		start_village_music()
+	else:
+		# Kill any running fade-in so it doesn't fight us, then fade out and stop.
+		_kill_music_tween()
+		if _music_player.playing:
+			_music_playing = false
+			_music_tween = create_tween()
+			_music_tween.tween_property(_music_player, "volume_db", -80.0, 0.3).set_trans(
+				Tween.TRANS_QUAD
+			).set_ease(Tween.EASE_IN)
+			_music_tween.tween_callback(func() -> void: _music_player.stop())
+		else:
+			_music_playing = false
+			_music_player.stop()
+	_save_audio_settings()
+
+
+func _kill_music_tween() -> void:
+	if is_instance_valid(_music_tween) and _music_tween.is_running():
+		_music_tween.kill()
+	_music_tween = null
+
+
+## Enable or disable sound effects. Persists the setting.
+func set_sfx_enabled(enabled: bool) -> void:
+	sfx_enabled = enabled
+	_save_audio_settings()
+
+
+func _load_audio_settings() -> void:
+	var cfg := ConfigFile.new()
+	if cfg.load(SETTINGS_PATH) == OK:
+		music_enabled = cfg.get_value("audio", "music_enabled", true)
+		sfx_enabled   = cfg.get_value("audio", "sfx_enabled",   true)
+
+
+func _save_audio_settings() -> void:
+	var cfg := ConfigFile.new()
+	cfg.load(SETTINGS_PATH)  # Preserve existing sections (e.g. "game" difficulty)
+	cfg.set_value("audio", "music_enabled", music_enabled)
+	cfg.set_value("audio", "sfx_enabled",   sfx_enabled)
+	cfg.save(SETTINGS_PATH)
 
 
 func _get_free_sfx_player() -> AudioStreamPlayer:

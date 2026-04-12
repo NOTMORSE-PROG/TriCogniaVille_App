@@ -9,11 +9,11 @@ class_name FeedbackEngine
 # ── Default Config (overridable via config dict) ────────────────────────────
 const DEFAULT_CONFIG := {
 	"pass_threshold": 75,
-	"phonetic_credit": 0.5,
-	"soundex_credit": 0.5,
-	"phonetic_max_dist_short": 1,
+	"phonetic_credit": 0.75,
+	"soundex_credit": 0.75,
+	"phonetic_max_dist_short": 2,
 	"phonetic_max_dist_long": 2,
-	"soundex_max_dist": 2,
+	"soundex_max_dist": 1,
 	"sub_max_dist_long": 3,
 	"low_confidence_threshold": 0.50,
 	"low_confidence_penalty": 0.80,
@@ -59,7 +59,6 @@ static func assess(
 	var soundex_max: int = cfg.get("soundex_max_dist", 2)
 	var sub_max_long: int = cfg["sub_max_dist_long"]
 	var low_conf_threshold: float = cfg["low_confidence_threshold"]
-	var low_conf_penalty: float = cfg["low_confidence_penalty"]
 
 	var result := {
 		"score": 0,
@@ -128,10 +127,6 @@ static func assess(
 		+ float(phonetic_count) * phonetic_credit
 	)
 	var score := int(raw_score / float(exp_words.size()) * 100.0)
-
-	# Apply confidence penalty for low-confidence STT results
-	if low_confidence:
-		score = int(float(score) * low_conf_penalty)
 
 	score = clampi(score, 0, 100)
 
@@ -227,7 +222,8 @@ static func assess(
 	else:
 		result["feedback_encouragement"] = "Don't give up! Every attempt makes you better."
 
-	result["flag_review"] = false
+	# Flag for teacher review when STT confidence is low — don't reduce score
+	result["flag_review"] = low_confidence
 
 	return result
 

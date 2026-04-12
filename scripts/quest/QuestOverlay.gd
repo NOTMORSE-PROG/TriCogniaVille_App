@@ -35,6 +35,10 @@ var _stage_banner_label: Label
 var _stage_banner_desc: Label
 var _stage_banner_icon: Label
 
+# Header TTS
+var _header_tts_btn: Button
+var _header_tts_text: String = ""
+
 # Mission progress
 var _progress_container: HBoxContainer
 var _mission_progress_bar: ProgressBar
@@ -123,7 +127,7 @@ func _build_layout() -> void:
 	header_hbox.add_child(_header_container)
 
 	_building_label = Label.new()
-	_building_label.add_theme_font_size_override("font_size", int(44 * _sy))
+	_building_label.add_theme_font_size_override("font_size", int(52 * _sy))
 	_building_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_building_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_header_container.add_child(_building_label)
@@ -144,6 +148,12 @@ func _build_layout() -> void:
 	_stage_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	_stage_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	sub_hbox.add_child(_stage_label)
+
+	_counter_label = Label.new()
+	_counter_label.add_theme_font_size_override("font_size", int(24 * _sy))
+	_counter_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+	_counter_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	sub_hbox.add_child(_counter_label)
 
 	# Stage dots
 	var dots_container := HBoxContainer.new()
@@ -166,6 +176,32 @@ func _build_layout() -> void:
 		dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		dots_container.add_child(dot)
 		_stage_dots.append(dot)
+
+	# TTS button (header — speaks current question instruction/text)
+	_header_tts_btn = Button.new()
+	_header_tts_btn.text = "🔊"
+	_header_tts_btn.tooltip_text = "Hear the question"
+	_header_tts_btn.custom_minimum_size = Vector2(68 * _sx, 68 * _sy)
+	_header_tts_btn.add_theme_font_size_override("font_size", int(28 * _sy))
+	_header_tts_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	var tts_style := StyleBoxFlat.new()
+	tts_style.bg_color = Color(1.0, 1.0, 1.0, 0.07)
+	tts_style.corner_radius_top_left = int(10 * _sx)
+	tts_style.corner_radius_top_right = int(10 * _sx)
+	tts_style.corner_radius_bottom_left = int(10 * _sx)
+	tts_style.corner_radius_bottom_right = int(10 * _sx)
+	tts_style.border_width_top = 1
+	tts_style.border_width_bottom = 1
+	tts_style.border_width_left = 1
+	tts_style.border_width_right = 1
+	tts_style.border_color = Color(1.0, 1.0, 1.0, 0.18)
+	_header_tts_btn.add_theme_stylebox_override("normal", tts_style)
+	var tts_hover := tts_style.duplicate()
+	tts_hover.bg_color = Color(1.0, 1.0, 1.0, 0.14)
+	_header_tts_btn.add_theme_stylebox_override("hover", tts_hover)
+	_header_tts_btn.pressed.connect(func() -> void: TTSManager.speak(_header_tts_text))
+	_header_tts_btn.visible = false
+	header_hbox.add_child(_header_tts_btn)
 
 	# Close button
 	_close_btn = Button.new()
@@ -253,20 +289,29 @@ func _build_layout() -> void:
 	_running_score_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_progress_container.add_child(_running_score_label)
 
-	# ── Content area ──
+	# ── Scrollable content area — question + hint scroll together ──
+	# SIZE_EXPAND_FILL: takes all remaining height between progress bar and bottom bar.
+	# _question_container uses SIZE_SHRINK_BEGIN so it grows with content; once
+	# taller than this scroll area it becomes scrollable.
 	_question_scroll = ScrollContainer.new()
-	var scroll := _question_scroll
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.mouse_filter = Control.MOUSE_FILTER_PASS
-	main_vbox.add_child(scroll)
+	_question_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_question_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_question_scroll.mouse_filter = Control.MOUSE_FILTER_PASS
+	main_vbox.add_child(_question_scroll)
+
+	var scroll_body := VBoxContainer.new()
+	scroll_body.add_theme_constant_override("separation", int(10 * _sy))
+	scroll_body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll_body.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	scroll_body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_question_scroll.add_child(scroll_body)
 
 	_question_container = VBoxContainer.new()
 	_question_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_question_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.add_child(_question_container)
+	_question_container.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	scroll_body.add_child(_question_container)
 
-	# ── Hint nudge label ──
+	# ── Hint nudge label (scrolls with question content) ──
 	_hint_nudge_label = Label.new()
 	_hint_nudge_label.text = ""
 	_hint_nudge_label.visible = false
@@ -275,21 +320,14 @@ func _build_layout() -> void:
 	_hint_nudge_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hint_nudge_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hint_nudge_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	main_vbox.add_child(_hint_nudge_label)
+	scroll_body.add_child(_hint_nudge_label)
 
-	# ── Bottom bar ──
+	# ── Bottom bar — pinned outside scroll so Next/counter are always visible ──
 	_bottom_bar = HBoxContainer.new()
 	_bottom_bar.add_theme_constant_override("separation", int(12 * _sx))
 	_bottom_bar.alignment = BoxContainer.ALIGNMENT_CENTER
 	_bottom_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	main_vbox.add_child(_bottom_bar)
-
-	_counter_label = Label.new()
-	_counter_label.add_theme_font_size_override("font_size", int(22 * _sy))
-	_counter_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
-	_counter_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_counter_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_bottom_bar.add_child(_counter_label)
 
 	_next_btn = Button.new()
 	_next_btn.text = "Next"
@@ -325,6 +363,8 @@ func _on_quest_started(building_id: String) -> void:
 	# Defensive resets — state may be dirty from a previously abandoned quest
 	_transitioning = false
 	_clear_question_container()
+	_counter_label.text = ""
+	_header_tts_btn.visible = false
 	if is_instance_valid(_question_scroll):
 		_question_scroll.visible = true
 	if is_instance_valid(_bottom_bar):
@@ -401,10 +441,18 @@ func _load_current_question() -> void:
 		return
 
 	# Update counter
-	if stage == "mission":
-		_counter_label.text = "Question %d of %d" % [idx + 1, questions.size()]
+	_counter_label.text = "%d / %d" % [idx + 1, questions.size()]
+
+	# Update header TTS button with this question's speak text
+	var tts_instruction: String = question.get("instruction", "")
+	var tts_question: String = question.get("question", "")
+	if not tts_instruction.is_empty() and not tts_question.is_empty():
+		_header_tts_text = (tts_instruction + ". " + tts_question).strip_edges()
+	elif not tts_instruction.is_empty():
+		_header_tts_text = tts_instruction
 	else:
-		_counter_label.text = "%s %d of %d" % [stage.capitalize(), idx + 1, questions.size()]
+		_header_tts_text = tts_question
+	_header_tts_btn.visible = not _header_tts_text.is_empty()
 
 	# Clear old interaction — remove all children immediately to prevent stacking
 	_transitioning = true
@@ -517,6 +565,17 @@ func _load_current_question() -> void:
 		set_process(false)
 
 	_transitioning = false
+
+	# Auto-read instruction for Non-Reader students (reading_level == 1).
+	# Fires after a short delay so the UI animation settles first.
+	if GameManager.current_student.get("reading_level", 2) == 1:
+		var tts_text: String = question.get("instruction", "")
+		if tts_text.is_empty():
+			tts_text = question.get("question", "")
+		if not tts_text.is_empty():
+			get_tree().create_timer(0.6).timeout.connect(
+				func() -> void: TTSManager.speak(tts_text)
+			)
 
 
 func _on_hint_triggered(level: int) -> void:
@@ -762,6 +821,7 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 
 	_next_btn.visible = false
 	_counter_label.text = ""
+	_header_tts_btn.visible = false
 
 	var total := QuestManager.get_mission_total()
 	var question_results := QuestManager.get_question_results()

@@ -134,6 +134,15 @@ func _build_ui() -> void:
 
 	vbox.add_child(_content_card)
 
+	# 🔊 Pronunciation hint button — lets student hear the word/passage before recording
+	var speak_text: String = word if not word.is_empty() else passage
+	if not speak_text.is_empty():
+		var speak_center := CenterContainer.new()
+		speak_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(speak_center)
+		var speak_btn := TTSManager.make_speak_button(speak_text, _sx, _sy)
+		speak_center.add_child(speak_btn)
+
 	# ── Attempt counter ────────────────────────────────────────────────────────
 	_attempt_label = Label.new()
 	_attempt_label.add_theme_font_size_override("font_size", int(20 * _sy))
