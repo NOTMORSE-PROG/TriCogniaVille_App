@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface AnalyticsData {
   totalStudents: number;
@@ -24,23 +25,37 @@ export default function DashboardOverview() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch("/api/dashboard/analytics")
+  const fetchData = useCallback(() => {
+    fetch("/api/dashboard/analytics", { cache: "no-store" })
       .then((res) => {
         if (!res.ok) throw new Error(res.status === 401 ? "Not authenticated" : `API error ${res.status}`);
         return res.json();
       })
-      .then((json) =>
+      .then((json) => {
         setData({
           ...json,
           readingLevelDistribution: json.readingLevelDistribution ?? [],
           streakLeaderboard: json.streakLeaderboard ?? [],
           recentActivity: json.recentActivity ?? [],
-        })
-      )
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+        });
+        setError(null);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError((err as Error).message);
+        setLoading(false);
+      });
   }, []);
+
+  const handleRefresh = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    fetchData();
+  }, [fetchData]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   if (loading) {
     return <div className="text-muted-foreground">Loading dashboard...</div>;
@@ -66,7 +81,12 @@ export default function DashboardOverview() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard Overview</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Dashboard Overview</h1>
+        <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
+          {loading ? "Refreshing..." : "Refresh"}
+        </Button>
+      </div>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
