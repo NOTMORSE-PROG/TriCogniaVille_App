@@ -7,6 +7,9 @@ import { internalError } from "@/lib/api/errors";
 import { sql, desc, inArray, gte, and } from "drizzle-orm";
 import { TokenPayload } from "@/lib/auth/jwt";
 
+// Always serve fresh data — never cache the analytics response at Vercel's edge.
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   return withTeacherAuth(request, async (_req: NextRequest, teacher: TokenPayload) => {
     try {
