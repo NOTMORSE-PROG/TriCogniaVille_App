@@ -840,21 +840,21 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 	# Title
 	var title := Label.new()
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", int(26 * _sy))
+	title.add_theme_font_size_override("font_size", int(38 * _sy))
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	header_vbox.add_child(title)
 
 	# Score display
 	var score_label := Label.new()
 	score_label.text = "%d / %d" % [score, total]
-	score_label.add_theme_font_size_override("font_size", int(36 * _sy))
+	score_label.add_theme_font_size_override("font_size", int(56 * _sy))
 	score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	score_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	header_vbox.add_child(score_label)
 
 	# Personalized message
 	var message := Label.new()
-	message.add_theme_font_size_override("font_size", int(15 * _sy))
+	message.add_theme_font_size_override("font_size", int(26 * _sy))
 	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	message.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -876,7 +876,7 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 		var xp: int = QuestManager.get_last_xp_reward()
 		var xp_label := Label.new()
 		xp_label.text = "+%d XP" % xp
-		xp_label.add_theme_font_size_override("font_size", int(22 * _sy))
+		xp_label.add_theme_font_size_override("font_size", int(32 * _sy))
 		xp_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 		xp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		xp_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -919,27 +919,27 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 
 			var lumi_icon := Label.new()
 			lumi_icon.text = "\u2726"
-			lumi_icon.add_theme_font_size_override("font_size", int(16 * _sy))
+			lumi_icon.add_theme_font_size_override("font_size", int(26 * _sy))
 			lumi_icon.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
 			lumi_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			lumi_hbox.add_child(lumi_icon)
 
 			var lumi_text := Label.new()
 			lumi_text.text = fail_outro[0].get("text", "")
-			lumi_text.add_theme_font_size_override("font_size", int(14 * _sy))
+			lumi_text.add_theme_font_size_override("font_size", int(24 * _sy))
 			lumi_text.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 			lumi_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			lumi_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			lumi_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			lumi_hbox.add_child(lumi_text)
 
-			UIAnimations.fade_in_up(self, lumi_card, 0.3)
+			UIAnimations.fade_in(self, lumi_card, 0.3)
 
 	# ── Question Breakdown ──
 	if question_results.size() > 0:
 		var breakdown_label := Label.new()
 		breakdown_label.text = "Question Breakdown"
-		breakdown_label.add_theme_font_size_override("font_size", int(16 * _sy))
+		breakdown_label.add_theme_font_size_override("font_size", int(26 * _sy))
 		breakdown_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 		breakdown_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		vbox.add_child(breakdown_label)
@@ -957,20 +957,20 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 			# Status icon
 			var icon := Label.new()
 			icon.text = "+" if correct else "x"
-			icon.add_theme_font_size_override("font_size", int(16 * _sy))
+			icon.add_theme_font_size_override("font_size", int(24 * _sy))
 			icon.add_theme_color_override(
 				"font_color", StyleFactory.SUCCESS_GREEN if correct else StyleFactory.TEXT_ERROR
 			)
-			icon.custom_minimum_size = Vector2(24 * _sx, 0)
+			icon.custom_minimum_size = Vector2(32 * _sx, 0)
 			icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			row.add_child(icon)
 
 			# Question number
 			var num := Label.new()
 			num.text = "Q%d" % (i + 1)
-			num.add_theme_font_size_override("font_size", int(13 * _sy))
+			num.add_theme_font_size_override("font_size", int(22 * _sy))
 			num.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
-			num.custom_minimum_size = Vector2(32 * _sx, 0)
+			num.custom_minimum_size = Vector2(48 * _sx, 0)
 			num.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			row.add_child(num)
 
@@ -980,7 +980,7 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 			if q_text.length() > 50:
 				q_text = q_text.substr(0, 47) + "..."
 			preview.text = q_text
-			preview.add_theme_font_size_override("font_size", int(13 * _sy))
+			preview.add_theme_font_size_override("font_size", int(22 * _sy))
 			preview.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 			preview.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			preview.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -1010,7 +1010,7 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 
 			var ref_title := Label.new()
 			ref_title.text = "\u2728 Your Reflection"
-			ref_title.add_theme_font_size_override("font_size", int(16 * _sy))
+			ref_title.add_theme_font_size_override("font_size", int(28 * _sy))
 			ref_title.add_theme_color_override("font_color", StyleFactory.GOLD)
 			ref_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			ref_vbox.add_child(ref_title)
@@ -1021,12 +1021,12 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 				ref_vbox.add_child(s_row)
 				var s_icon := Label.new()
 				s_icon.text = "\u2b50"
-				s_icon.add_theme_font_size_override("font_size", int(16 * _sy))
+				s_icon.add_theme_font_size_override("font_size", int(26 * _sy))
 				s_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				s_row.add_child(s_icon)
 				var s_lbl := Label.new()
 				s_lbl.text = strength
-				s_lbl.add_theme_font_size_override("font_size", int(15 * _sy))
+				s_lbl.add_theme_font_size_override("font_size", int(24 * _sy))
 				s_lbl.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
 				s_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 				s_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -1039,19 +1039,19 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 				ref_vbox.add_child(g_row)
 				var g_icon := Label.new()
 				g_icon.text = "\U0001f331"
-				g_icon.add_theme_font_size_override("font_size", int(16 * _sy))
+				g_icon.add_theme_font_size_override("font_size", int(26 * _sy))
 				g_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				g_row.add_child(g_icon)
 				var g_lbl := Label.new()
 				g_lbl.text = growth
-				g_lbl.add_theme_font_size_override("font_size", int(15 * _sy))
+				g_lbl.add_theme_font_size_override("font_size", int(24 * _sy))
 				g_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 				g_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 				g_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 				g_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				g_row.add_child(g_lbl)
 
-			UIAnimations.fade_in_up(self, ref_card, 0.5)
+			UIAnimations.fade_in(self, ref_card, 0.5)
 
 	# ── Action Buttons ──
 	var btn_row := HBoxContainer.new()

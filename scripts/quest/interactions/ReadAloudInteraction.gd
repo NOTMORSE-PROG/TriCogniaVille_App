@@ -116,6 +116,7 @@ func _build_ui() -> void:
 		_inst_label.add_theme_font_size_override("font_size", int(ra_i_font * _sy))
 		_inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 		_inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_inst_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		_inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		inst_row.add_child(_inst_label)
 
