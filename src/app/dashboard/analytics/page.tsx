@@ -107,7 +107,7 @@ export default function AnalyticsPage() {
             <p className="text-muted-foreground">No data yet.</p>
           ) : (
             <div className="space-y-3">
-              {[1, 2, 3].map((level) => {
+              {[1, 2, 3, 4].map((level) => {
                 const item = data.readingLevelDistribution.find(
                   (d) => d.level === level
                 );
@@ -130,7 +130,7 @@ export default function AnalyticsPage() {
                     <div className="flex-1 bg-muted rounded-full h-8 overflow-hidden">
                       <div
                         className="bg-primary h-full rounded-full flex items-center pl-3 text-primary-foreground text-xs font-medium transition-all"
-                        style={{ width: `${Math.max(pct, 5)}%` }}
+                        style={{ width: pct === 0 ? "0%" : `${Math.max(pct, 5)}%` }}
                       >
                         {pct}%
                       </div>

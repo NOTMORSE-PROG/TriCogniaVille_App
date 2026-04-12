@@ -198,7 +198,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     requirementKey: "attempts_1",
   },
 
-  // ── Reading level badges (3) ──
+  // ── Reading level badges (4) ──
   {
     id: "level_2",
     name: "Rising Reader",

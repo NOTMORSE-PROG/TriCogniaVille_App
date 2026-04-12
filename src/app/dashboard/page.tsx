@@ -112,26 +112,37 @@ export default function DashboardOverview() {
           <CardTitle>Reading Level Distribution</CardTitle>
         </CardHeader>
         <CardContent>
-          {data.readingLevelDistribution.length === 0 ? (
-            <p className="text-muted-foreground">No student data yet.</p>
-          ) : (
-            <div className="space-y-3">
-              {data.readingLevelDistribution.map((d) => (
-                <div key={d.level} className="flex items-center gap-3">
-                  <span className="w-24 text-sm">Level {d.level}</span>
+          <div className="space-y-3">
+            {[
+              { level: 1, label: "Non-Reader" },
+              { level: 2, label: "Emerging" },
+              { level: 3, label: "Fluent" },
+              { level: 4, label: "Advanced" },
+            ].map(({ level, label }) => {
+              const item = data.readingLevelDistribution.find(
+                (d) => d.level === level
+              );
+              const count = item?.count ?? 0;
+              const pct =
+                data.totalStudents > 0
+                  ? (count / data.totalStudents) * 100
+                  : 0;
+              return (
+                <div key={level} className="flex items-center gap-3">
+                  <span className="w-28 text-sm">
+                    L{level}: {label}
+                  </span>
                   <div className="flex-1 bg-muted rounded-full h-6 overflow-hidden">
                     <div
                       className="bg-primary h-full rounded-full transition-all"
-                      style={{
-                        width: `${data.totalStudents > 0 ? (d.count / data.totalStudents) * 100 : 0}%`,
-                      }}
+                      style={{ width: pct === 0 ? "0%" : `${Math.max(pct, 3)}%` }}
                     />
                   </div>
-                  <span className="text-sm font-medium w-8">{d.count}</span>
+                  <span className="text-sm font-medium w-8">{count}</span>
                 </div>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
 
