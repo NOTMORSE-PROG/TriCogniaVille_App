@@ -80,34 +80,56 @@ func _build_ui() -> void:
 		passage_card.add_child(_passage_label)
 		add_child(passage_card)
 
+	# Font tier based on passage length
+	# Tier 1: no passage      → largest (48% of all MCQs)
+	# Tier 2: short  <150     → large
+	# Tier 3: medium 150-400  → medium
+	# Tier 4: long   400+     → compact (content scrolls)
+	var p_len := passage.length()
+	var tier: int
+	if _compact:
+		tier = 0  # handled separately below
+	elif p_len == 0:
+		tier = 1
+	elif p_len < 150:
+		tier = 2
+	elif p_len < 400:
+		tier = 3
+	else:
+		tier = 4
+
 	# Instruction
 	var instruction: String = _question.get("instruction", "")
 	if not instruction.is_empty():
 		var inst_label := Label.new()
 		inst_label.text = instruction
-		var i_len := instruction.length()
 		var i_font: int
-		if _compact:
-			i_font = 30
-		elif i_len > 150:
-			i_font = 30
-		elif i_len > 80:
-			i_font = 40
-		else:
-			i_font = 50
+		match tier:
+			0: i_font = 30
+			1: i_font = 52
+			2: i_font = 44
+			3: i_font = 34
+			_: i_font = 28
 		inst_label.add_theme_font_size_override("font_size", int(i_font * _sy))
 		inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 		inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		add_child(inst_label)
 
-	# Question — auto-shrink font for long question text
+	# Question
 	var q_text: String = _question.get("question", "")
-	var q_base_font: int = 30 if _compact else 50
+	var q_base_font: int
+	match tier:
+		0: q_base_font = 30
+		1: q_base_font = 58
+		2: q_base_font = 50
+		3: q_base_font = 42
+		_: q_base_font = 36
+	# Shrink slightly for very long question text
 	if q_text.length() > 80:
-		q_base_font = int(q_base_font * 0.70)
-	elif q_text.length() > 55:
 		q_base_font = int(q_base_font * 0.82)
+	elif q_text.length() > 55:
+		q_base_font = int(q_base_font * 0.90)
 	_question_label = Label.new()
 	_question_label.text = q_text
 	_question_label.add_theme_font_size_override("font_size", int(q_base_font * _sy))
@@ -155,8 +177,24 @@ func _build_ui() -> void:
 	var max_opt_len := 0
 	for opt_text in options:
 		max_opt_len = max(max_opt_len, (opt_text as String).length())
-	var base_font: int = 26 if _compact else 38
-	var base_h: float = 68.0 if _compact else 96.0
+	var base_font: int
+	var base_h: float
+	match tier:
+		0:
+			base_font = 26
+			base_h = 68.0
+		1:
+			base_font = 46
+			base_h = 112.0
+		2:
+			base_font = 40
+			base_h = 100.0
+		3:
+			base_font = 32
+			base_h = 88.0
+		_:
+			base_font = 26
+			base_h = 80.0
 	if max_opt_len > 70:
 		base_font = int(base_font * 0.70)
 		base_h *= 0.70
