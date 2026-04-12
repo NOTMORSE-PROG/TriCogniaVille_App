@@ -38,13 +38,9 @@ const TIER_COLORS: Array[Color]   = [
 ]
 
 const CREDITS: Array[Dictionary] = [
-	{"role": "Project Lead",    "name": "Anjanette Masaño"},
-	{"role": "Lead Developer",  "name": "Harrison Reyes"},
-	{"role": "Researcher",      "name": "Cris Bapista"},
-	{"role": "Researcher",      "name": "Maicela Salvador"},
-	{"role": "Art & UI/UX",     "name": "Mark L."},
-	{"role": "Sound Design",    "name": "Echo Studio"},
-	{"role": "Graphic Design",  "name": "Bluepeak Creatives"},
+	{"role": "Project Lead",           "name": "Anne Caryll D. Paloma"},
+	{"role": "Associate Lead",         "name": "Jamille Erica Briones"},
+	{"role": "Research & Content",     "name": "Leeana Ricka Salaysay\nEnzo Santos\nRica Jamon"},
 ]
 
 # ── State ─────────────────────────────────────────────────────────────────────
@@ -840,9 +836,9 @@ func _build_credits_section() -> Control:
 	vbox.add_child(_make_section_header("CREDITS", "✨"))
 	vbox.add_child(_make_separator())
 
-	# 4-column grid of credit tiles (fills panel width)
+	# 3-column grid of credit tiles (fills panel width)
 	var grid := GridContainer.new()
-	grid.columns = 4
+	grid.columns = 3
 	grid.add_theme_constant_override("h_separation", int(10 * _sx))
 	grid.add_theme_constant_override("v_separation", int(10 * _sy))
 	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -889,6 +885,7 @@ func _make_credit_tile(role: String, person_name: String) -> Control:
 
 	var name_lbl := Label.new()
 	name_lbl.text = person_name
+	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	name_lbl.add_theme_font_size_override("font_size", int(17 * _sy))
 	name_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
