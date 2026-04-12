@@ -472,12 +472,7 @@ func _load_current_question() -> void:
 	var qtype: String = question.get("type", "mcq")
 	match qtype:
 		"mcq":
-			var mcq_script := load("res://scripts/quest/interactions/MCQInteraction.gd")
-			if mcq_script == null:
-				push_error("[QuestOverlay] Failed to load MCQInteraction script")
-				_transitioning = false
-				return
-			var mcq: Node = mcq_script.new()
+			var mcq: Node = _MCQ_SCRIPT.new()
 			_question_container.add_child(mcq)
 			mcq.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			mcq.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -487,12 +482,7 @@ func _load_current_question() -> void:
 			mcq.answer_submitted.connect(_on_answer_submitted)
 			_interaction_node = mcq
 		"tap_target":
-			var tap_script := load("res://scripts/quest/interactions/TapTargetInteraction.gd")
-			if tap_script == null:
-				push_error("[QuestOverlay] Failed to load TapTargetInteraction script")
-				_transitioning = false
-				return
-			var tap: Node = tap_script.new()
+			var tap: Node = _TAP_SCRIPT.new()
 			_question_container.add_child(tap)
 			tap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			tap.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -500,12 +490,7 @@ func _load_current_question() -> void:
 			tap.answer_submitted.connect(_on_answer_submitted)
 			_interaction_node = tap
 		"drag_drop":
-			var dd_script := load("res://scripts/quest/interactions/DragDropInteraction.gd")
-			if dd_script == null:
-				push_error("[QuestOverlay] Failed to load DragDropInteraction script")
-				_transitioning = false
-				return
-			var dd: Node = dd_script.new()
+			var dd: Node = _DD_SCRIPT.new()
 			_question_container.add_child(dd)
 			dd.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			dd.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -513,12 +498,7 @@ func _load_current_question() -> void:
 			dd.answer_submitted.connect(_on_answer_submitted)
 			_interaction_node = dd
 		"read_aloud":
-			var ra_script := load("res://scripts/quest/interactions/ReadAloudInteraction.gd")
-			if ra_script == null:
-				push_error("[QuestOverlay] Failed to load ReadAloudInteraction script")
-				_transitioning = false
-				return
-			var ra: Node = ra_script.new()
+			var ra: Node = _RA_SCRIPT.new()
 			_question_container.add_child(ra)
 			ra.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			ra.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -526,12 +506,7 @@ func _load_current_question() -> void:
 			ra.answer_submitted.connect(_on_answer_submitted)
 			_interaction_node = ra
 		"fluency_check":
-			var fl_script := load("res://scripts/quest/interactions/FluencyInteraction.gd")
-			if fl_script == null:
-				push_error("[QuestOverlay] Failed to load FluencyInteraction script")
-				_transitioning = false
-				return
-			var fl: Node = fl_script.new()
+			var fl: Node = _FL_SCRIPT.new()
 			_question_container.add_child(fl)
 			fl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			fl.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -542,14 +517,7 @@ func _load_current_question() -> void:
 			)
 			_interaction_node = fl
 		"punctuation_read":
-			var pr_script := load(
-				"res://scripts/quest/interactions/PunctuationReadInteraction.gd"
-			)
-			if pr_script == null:
-				push_error("[QuestOverlay] Failed to load PunctuationReadInteraction script")
-				_transitioning = false
-				return
-			var pr: Node = pr_script.new()
+			var pr: Node = _PR_SCRIPT.new()
 			_question_container.add_child(pr)
 			pr.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			pr.size_flags_vertical = Control.SIZE_EXPAND_FILL
