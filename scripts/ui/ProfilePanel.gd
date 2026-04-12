@@ -328,7 +328,7 @@ func _build_sound_card() -> Control:
 	# Music row
 	var music_row := _build_toggle_row("🎵  Music")
 	_music_btn = music_row.get_meta("btn") as Button
-	_music_btn.button_pressed = AudioManager.music_enabled
+	_music_btn.set_pressed_no_signal(AudioManager.music_enabled)
 	_music_btn.text = "ON" if AudioManager.music_enabled else "OFF"
 	_style_toggle(_music_btn, AudioManager.music_enabled)
 	_music_btn.toggled.connect(_on_music_toggled)
@@ -337,7 +337,7 @@ func _build_sound_card() -> Control:
 	# SFX row
 	var sfx_row := _build_toggle_row("🔔  Sound FX")
 	_sfx_btn = sfx_row.get_meta("btn") as Button
-	_sfx_btn.button_pressed = AudioManager.sfx_enabled
+	_sfx_btn.set_pressed_no_signal(AudioManager.sfx_enabled)
 	_sfx_btn.text = "ON" if AudioManager.sfx_enabled else "OFF"
 	_style_toggle(_sfx_btn, AudioManager.sfx_enabled)
 	_sfx_btn.toggled.connect(_on_sfx_toggled)
@@ -1007,6 +1007,7 @@ func show_profile() -> void:
 		return
 	_can_dismiss = false
 	_apply_scale()
+	_sync_audio_buttons()
 	_reset_content()
 	_populate_buildings()  # Refresh — buildings may have changed since last open
 	modulate.a = 0.0
@@ -1034,6 +1035,17 @@ func hide_profile() -> void:
 	modulate.a = 1.0
 	_transitioning = false
 	dismissed.emit()
+
+
+func _sync_audio_buttons() -> void:
+	if is_instance_valid(_music_btn):
+		_music_btn.set_pressed_no_signal(AudioManager.music_enabled)
+		_music_btn.text = "ON" if AudioManager.music_enabled else "OFF"
+		_style_toggle(_music_btn, AudioManager.music_enabled)
+	if is_instance_valid(_sfx_btn):
+		_sfx_btn.set_pressed_no_signal(AudioManager.sfx_enabled)
+		_sfx_btn.text = "ON" if AudioManager.sfx_enabled else "OFF"
+		_style_toggle(_sfx_btn, AudioManager.sfx_enabled)
 
 
 func _reset_content() -> void:
@@ -1241,21 +1253,6 @@ func _draw_avatar() -> void:
 		_initials, HORIZONTAL_ALIGNMENT_CENTER, -1, fs, Color.WHITE
 	)
 
-	# Level badge dot (bottom-right)
-	var br := 13.0 * _sx
-	var bc := Vector2(_avatar_ctrl.size.x - br * 0.5, _avatar_ctrl.size.y - br * 0.5)
-	_avatar_ctrl.draw_circle(bc, br + 2.0 * _sx, StyleFactory.BG_DEEP)
-	_avatar_ctrl.draw_circle(bc, br, StyleFactory.BG_CARD)
-	_avatar_ctrl.draw_arc(bc, br, 0, TAU, 32, _frame_color, 1.5 * _sx, true)
-
-	var lvl_t  := str(_level_num)
-	var lvl_fs := int(12 * _sy)
-	var lvl_ts := font.get_string_size(lvl_t, HORIZONTAL_ALIGNMENT_CENTER, -1, lvl_fs)
-	_avatar_ctrl.draw_string(
-		font,
-		bc - lvl_ts * 0.5 + Vector2(0, lvl_ts.y * 0.35),
-		lvl_t, HORIZONTAL_ALIGNMENT_CENTER, -1, lvl_fs, _frame_color
-	)
 
 
 # =============================================================================
@@ -1277,10 +1274,14 @@ func _on_logout_pressed() -> void:
 
 
 func _on_music_toggled(on: bool) -> void:
+	if on == AudioManager.music_enabled:
+		return
 	AudioManager.set_music_enabled(on)
 
 
 func _on_sfx_toggled(on: bool) -> void:
+	if on == AudioManager.sfx_enabled:
+		return
 	AudioManager.set_sfx_enabled(on)
 
 

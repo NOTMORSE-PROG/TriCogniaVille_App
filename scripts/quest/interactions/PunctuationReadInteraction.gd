@@ -96,11 +96,22 @@ func _build_ui() -> void:
 	add_child(_sentence_card)
 
 	var sentence_label := RichTextLabel.new()
-	sentence_label.text = _question.get("sentence", "")
+	var sentence_text: String = _question.get("sentence", "")
+	sentence_label.text = sentence_text
 	sentence_label.fit_content = true
 	sentence_label.bbcode_enabled = false
 	sentence_label.scroll_active = false
-	sentence_label.add_theme_font_size_override("normal_font_size", int(42 * _sy))
+	var s_len := sentence_text.length()
+	var s_font: int
+	if s_len > 350:
+		s_font = 16
+	elif s_len > 200:
+		s_font = 20
+	elif s_len > 100:
+		s_font = 26
+	else:
+		s_font = 36
+	sentence_label.add_theme_font_size_override("normal_font_size", int(s_font * _sy))
 	sentence_label.add_theme_color_override("default_color", StyleFactory.GOLD)
 	sentence_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	sentence_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -114,7 +125,9 @@ func _build_ui() -> void:
 
 	var read_instruction := Label.new()
 	read_instruction.text = _question.get("instruction", "Read this sentence aloud.")
-	read_instruction.add_theme_font_size_override("font_size", int(34 * _sy))
+	var ri_text: String = _question.get("instruction", "Read this sentence aloud.")
+	var ri_font: int = (30 if ri_text.length() > 150 else (38 if ri_text.length() > 80 else 46))
+	read_instruction.add_theme_font_size_override("font_size", int(ri_font * _sy))
 	read_instruction.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	read_instruction.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	read_instruction.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

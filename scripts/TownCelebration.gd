@@ -359,6 +359,8 @@ func _dismiss() -> void:
 
 
 func _play_celebration_music() -> void:
+	if not AudioManager.music_enabled:
+		return
 	var path := "res://assets/audio/ambient/celebration.ogg"
 	if not ResourceLoader.exists(path):
 		push_warning("[TownCelebration] Celebration music not found: %s" % path)

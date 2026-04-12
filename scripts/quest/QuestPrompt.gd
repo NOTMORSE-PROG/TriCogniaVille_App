@@ -124,7 +124,7 @@ func _build_prompt(
 	# Building name + topic
 	var title := Label.new()
 	title.text = building_label
-	title.add_theme_font_size_override("font_size", int(50 * _sy))
+	title.add_theme_font_size_override("font_size", int(62 * _sy))
 	title.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -132,7 +132,7 @@ func _build_prompt(
 
 	var topic_label := Label.new()
 	topic_label.text = topic
-	topic_label.add_theme_font_size_override("font_size", int(32 * _sy))
+	topic_label.add_theme_font_size_override("font_size", int(42 * _sy))
 	topic_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 	topic_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	topic_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -147,7 +147,7 @@ func _build_prompt(
 	# Description
 	var desc := Label.new()
 	desc.text = "Complete this reading quest to unlock!"
-	desc.add_theme_font_size_override("font_size", int(36 * _sy))
+	desc.add_theme_font_size_override("font_size", int(44 * _sy))
 	desc.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -167,7 +167,7 @@ func _build_prompt(
 		var tutorial_btn := Button.new()
 		tutorial_btn.text = "✓  Tutorial Done" if tutorial_done else "Start with Tutorial"
 		tutorial_btn.custom_minimum_size = Vector2(520 * _sx, 96 * _sy)
-		tutorial_btn.add_theme_font_size_override("font_size", int(38 * _sy))
+		tutorial_btn.add_theme_font_size_override("font_size", int(46 * _sy))
 		tutorial_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 		var tut_style := StyleFactory.make_secondary_button_normal()
 		tut_style.border_color = StyleFactory.STAGE_TUTORIAL_ACCENT
@@ -200,7 +200,7 @@ func _build_prompt(
 
 		var tut_desc := Label.new()
 		tut_desc.text = "Learn step-by-step with guided examples"
-		tut_desc.add_theme_font_size_override("font_size", int(26 * _sy))
+		tut_desc.add_theme_font_size_override("font_size", int(34 * _sy))
 		tut_desc.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 		tut_desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		tut_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -216,7 +216,7 @@ func _build_prompt(
 			challenge_btn.text = "🔒  Complete Tutorial First"
 		challenge_btn.disabled = not tutorial_done
 		challenge_btn.custom_minimum_size = Vector2(520 * _sx, 96 * _sy)
-		challenge_btn.add_theme_font_size_override("font_size", int(38 * _sy))
+		challenge_btn.add_theme_font_size_override("font_size", int(46 * _sy))
 		challenge_btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 		if tutorial_done:
 			challenge_btn.add_theme_stylebox_override(
@@ -249,7 +249,7 @@ func _build_prompt(
 			if tutorial_done
 			else "Finish the tutorial to unlock the challenge"
 		)
-		ch_desc.add_theme_font_size_override("font_size", int(26 * _sy))
+		ch_desc.add_theme_font_size_override("font_size", int(34 * _sy))
 		ch_desc.add_theme_color_override(
 			"font_color",
 			StyleFactory.TEXT_MUTED if tutorial_done else StyleFactory.TEXT_MUTED
@@ -266,7 +266,7 @@ func _build_prompt(
 	var dismiss_btn := Button.new()
 	dismiss_btn.text = "Not now"
 	dismiss_btn.custom_minimum_size = Vector2(240 * _sx, 80 * _sy)
-	dismiss_btn.add_theme_font_size_override("font_size", int(30 * _sy))
+	dismiss_btn.add_theme_font_size_override("font_size", int(38 * _sy))
 	dismiss_btn.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	dismiss_btn.add_theme_stylebox_override("normal", StyleFactory.make_secondary_button_normal())
 	dismiss_btn.add_theme_stylebox_override("hover", StyleFactory.make_secondary_button_hover())

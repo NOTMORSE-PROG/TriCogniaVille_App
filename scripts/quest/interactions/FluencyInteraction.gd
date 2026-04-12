@@ -86,7 +86,9 @@ func _build_ui() -> void:
 	var instruction: String = _question.get("instruction", "Read the full passage aloud clearly.")
 	var inst_label := Label.new()
 	inst_label.text = instruction
-	inst_label.add_theme_font_size_override("font_size", int(34 * _sy))
+	var i_len := instruction.length()
+	var i_font: int = 30 if i_len > 150 else (38 if i_len > 80 else 46)
+	inst_label.add_theme_font_size_override("font_size", int(i_font * _sy))
 	inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	inst_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -118,12 +120,13 @@ func _build_ui() -> void:
 
 		vbox.add_child(card)
 
-		# 🔊 Let student hear the passage before recording
-		var speak_center := CenterContainer.new()
-		speak_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_child(speak_center)
-		var speak_btn := TTSManager.make_speak_button(passage, _sx, _sy)
-		speak_center.add_child(speak_btn)
+		# 🔊 Pronunciation hint — only for Non-Reader (level 1) students.
+		if GameManager.current_student.get("reading_level", 2) == 1:
+			var speak_center := CenterContainer.new()
+			speak_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			vbox.add_child(speak_center)
+			var speak_btn := TTSManager.make_speak_button(passage, _sx, _sy)
+			speak_center.add_child(speak_btn)
 
 	# ── Status panel ───────────────────────────────────────────────────────────
 	_status_panel = PanelContainer.new()

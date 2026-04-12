@@ -93,24 +93,49 @@ func _build_ui() -> void:
 	add_child(vbox)
 	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
-	# ── Instruction label ──────────────────────────────────────────────────────
+	# ── Instruction row (label + optional TTS button side by side) ────────────
 	var instruction: String = _question.get("instruction", "Read this aloud clearly.")
-	_inst_label = Label.new()
-	_inst_label.text = instruction
-	_inst_label.add_theme_font_size_override("font_size", int(34 * _sy))
-	_inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
-	_inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_inst_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(_inst_label)
+	var word: String = _question.get("word", "")
+	var passage: String = _question.get("passage", "")
+	var speak_text: String = word if not word.is_empty() else passage
+	var show_tts: bool = (
+		not speak_text.is_empty()
+		and GameManager.current_student.get("reading_level", 2) == 1
+	)
+
+	if show_tts:
+		var inst_row := HBoxContainer.new()
+		inst_row.add_theme_constant_override("separation", int(10 * _sx))
+		inst_row.alignment = BoxContainer.ALIGNMENT_CENTER
+		inst_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(inst_row)
+
+		_inst_label = Label.new()
+		_inst_label.text = instruction
+		var ra_i_font: int = (30 if instruction.length() > 150 else (38 if instruction.length() > 80 else 46))
+		_inst_label.add_theme_font_size_override("font_size", int(ra_i_font * _sy))
+		_inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
+		_inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		inst_row.add_child(_inst_label)
+
+		var speak_btn := TTSManager.make_speak_button(speak_text, _sx, _sy)
+		inst_row.add_child(speak_btn)
+	else:
+		_inst_label = Label.new()
+		_inst_label.text = instruction
+		var ra_i_font2: int = (30 if instruction.length() > 150 else (38 if instruction.length() > 80 else 46))
+		_inst_label.add_theme_font_size_override("font_size", int(ra_i_font2 * _sy))
+		_inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
+		_inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_inst_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(_inst_label)
 
 	# ── Content card ───────────────────────────────────────────────────────────
 	_content_card = PanelContainer.new()
 	_content_card.add_theme_stylebox_override("panel", StyleFactory.make_glass_card(16))
 	_content_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	var word: String = _question.get("word", "")
-	var passage: String = _question.get("passage", "")
 
 	if not word.is_empty():
 		var word_label := Label.new()
@@ -133,15 +158,6 @@ func _build_ui() -> void:
 		_content_card.add_child(passage_label)
 
 	vbox.add_child(_content_card)
-
-	# 🔊 Pronunciation hint button — lets student hear the word/passage before recording
-	var speak_text: String = word if not word.is_empty() else passage
-	if not speak_text.is_empty():
-		var speak_center := CenterContainer.new()
-		speak_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_child(speak_center)
-		var speak_btn := TTSManager.make_speak_button(speak_text, _sx, _sy)
-		speak_center.add_child(speak_btn)
 
 	# ── Attempt counter ────────────────────────────────────────────────────────
 	_attempt_label = Label.new()

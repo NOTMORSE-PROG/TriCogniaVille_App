@@ -212,7 +212,16 @@ func _show_step(idx: int) -> void:
 		func() -> void:
 			_title_label.text = step["title"]
 			_title_label.add_theme_color_override("font_color", step["accent"])
-			_desc_label.text = step["desc"]
+			var desc_text: String = step["desc"]
+			_desc_label.text = desc_text
+			var desc_font: int
+			if desc_text.length() > 150:
+				desc_font = 22
+			elif desc_text.length() > 80:
+				desc_font = 28
+			else:
+				desc_font = 34
+			_desc_label.add_theme_font_size_override("font_size", int(desc_font * _sy))
 	)
 	tw.tween_property(_card, "modulate:a", 1.0, 0.2).set_trans(Tween.TRANS_QUAD).set_ease(
 		Tween.EASE_OUT

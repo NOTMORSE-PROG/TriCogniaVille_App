@@ -311,7 +311,7 @@ func _build_layout() -> void:
 	_question_container.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	scroll_body.add_child(_question_container)
 
-	# ── Hint nudge label (scrolls with question content) ──
+	# ── Hint nudge label — pinned in main_vbox above bottom bar ──
 	_hint_nudge_label = Label.new()
 	_hint_nudge_label.text = ""
 	_hint_nudge_label.visible = false
@@ -320,12 +320,12 @@ func _build_layout() -> void:
 	_hint_nudge_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hint_nudge_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hint_nudge_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	scroll_body.add_child(_hint_nudge_label)
+	main_vbox.add_child(_hint_nudge_label)
 
 	# ── Bottom bar — pinned outside scroll so Next/counter are always visible ──
 	_bottom_bar = HBoxContainer.new()
 	_bottom_bar.add_theme_constant_override("separation", int(12 * _sx))
-	_bottom_bar.alignment = BoxContainer.ALIGNMENT_CENTER
+	_bottom_bar.alignment = BoxContainer.ALIGNMENT_END
 	_bottom_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	main_vbox.add_child(_bottom_bar)
 
@@ -419,6 +419,7 @@ func _on_quest_abandoned(_building_id: String) -> void:
 func _load_current_question() -> void:
 	if _transitioning:
 		return
+	TTSManager.stop()
 
 	var questions := QuestManager.get_current_questions()
 	var idx := QuestManager.get_current_question_index()
@@ -566,17 +567,6 @@ func _load_current_question() -> void:
 
 	_transitioning = false
 
-	# Auto-read instruction for Non-Reader students (reading_level == 1).
-	# Fires after a short delay so the UI animation settles first.
-	if GameManager.current_student.get("reading_level", 2) == 1:
-		var tts_text: String = question.get("instruction", "")
-		if tts_text.is_empty():
-			tts_text = question.get("question", "")
-		if not tts_text.is_empty():
-			get_tree().create_timer(0.6).timeout.connect(
-				func() -> void: TTSManager.speak(tts_text)
-			)
-
 
 func _on_hint_triggered(level: int) -> void:
 	match level:
@@ -675,6 +665,7 @@ func _on_answer_submitted(correct: bool) -> void:
 func _on_next_pressed() -> void:
 	if _transitioning:
 		return
+	TTSManager.stop()
 	var has_more := QuestManager.advance_question()
 	if has_more:
 		_load_current_question()
@@ -1297,6 +1288,7 @@ func _update_stage_dots(stage: String) -> void:
 
 
 func _hide_overlay() -> void:
+	TTSManager.stop()
 	_clear_question_container()
 	_set_tracker_visible(true)
 	AudioManager.start_village_music()

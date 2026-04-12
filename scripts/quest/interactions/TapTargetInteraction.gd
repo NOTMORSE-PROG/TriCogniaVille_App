@@ -43,7 +43,8 @@ func _build_ui() -> void:
 	if not instruction.is_empty():
 		var inst_label := Label.new()
 		inst_label.text = instruction
-		inst_label.add_theme_font_size_override("font_size", int(40 * _sy))
+		var tt_i_font: int = (30 if instruction.length() > 150 else (38 if instruction.length() > 80 else 48))
+		inst_label.add_theme_font_size_override("font_size", int(tt_i_font * _sy))
 		inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 		inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		inst_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -64,7 +65,7 @@ func _build_ui() -> void:
 
 		var word_label := Label.new()
 		word_label.text = word
-		word_label.add_theme_font_size_override("font_size", int(60 * _sy))
+		word_label.add_theme_font_size_override("font_size", int(80 * _sy))
 		word_label.add_theme_color_override("font_color", StyleFactory.GOLD)
 		word_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		word_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -96,8 +97,8 @@ func _build_ui() -> void:
 
 		var btn := Button.new()
 		btn.text = seg_text
-		btn.custom_minimum_size = Vector2(maxf(110 * _sx, seg_text.length() * 42 * _sx), 130 * _sy)
-		btn.add_theme_font_size_override("font_size", int(50 * _sy))
+		btn.custom_minimum_size = Vector2(maxf(130 * _sx, seg_text.length() * 48 * _sx), 150 * _sy)
+		btn.add_theme_font_size_override("font_size", int(64 * _sy))
 		btn.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 		btn.add_theme_stylebox_override(
 			"normal", StyleFactory.make_elevated_card(StyleFactory.BG_SURFACE, 10, 1)
@@ -130,13 +131,13 @@ func _build_ui() -> void:
 	fb_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	_feedback_icon = Label.new()
-	_feedback_icon.add_theme_font_size_override("font_size", int(40 * _sy))
+	_feedback_icon.add_theme_font_size_override("font_size", int(52 * _sy))
 	_feedback_icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_feedback_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fb_vbox.add_child(_feedback_icon)
 
 	_feedback_text = Label.new()
-	_feedback_text.add_theme_font_size_override("font_size", int(30 * _sy))
+	_feedback_text.add_theme_font_size_override("font_size", int(42 * _sy))
 	_feedback_text.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	_feedback_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_feedback_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

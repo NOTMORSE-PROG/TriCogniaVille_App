@@ -3065,8 +3065,8 @@ const _SCHOOL_MISSION_L2 := [
 const _INN_TUTORIAL_L2 := [
 	{
 		"type": "mcq",
-		"instruction":
-		"Punctuation marks help us read!\n• A period (.) means stop at the end.\n• An exclamation mark (!) means use a strong voice.\n• A question mark (?) means you are asking something.\n• A comma (,) means pause briefly.",
+		"instruction": "Punctuation marks help us read!",
+		"passage": "• A period (.) = stop at the end.\n• An exclamation mark (!) = strong voice.\n• A question mark (?) = asking something.",
 		"question": "What does a period (.) at the end of a sentence tell you?",
 		"options": ["Keep going", "Stop at the end", "Ask a question"],
 		"correct_index": 1,

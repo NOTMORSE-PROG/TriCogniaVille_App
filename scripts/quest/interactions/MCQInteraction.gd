@@ -54,6 +54,7 @@ func _build_ui() -> void:
 		passage_card.add_theme_stylebox_override(
 			"panel", StyleFactory.make_elevated_card(StyleFactory.BG_CARD, 12, 1)
 		)
+		passage_card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		passage_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 		_passage_label = RichTextLabel.new()
@@ -61,9 +62,23 @@ func _build_ui() -> void:
 		_passage_label.fit_content = true
 		_passage_label.bbcode_enabled = false
 		_passage_label.scroll_active = false
-		_passage_label.add_theme_font_size_override("normal_font_size", int((18 if _compact else 34) * _sy))
+		_passage_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var p_base: int
+		if _compact:
+			p_base = 26
+		else:
+			var p_len := passage.length()
+			if p_len > 350:
+				p_base = 18
+			elif p_len > 200:
+				p_base = 22
+			elif p_len > 100:
+				p_base = 26
+			else:
+				p_base = 32
+		_passage_label.add_theme_font_size_override("normal_font_size", int(p_base * _sy))
 		_passage_label.add_theme_color_override("default_color", StyleFactory.TEXT_SECONDARY)
-		_passage_label.custom_minimum_size = Vector2(0, (60 if _compact else 130) * _sy)
+		_passage_label.custom_minimum_size = Vector2(0, 0)
 		_passage_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		passage_card.add_child(_passage_label)
 		vbox.add_child(passage_card)
@@ -73,7 +88,17 @@ func _build_ui() -> void:
 	if not instruction.is_empty():
 		var inst_label := Label.new()
 		inst_label.text = instruction
-		inst_label.add_theme_font_size_override("font_size", int((26 if _compact else 48) * _sy))
+		var i_len := instruction.length()
+		var i_font: int
+		if _compact:
+			i_font = 30
+		elif i_len > 150:
+			i_font = 30
+		elif i_len > 80:
+			i_font = 40
+		else:
+			i_font = 50
+		inst_label.add_theme_font_size_override("font_size", int(i_font * _sy))
 		inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 		inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		inst_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -81,7 +106,7 @@ func _build_ui() -> void:
 
 	# Question — auto-shrink font for long question text
 	var q_text: String = _question.get("question", "")
-	var q_base_font: int = 22 if _compact else 40
+	var q_base_font: int = 30 if _compact else 50
 	if q_text.length() > 80:
 		q_base_font = int(q_base_font * 0.70)
 	elif q_text.length() > 55:
@@ -100,7 +125,7 @@ func _build_ui() -> void:
 		if not hint.is_empty():
 			_hint_label = Label.new()
 			_hint_label.text = hint
-			_hint_label.add_theme_font_size_override("font_size", int(21 * _sy))
+			_hint_label.add_theme_font_size_override("font_size", int(28 * _sy))
 			_hint_label.add_theme_color_override("font_color", StyleFactory.SKY_BLUE)
 			_hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			_hint_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -133,8 +158,8 @@ func _build_ui() -> void:
 	var max_opt_len := 0
 	for opt_text in options:
 		max_opt_len = max(max_opt_len, (opt_text as String).length())
-	var base_font: int = 20 if _compact else 30
-	var base_h: float = 56.0 if _compact else 88.0
+	var base_font: int = 26 if _compact else 38
+	var base_h: float = 68.0 if _compact else 96.0
 	if max_opt_len > 70:
 		base_font = int(base_font * 0.70)
 		base_h *= 0.70
@@ -171,12 +196,12 @@ func _build_ui() -> void:
 	fb_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	_feedback_icon = Label.new()
-	_feedback_icon.add_theme_font_size_override("font_size", int(27 * _sy))
+	_feedback_icon.add_theme_font_size_override("font_size", int(36 * _sy))
 	_feedback_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fb_vbox.add_child(_feedback_icon)
 
 	_feedback_text = Label.new()
-	_feedback_text.add_theme_font_size_override("font_size", int(21 * _sy))
+	_feedback_text.add_theme_font_size_override("font_size", int(28 * _sy))
 	_feedback_text.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	_feedback_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_feedback_text.mouse_filter = Control.MOUSE_FILTER_IGNORE

@@ -3,6 +3,9 @@ extends Node
 ## Manages village background music and sound effects.
 ## Exposes music_enabled / sfx_enabled toggles with settings persistence.
 
+signal music_toggled(enabled: bool)   ## Emitted when music_enabled changes
+signal sfx_toggled(enabled: bool)     ## Emitted when sfx_enabled changes
+
 const SFX_POOL_SIZE := 4
 const SFX_PATHS := {
 	"correct": "res://assets/audio/sfx/correct.ogg",
@@ -58,8 +61,6 @@ func _ready() -> void:
 		else:
 			push_warning("[AudioManager] SFX not found: %s" % path)
 
-	print("[AudioManager] Ready. %d SFX loaded." % _sfx_streams.size())
-
 
 # ── Public API ──────────────────────────────────────────────────────────────
 
@@ -110,13 +111,9 @@ func stop_village_music() -> void:
 	if not _music_playing:
 		return
 	_music_playing = false
-	# Gentle 1.5s fade-out
 	_kill_music_tween()
-	_music_tween = create_tween()
-	_music_tween.tween_property(_music_player, "volume_db", -40.0, 1.5).set_trans(
-		Tween.TRANS_QUAD
-	).set_ease(Tween.EASE_IN)
-	_music_tween.tween_callback(func() -> void: _music_player.stop())
+	_music_player.volume_db = -80.0
+	_music_player.stop()
 
 
 func _on_music_finished() -> void:
@@ -134,26 +131,18 @@ func fade_music(target_db: float, duration: float = 0.5) -> void:
 # ── Private ─────────────────────────────────────────────────────────────────
 
 
-## Enable or disable background music. Fades smoothly then stops/starts the player.
+## Enable or disable background music. Stops immediately when disabled.
 func set_music_enabled(enabled: bool) -> void:
 	music_enabled = enabled
 	if enabled:
-		# Re-start from silence — start_village_music handles the fade-in.
 		start_village_music()
 	else:
-		# Kill any running fade-in so it doesn't fight us, then fade out and stop.
 		_kill_music_tween()
-		if _music_player.playing:
-			_music_playing = false
-			_music_tween = create_tween()
-			_music_tween.tween_property(_music_player, "volume_db", -80.0, 0.3).set_trans(
-				Tween.TRANS_QUAD
-			).set_ease(Tween.EASE_IN)
-			_music_tween.tween_callback(func() -> void: _music_player.stop())
-		else:
-			_music_playing = false
-			_music_player.stop()
+		_music_playing = false
+		_music_player.volume_db = -80.0
+		_music_player.stop()
 	_save_audio_settings()
+	music_toggled.emit(enabled)
 
 
 func _kill_music_tween() -> void:
@@ -162,10 +151,15 @@ func _kill_music_tween() -> void:
 	_music_tween = null
 
 
-## Enable or disable sound effects. Persists the setting.
+## Enable or disable sound effects. Stops any active SFX when disabled.
 func set_sfx_enabled(enabled: bool) -> void:
 	sfx_enabled = enabled
+	if not enabled:
+		for player in _sfx_players:
+			if player.playing:
+				player.stop()
 	_save_audio_settings()
+	sfx_toggled.emit(enabled)
 
 
 func _load_audio_settings() -> void:

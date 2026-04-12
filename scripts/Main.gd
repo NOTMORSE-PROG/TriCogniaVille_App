@@ -1735,8 +1735,8 @@ func _show_replay_prompt(building_id: String) -> void:
 	overlay.add_child(dim)
 
 	# Center panel
-	var panel_w := 320.0 * _sx
-	var panel_h := 310.0 * _sy
+	var panel_w := 580.0 * _sx
+	var panel_h := 560.0 * _sy
 	var panel := PanelContainer.new()
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = StyleFactory.BG_CARD
@@ -1766,15 +1766,15 @@ func _show_replay_prompt(building_id: String) -> void:
 	var name_lbl := Label.new()
 	name_lbl.text = building_label
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.add_theme_font_size_override("font_size", int(20 * _sy))
+	name_lbl.add_theme_font_size_override("font_size", int(52 * _sy))
 	name_lbl.add_theme_color_override("font_color", building_color)
 	vbox.add_child(name_lbl)
 
 	# Reading level
 	var level_lbl := Label.new()
-	level_lbl.text = "Playing at " + _get_level_label(player_level)
+	level_lbl.text = "Playing at " + _get_level_label(player_level).split("  •  ")[0]
 	level_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	level_lbl.add_theme_font_size_override("font_size", int(12 * _sy))
+	level_lbl.add_theme_font_size_override("font_size", int(32 * _sy))
 	level_lbl.add_theme_color_override("font_color", StyleFactory.SKY_BLUE)
 	vbox.add_child(level_lbl)
 
@@ -1790,8 +1790,8 @@ func _show_replay_prompt(building_id: String) -> void:
 	for stage_data in stages:
 		var btn := Button.new()
 		btn.text = stage_data["label"]
-		btn.custom_minimum_size = Vector2(0, 44 * _sy)
-		btn.add_theme_font_size_override("font_size", int(15 * _sy))
+		btn.custom_minimum_size = Vector2(0, 96 * _sy)
+		btn.add_theme_font_size_override("font_size", int(38 * _sy))
 		var btn_sb := StyleBoxFlat.new()
 		var sc: Color = stage_data["color"]
 		btn_sb.bg_color = Color(sc.r, sc.g, sc.b, 0.15)
@@ -1820,8 +1820,8 @@ func _show_replay_prompt(building_id: String) -> void:
 	# Close button
 	var close_btn := Button.new()
 	close_btn.text = "Close"
-	close_btn.custom_minimum_size = Vector2(0, 36 * _sy)
-	close_btn.add_theme_font_size_override("font_size", int(13 * _sy))
+	close_btn.custom_minimum_size = Vector2(0, 72 * _sy)
+	close_btn.add_theme_font_size_override("font_size", int(32 * _sy))
 	close_btn.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	close_btn.pressed.connect(func() -> void: overlay.queue_free())
 	vbox.add_child(close_btn)

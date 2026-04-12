@@ -60,6 +60,10 @@ func setup(vp: Vector2, sx: float, sy: float, building_controllers: Dictionary) 
 	if not GameManager.all_buildings_unlocked.is_connected(_on_all_buildings_unlocked):
 		GameManager.all_buildings_unlocked.connect(_on_all_buildings_unlocked)
 
+	# Respect music toggle — mute/unmute ambient layers when music setting changes
+	if not AudioManager.music_toggled.is_connected(_on_music_toggled):
+		AudioManager.music_toggled.connect(_on_music_toggled)
+
 	# Idempotent catch-up: apply all tiers already unlocked (no animation)
 	var already_unlocked := GameManager.unlocked_buildings.size()
 	if already_unlocked > 0:
@@ -581,7 +585,10 @@ func _start_ambient(tier: int, fade_in: bool) -> void:
 	)
 	player.play()
 
-	if fade_in:
+	# If music is currently disabled, silence immediately — player stays loaded
+	if not AudioManager.music_enabled:
+		player.volume_db = -80.0
+	elif fade_in:
 		var tw := create_tween()
 		tw.tween_property(player, "volume_db", target_db, 2.5).set_trans(Tween.TRANS_QUAD).set_ease(
 			Tween.EASE_OUT
@@ -590,6 +597,24 @@ func _start_ambient(tier: int, fade_in: bool) -> void:
 		player.volume_db = target_db
 
 	_ambient_players[tier] = player
+
+
+## Called when AudioManager.music_toggled fires.
+func _on_music_toggled(enabled: bool) -> void:
+	for tier in _ambient_players:
+		var player: AudioStreamPlayer = _ambient_players[tier]
+		if not is_instance_valid(player):
+			continue
+		var target_db: float = AMBIENT_LAYERS[tier]["db"]
+		if enabled:
+			# Fade ambient layers back in
+			var tw := create_tween()
+			tw.tween_property(player, "volume_db", target_db, 1.5).set_trans(
+				Tween.TRANS_QUAD
+			).set_ease(Tween.EASE_OUT)
+		else:
+			# Silence immediately
+			player.volume_db = -80.0
 
 
 # ═════════════════════════════════════════════════════════════════════════════

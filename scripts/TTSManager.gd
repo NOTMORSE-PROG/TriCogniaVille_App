@@ -17,15 +17,21 @@ func _ready() -> void:
 		return
 	# tts_get_voices_for_language() returns PackedStringArray of voice ID strings.
 	# tts_get_voices() returns Array[Dictionary] with "name" and "id" keys.
-	var en_voices: PackedStringArray = DisplayServer.tts_get_voices_for_language("en")
-	if not en_voices.is_empty():
-		_voice_id = en_voices[0]
+	# Prefer en-US; fall back to any English voice, then any available voice.
+	var us_voices: PackedStringArray = DisplayServer.tts_get_voices_for_language("en-US")
+	if not us_voices.is_empty():
+		_voice_id = us_voices[0]
 		_available = true
 	else:
-		var all_voices: Array = DisplayServer.tts_get_voices()
-		if not all_voices.is_empty():
-			_voice_id = all_voices[0].get("id", "")
-			_available = not _voice_id.is_empty()
+		var en_voices: PackedStringArray = DisplayServer.tts_get_voices_for_language("en")
+		if not en_voices.is_empty():
+			_voice_id = en_voices[0]
+			_available = true
+		else:
+			var all_voices: Array = DisplayServer.tts_get_voices()
+			if not all_voices.is_empty():
+				_voice_id = all_voices[0].get("id", "")
+				_available = not _voice_id.is_empty()
 	print("[TTSManager] Available: ", _available, " | Voice: ", _voice_id)
 
 
