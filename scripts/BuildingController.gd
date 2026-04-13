@@ -371,9 +371,13 @@ func _build_touch_area() -> void:
 	_area.input_pickable = true
 	var col := CollisionShape2D.new()
 	var shape := RectangleShape2D.new()
-	shape.size = Vector2(_bw, _bh)
+	# Touch area is 40% wider and 30% taller than the visual building
+	# so it's easier to tap on all screen sizes and densities.
+	var touch_w := _bw * 1.4
+	var touch_h := _bh * 1.3
+	shape.size = Vector2(touch_w, touch_h)
 	col.shape = shape
-	col.position = Vector2(0.0, -_bh * 0.5)
+	col.position = Vector2(0.0, -touch_h * 0.5)
 	_area.add_child(col)
 	_area.input_event.connect(_on_area_input)
 	add_child(_area)

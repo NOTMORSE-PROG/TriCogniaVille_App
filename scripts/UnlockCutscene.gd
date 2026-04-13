@@ -285,7 +285,8 @@ func _phase_next_building() -> void:
 	var pan_tw := create_tween().set_parallel(true)
 	pan_tw.tween_property(_camera, "offset", target_offset, 1.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 	pan_tw.tween_property(_camera, "zoom", Vector2(1.15, 1.15), 1.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
-	await pan_tw.finished
+	# Use timer instead of await tween.finished — more reliable on all devices
+	await get_tree().create_timer(1.1).timeout
 
 	# Show "Next Quest" callout banner
 	var callout_layer := CanvasLayer.new()
@@ -336,7 +337,7 @@ func _phase_next_building() -> void:
 	callout_root.modulate.a = 0.0
 	var fin_tw := create_tween()
 	fin_tw.tween_property(callout_root, "modulate:a", 1.0, 0.35)
-	await fin_tw.finished
+	await get_tree().create_timer(0.4).timeout
 
 	# Brief glow pulse on the next building to draw attention
 	var next_sprite := next_bc.get_building_sprite()
@@ -355,8 +356,9 @@ func _phase_next_building() -> void:
 	# Fade callout out
 	var fout_tw := create_tween()
 	fout_tw.tween_property(callout_root, "modulate:a", 0.0, 0.3)
-	await fout_tw.finished
-	callout_layer.queue_free()
+	await get_tree().create_timer(0.35).timeout
+	if is_instance_valid(callout_layer):
+		callout_layer.queue_free()
 
 
 func _phase_restore() -> void:
