@@ -29,18 +29,23 @@ const BUILDING_INFO: Dictionary = {
 	"bakery":    {"name": "Bakery",    "icon": "🍞"},
 }
 
-# Reading tier display (read-only; maps reading level → tier index)
-const TIER_LABELS: Array[String] = ["Beginner", "Intermediate", "Advanced"]
-const TIER_COLORS: Array[Color]   = [
-	Color(0.357, 0.851, 0.635),  # Beginner      → SUCCESS_GREEN
-	Color(0.886, 0.725, 0.290),  # Intermediate  → GOLD
-	Color(0.914, 0.388, 0.431),  # Advanced      → ACCENT_CORAL
-]
+# Reading level display (read-only; maps reading level integer → label/color)
+const LEVEL_NAMES: Dictionary = {
+	1: "Non Reader", 2: "Emerging", 3: "Developing", 4: "Fluent"
+}
+const LEVEL_COLORS: Dictionary = {
+	1: Color(0.914, 0.388, 0.431),  # coral
+	2: Color(0.392, 0.769, 0.910),  # sky blue
+	3: Color(0.529, 0.808, 0.922),  # teal
+	4: Color(0.886, 0.725, 0.290),  # gold
+}
 
 const CREDITS: Array[Dictionary] = [
-	{"role": "Project Lead",           "name": "Anne Caryll D. Paloma"},
-	{"role": "Associate Lead",         "name": "Jamille Erica Briones"},
-	{"role": "Research & Content",     "name": "Leeana Ricka Salaysay\nEnzo Santos\nRica Jamon"},
+	{"role": "Project Lead",       "name": "Anne Caryll D. Paloma",    "pic": "res://assets/sprites/credits/anne_caryll.png"},
+	{"role": "Associate Lead",     "name": "Jamille Erica Briones",    "pic": "res://assets/sprites/credits/jamille_erica.png"},
+	{"role": "Research & Content", "name": "Leeana Ricka Salaysay",    "pic": "res://assets/sprites/credits/leeana_ricka.png"},
+	{"role": "Research & Content", "name": "Enzo Santos",              "pic": "res://assets/sprites/credits/enzo_santos.png"},
+	{"role": "Research & Content", "name": "Rica Jamon",               "pic": "res://assets/sprites/credits/rica_jamon.png"},
 ]
 
 # ── State ─────────────────────────────────────────────────────────────────────
@@ -181,7 +186,7 @@ func _build_layout() -> void:
 	_loading_lbl = Label.new()
 	_loading_lbl.text = "Loading profile..."
 	_loading_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_loading_lbl.add_theme_font_size_override("font_size", int(24 * _sy))
+	_loading_lbl.add_theme_font_size_override("font_size", int(36 * _sy))
 	_loading_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	_loading_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_loading_section.add_child(_loading_lbl)
@@ -265,7 +270,7 @@ func _build_title_bar() -> Control:
 	# Gear icon
 	var gear := Label.new()
 	gear.text = "⚙"
-	gear.add_theme_font_size_override("font_size", int(24 * _sy))
+	gear.add_theme_font_size_override("font_size", int(34 * _sy))
 	gear.add_theme_color_override("font_color", StyleFactory.GOLD)
 	gear.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(gear)
@@ -273,7 +278,7 @@ func _build_title_bar() -> Control:
 	# Title text
 	var title := Label.new()
 	title.text = "VILLAGE SETTINGS"
-	title.add_theme_font_size_override("font_size", int(24 * _sy))
+	title.add_theme_font_size_override("font_size", int(34 * _sy))
 	title.add_theme_color_override("font_color", StyleFactory.GOLD)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -351,7 +356,7 @@ func _build_toggle_row(label_text: String) -> HBoxContainer:
 	var lbl := Label.new()
 	lbl.text = label_text
 	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	lbl.add_theme_font_size_override("font_size", int(18 * _sy))
+	lbl.add_theme_font_size_override("font_size", int(26 * _sy))
 	lbl.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(lbl)
@@ -359,8 +364,8 @@ func _build_toggle_row(label_text: String) -> HBoxContainer:
 	var btn := Button.new()
 	btn.toggle_mode = true
 	btn.text = "ON"
-	btn.custom_minimum_size = Vector2(int(62 * _sx), int(36 * _sy))
-	btn.add_theme_font_size_override("font_size", int(15 * _sy))
+	btn.custom_minimum_size = Vector2(int(72 * _sx), int(44 * _sy))
+	btn.add_theme_font_size_override("font_size", int(22 * _sy))
 	btn.toggled.connect(func(on: bool) -> void:
 		btn.text = "ON" if on else "OFF"
 		_style_toggle(btn, on)
@@ -424,7 +429,7 @@ func _build_player_card() -> Control:
 	# Player name
 	_name_lbl = Label.new()
 	_name_lbl.text = GameManager.current_student.get("name", "Player")
-	_name_lbl.add_theme_font_size_override("font_size", int(24 * _sy))
+	_name_lbl.add_theme_font_size_override("font_size", int(38 * _sy))
 	_name_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	_name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -450,7 +455,7 @@ func _build_player_card() -> Control:
 
 	_level_lbl = Label.new()
 	_level_lbl.text = "Lv. 1"
-	_level_lbl.add_theme_font_size_override("font_size", int(17 * _sy))
+	_level_lbl.add_theme_font_size_override("font_size", int(26 * _sy))
 	_level_lbl.add_theme_color_override("font_color", StyleFactory.BG_DEEP)
 	_level_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_level_pill.add_child(_level_lbl)
@@ -476,7 +481,7 @@ func _build_learning_card() -> Control:
 
 	var sub := Label.new()
 	sub.text = "Reading Level"
-	sub.add_theme_font_size_override("font_size", int(16 * _sy))
+	sub.add_theme_font_size_override("font_size", int(24 * _sy))
 	sub.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -512,7 +517,7 @@ func _build_learning_card() -> Control:
 
 	_level_big_lbl = Label.new()
 	_level_big_lbl.text = "—"
-	_level_big_lbl.add_theme_font_size_override("font_size", int(38 * _sy))
+	_level_big_lbl.add_theme_font_size_override("font_size", int(56 * _sy))
 	_level_big_lbl.add_theme_color_override("font_color", StyleFactory.GOLD)
 	_level_big_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_level_big_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -520,7 +525,7 @@ func _build_learning_card() -> Control:
 
 	_tier_name_lbl = Label.new()
 	_tier_name_lbl.text = ""
-	_tier_name_lbl.add_theme_font_size_override("font_size", int(15 * _sy))
+	_tier_name_lbl.add_theme_font_size_override("font_size", int(24 * _sy))
 	_tier_name_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
 	_tier_name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_tier_name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -557,7 +562,7 @@ func _build_buildings_section() -> Control:
 	var unlocked: Array = _get_unlocked()
 	var count_lbl := Label.new()
 	count_lbl.text = "%d / %d" % [unlocked.size(), BUILDING_ORDER.size()]
-	count_lbl.add_theme_font_size_override("font_size", int(18 * _sy))
+	count_lbl.add_theme_font_size_override("font_size", int(28 * _sy))
 	count_lbl.add_theme_color_override(
 		"font_color",
 		StyleFactory.SUCCESS_GREEN if unlocked.size() == BUILDING_ORDER.size() else StyleFactory.GOLD
@@ -637,14 +642,14 @@ func _make_building_tile(info: Dictionary, is_unlocked: bool) -> Control:
 
 	var icon_lbl := Label.new()
 	icon_lbl.text = info.get("icon", "?") if is_unlocked else "🔒"
-	icon_lbl.add_theme_font_size_override("font_size", int(30 * _sy))
+	icon_lbl.add_theme_font_size_override("font_size", int(44 * _sy))
 	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	col.add_child(icon_lbl)
 
 	var name_lbl := Label.new()
 	name_lbl.text = info.get("name", "")
-	name_lbl.add_theme_font_size_override("font_size", int(13 * _sy))
+	name_lbl.add_theme_font_size_override("font_size", int(20 * _sy))
 	name_lbl.add_theme_color_override(
 		"font_color",
 		StyleFactory.TEXT_SECONDARY if is_unlocked else StyleFactory.TEXT_MUTED
@@ -657,7 +662,7 @@ func _make_building_tile(info: Dictionary, is_unlocked: bool) -> Control:
 	if is_unlocked:
 		var check := Label.new()
 		check.text = "✓"
-		check.add_theme_font_size_override("font_size", int(13 * _sy))
+		check.add_theme_font_size_override("font_size", int(20 * _sy))
 		check.add_theme_color_override("font_color", StyleFactory.SUCCESS_GREEN)
 		check.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		check.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -693,7 +698,7 @@ func _build_badges_section() -> Control:
 
 	_badges_count_lbl = Label.new()
 	_badges_count_lbl.text = "—"
-	_badges_count_lbl.add_theme_font_size_override("font_size", int(18 * _sy))
+	_badges_count_lbl.add_theme_font_size_override("font_size", int(28 * _sy))
 	_badges_count_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 	_badges_count_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hrow.add_child(_badges_count_lbl)
@@ -739,7 +744,7 @@ func _populate_badges(badges: Array) -> void:
 
 		var cat_lbl := Label.new()
 		cat_lbl.text = CATEGORY_LABELS.get(cat, cat.capitalize())
-		cat_lbl.add_theme_font_size_override("font_size", int(18 * _sy))
+		cat_lbl.add_theme_font_size_override("font_size", int(28 * _sy))
 		cat_lbl.add_theme_color_override("font_color", _get_category_color(cat))
 		cat_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		cat_vbox.add_child(cat_lbl)
@@ -758,10 +763,8 @@ func _populate_badges(badges: Array) -> void:
 
 func _make_badge_tile(badge: Dictionary, category: String) -> PanelContainer:
 	var is_earned: bool = badge.get("earned", false)
-	var tile_h := int(118 * _sy)
 
 	var tile := PanelContainer.new()
-	tile.custom_minimum_size = Vector2(0, tile_h)
 	tile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
@@ -799,14 +802,14 @@ func _make_badge_tile(badge: Dictionary, category: String) -> PanelContainer:
 
 	var icon_lbl := Label.new()
 	icon_lbl.text = badge.get("icon", "?") if is_earned else "🔒"
-	icon_lbl.add_theme_font_size_override("font_size", int(34 * _sy))
+	icon_lbl.add_theme_font_size_override("font_size", int(48 * _sy))
 	icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	col.add_child(icon_lbl)
 
 	var name_lbl := Label.new()
 	name_lbl.text = badge.get("name", "")
-	name_lbl.add_theme_font_size_override("font_size", int(14 * _sy))
+	name_lbl.add_theme_font_size_override("font_size", int(20 * _sy))
 	name_lbl.add_theme_color_override(
 		"font_color",
 		StyleFactory.TEXT_SECONDARY if is_earned else StyleFactory.TEXT_MUTED
@@ -816,6 +819,17 @@ func _make_badge_tile(badge: Dictionary, category: String) -> PanelContainer:
 	name_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	col.add_child(name_lbl)
+
+	if not is_earned:
+		var req_lbl := Label.new()
+		req_lbl.text = badge.get("requirement", "")
+		req_lbl.add_theme_font_size_override("font_size", int(16 * _sy))
+		req_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+		req_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		req_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		req_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		req_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		col.add_child(req_lbl)
 
 	return tile
 
@@ -836,7 +850,7 @@ func _build_credits_section() -> Control:
 	vbox.add_child(_make_section_header("CREDITS", "✨"))
 	vbox.add_child(_make_separator())
 
-	# 3-column grid of credit tiles (fills panel width)
+	# Grid of credit tiles with profile pictures
 	var grid := GridContainer.new()
 	grid.columns = 3
 	grid.add_theme_constant_override("h_separation", int(10 * _sx))
@@ -846,12 +860,12 @@ func _build_credits_section() -> Control:
 	vbox.add_child(grid)
 
 	for credit in CREDITS:
-		grid.add_child(_make_credit_tile(credit.get("role", ""), credit.get("name", "")))
+		grid.add_child(_make_credit_tile(credit.get("role", ""), credit.get("name", ""), credit.get("pic", "")))
 
 	return card
 
 
-func _make_credit_tile(role: String, person_name: String) -> Control:
+func _make_credit_tile(role: String, person_name: String, pic_path: String) -> Control:
 	var tile := PanelContainer.new()
 	tile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -864,29 +878,76 @@ func _make_credit_tile(role: String, person_name: String) -> Control:
 	ts.border_width_right  = 1
 	ts.border_width_bottom = 1
 	ts.border_color = Color(StyleFactory.GOLD.r, StyleFactory.GOLD.g, StyleFactory.GOLD.b, 0.30)
-	ts.content_margin_left   = int(14 * _sx)
-	ts.content_margin_right  = int(14 * _sx)
-	ts.content_margin_top    = int(10 * _sy)
+	ts.content_margin_left   = int(10 * _sx)
+	ts.content_margin_right  = int(10 * _sx)
+	ts.content_margin_top    = int(12 * _sy)
 	ts.content_margin_bottom = int(10 * _sy)
 	ts.anti_aliasing = true
 	tile.add_theme_stylebox_override("panel", ts)
 
 	var col := VBoxContainer.new()
-	col.add_theme_constant_override("separation", int(2 * _sy))
+	col.add_theme_constant_override("separation", int(6 * _sy))
+	col.alignment = BoxContainer.ALIGNMENT_CENTER
 	col.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tile.add_child(col)
 
+	# Circular profile picture
+	if pic_path != "":
+		var pic_size := int(120 * _sy)
+		var pic_container := CenterContainer.new()
+		pic_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		col.add_child(pic_container)
+
+		var tex_rect := TextureRect.new()
+		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		tex_rect.custom_minimum_size = Vector2(pic_size, pic_size)
+		tex_rect.size = Vector2(pic_size, pic_size)
+		tex_rect.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		pic_container.add_child(tex_rect)
+
+		var img_tex := load(pic_path) as Texture2D
+		if img_tex:
+			tex_rect.texture = img_tex
+
+		# Smooth circular clip shader (anti-aliased edge)
+		var shader := Shader.new()
+		shader.code = "shader_type canvas_item;\nvoid fragment() {\n\tvec2 uv = UV - vec2(0.5);\n\tfloat dist = length(uv);\n\tfloat aa = fwidth(dist);\n\tCOLOR = texture(TEXTURE, UV);\n\tCOLOR.a *= 1.0 - smoothstep(0.5 - aa, 0.5, dist);\n}"
+		var mat := ShaderMaterial.new()
+		mat.shader = shader
+		tex_rect.material = mat
+
+		# Gold border ring overlay
+		var ring := Panel.new()
+		ring.custom_minimum_size = Vector2(pic_size, pic_size)
+		ring.size = Vector2(pic_size, pic_size)
+		ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var ring_style := StyleBoxFlat.new()
+		ring_style.bg_color = Color.TRANSPARENT
+		ring_style.set_corner_radius_all(pic_size / 2)
+		ring_style.border_width_top    = 3
+		ring_style.border_width_left   = 3
+		ring_style.border_width_right  = 3
+		ring_style.border_width_bottom = 3
+		ring_style.border_color = StyleFactory.GOLD
+		ring_style.anti_aliasing = true
+		ring.add_theme_stylebox_override("panel", ring_style)
+		pic_container.add_child(ring)
+
 	var role_lbl := Label.new()
 	role_lbl.text = role
-	role_lbl.add_theme_font_size_override("font_size", int(13 * _sy))
+	role_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	role_lbl.add_theme_font_size_override("font_size", int(18 * _sy))
 	role_lbl.add_theme_color_override("font_color", StyleFactory.GOLD)
 	role_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	col.add_child(role_lbl)
 
 	var name_lbl := Label.new()
 	name_lbl.text = person_name
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	name_lbl.add_theme_font_size_override("font_size", int(17 * _sy))
+	name_lbl.add_theme_font_size_override("font_size", int(22 * _sy))
 	name_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_PRIMARY)
 	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	col.add_child(name_lbl)
@@ -905,8 +966,8 @@ func _build_logout_row() -> Control:
 
 	var btn := Button.new()
 	btn.text = "Sign Out"
-	btn.custom_minimum_size = Vector2(int(220 * _sx), int(60 * _sy))
-	btn.add_theme_font_size_override("font_size", int(20 * _sy))
+	btn.custom_minimum_size = Vector2(int(220 * _sx), int(72 * _sy))
+	btn.add_theme_font_size_override("font_size", int(28 * _sy))
 	btn.add_theme_color_override("font_color", StyleFactory.TEXT_ERROR)
 
 	var n := StyleFactory.make_secondary_button_normal()
@@ -964,13 +1025,13 @@ func _make_section_header(title_text: String, icon: String) -> Control:
 
 	var icon_lbl := Label.new()
 	icon_lbl.text = icon
-	icon_lbl.add_theme_font_size_override("font_size", int(18 * _sy))
+	icon_lbl.add_theme_font_size_override("font_size", int(26 * _sy))
 	icon_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(icon_lbl)
 
 	var t := Label.new()
 	t.text = title_text
-	t.add_theme_font_size_override("font_size", int(19 * _sy))
+	t.add_theme_font_size_override("font_size", int(28 * _sy))
 	t.add_theme_color_override("font_color", StyleFactory.GOLD)
 	t.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(t)
@@ -1146,19 +1207,13 @@ func _populate_header(data: Dictionary) -> void:
 func _update_reading_level_display() -> void:
 	if not is_instance_valid(_level_big_lbl):
 		return
-	# Map reading level → tier index (0=Beginner, 1=Intermediate, 2=Advanced)
-	var tier: int = 0
-	if _level_num >= 5:
-		tier = 2
-	elif _level_num >= 3:
-		tier = 1
-	else:
-		tier = 0
+	var level: int = clampi(_level_num, 1, 4)
+	var color: Color = LEVEL_COLORS[level]
 
-	_level_big_lbl.text = str(_level_num)
-	_level_big_lbl.add_theme_color_override("font_color", TIER_COLORS[tier])
-	_tier_name_lbl.text = TIER_LABELS[tier]
-	_tier_name_lbl.add_theme_color_override("font_color", TIER_COLORS[tier])
+	_level_big_lbl.text = str(level)
+	_level_big_lbl.add_theme_color_override("font_color", color)
+	_tier_name_lbl.text = LEVEL_NAMES[level]
+	_tier_name_lbl.add_theme_color_override("font_color", color)
 
 
 
@@ -1184,7 +1239,7 @@ func _show_error_state() -> void:
 
 		var err_lbl := Label.new()
 		err_lbl.text = "Could not load full profile"
-		err_lbl.add_theme_font_size_override("font_size", int(20 * _sy))
+		err_lbl.add_theme_font_size_override("font_size", int(28 * _sy))
 		err_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_ERROR)
 		err_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		err_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1192,7 +1247,7 @@ func _show_error_state() -> void:
 
 		var hint_lbl := Label.new()
 		hint_lbl.text = "Badges require an internet connection"
-		hint_lbl.add_theme_font_size_override("font_size", int(18 * _sy))
+		hint_lbl.add_theme_font_size_override("font_size", int(26 * _sy))
 		hint_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 		hint_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		hint_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1204,7 +1259,7 @@ func _show_error_state() -> void:
 		var retry_btn := Button.new()
 		retry_btn.text = "Retry"
 		retry_btn.custom_minimum_size = Vector2(int(100 * _sx), int(42 * _sy))
-		retry_btn.add_theme_font_size_override("font_size", int(20 * _sy))
+		retry_btn.add_theme_font_size_override("font_size", int(28 * _sy))
 		retry_btn.add_theme_stylebox_override("normal",  StyleFactory.make_secondary_button_normal())
 		retry_btn.add_theme_stylebox_override("hover",   StyleFactory.make_secondary_button_hover())
 		retry_btn.add_theme_stylebox_override("pressed", StyleFactory.make_secondary_button_pressed())

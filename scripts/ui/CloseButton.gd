@@ -1,9 +1,14 @@
 class_name CloseButton
 extends Control
 ## CloseButton — Drawn circle + X close button.
-## Visual and input rect are always identical — no sweet-spot issues.
+## Layout size matches the visual circle exactly; _has_point() silently expands
+## the input detection zone so taps near-but-not-on the circle still register.
 
 signal pressed
+
+## Extra hit area on every side (px). Does NOT affect layout or draw — only
+## _has_point(), so the padding never bleeds into neighbouring nodes.
+const HIT_PADDING := 20.0
 
 var _hovered: bool = false
 
@@ -13,6 +18,15 @@ func setup(size_px: float) -> void:
 	size = Vector2(size_px, size_px)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	queue_redraw()
+
+
+## Expand the input-detection rect without touching layout or visuals.
+func _has_point(point: Vector2) -> bool:
+	return Rect2(
+		-HIT_PADDING, -HIT_PADDING,
+		size.x + HIT_PADDING * 2.0,
+		size.y + HIT_PADDING * 2.0
+	).has_point(point)
 
 
 func _draw() -> void:

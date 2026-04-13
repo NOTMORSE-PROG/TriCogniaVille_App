@@ -36,6 +36,11 @@ var _dialogue_panel: Control
 var _profile_panel: Control
 var _profile_btn: Control
 
+# ─── Badge toast notifications ───────────────────────────────────────────────
+var _toast_canvas: CanvasLayer
+var _toast_queue: Array[String] = []
+var _toast_showing: bool = false
+
 # ─── Free exploration (post-completion) ──────────────────────────────────────
 var _is_free_exploration: bool = false
 
@@ -1076,6 +1081,12 @@ func _build_ui() -> void:
 	_dialogue_panel.setup(_sx, _sy)
 	canvas.add_child(_dialogue_panel)
 
+	# ── Badge toast overlay (above all UI) ──
+	_toast_canvas = CanvasLayer.new()
+	_toast_canvas.name = "BadgeToasts"
+	_toast_canvas.layer = 15
+	add_child(_toast_canvas)
+
 func _on_profile_btn_pressed() -> void:
 	if is_instance_valid(_profile_panel):
 		_profile_panel.show_profile()
@@ -1159,6 +1170,7 @@ func _build_town_livener() -> void:
 func _connect_signals() -> void:
 	GameManager.building_unlocked.connect(_on_building_unlocked)
 	GameManager.all_buildings_unlocked.connect(_on_all_buildings_unlocked)
+	GameManager.badge_unlocked.connect(_on_badge_unlocked)
 	QuestManager.quest_started.connect(func(_bid: String) -> void:
 		_set_joystick_active(false)
 		if is_instance_valid(_profile_btn):
@@ -1297,6 +1309,27 @@ func _on_overlay_closed(building_id: String, _passed: bool) -> void:
 		bc.unlock()
 		_update_progress_bar()
 		_set_joystick_active(true)
+
+
+func _on_badge_unlocked(badge_id: String) -> void:
+	if not is_instance_valid(_toast_canvas):
+		return
+	_toast_queue.push_back(badge_id)
+	_show_next_toast()
+
+
+func _show_next_toast() -> void:
+	if _toast_showing or _toast_queue.is_empty():
+		return
+	_toast_showing = true
+	var badge_id := _toast_queue.pop_front() as String
+	var toast := BadgeToast.new()
+	_toast_canvas.add_child(toast)
+	toast.popup(badge_id, _vp, 0, _sx, _sy)
+	toast.tree_exited.connect(func() -> void:
+		_toast_showing = false
+		_show_next_toast()
+	)
 
 
 func _on_building_unlocked(building_id: String) -> void:
@@ -1700,10 +1733,10 @@ func _enter_free_exploration() -> void:
 
 func _get_level_label(level: int) -> String:
 	match level:
-		1: return "Beginner  •  Level 1"
-		2: return "Developing  •  Level 2"
-		3: return "Fluent  •  Level 3"
-		4: return "Advanced  •  Level 4"
+		1: return "Non Reader  •  Level 1"
+		2: return "Emerging  •  Level 2"
+		3: return "Developing  •  Level 3"
+		4: return "Fluent  •  Level 4"
 		_: return "Level %d" % level
 
 

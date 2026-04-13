@@ -292,12 +292,18 @@ func _phase_next_building() -> void:
 	callout_layer.layer = 16
 	add_child(callout_layer)
 
+	# CanvasLayer has no modulate — use a Control wrapper as the fade target
+	var callout_root := Control.new()
+	callout_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	callout_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	callout_layer.add_child(callout_root)
+
 	var callout_bg := ColorRect.new()
 	callout_bg.color = Color(0.04, 0.08, 0.15, 0.82)
 	callout_bg.size = Vector2(_vp.x * 0.44, 90 * _sy)
 	callout_bg.position = Vector2((_vp.x - _vp.x * 0.44) * 0.5, _vp.y * 0.13)
 	callout_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	callout_layer.add_child(callout_bg)
+	callout_root.add_child(callout_bg)
 
 	var eyebrow := Label.new()
 	eyebrow.text = "Next Quest"
@@ -307,7 +313,7 @@ func _phase_next_building() -> void:
 	eyebrow.size = Vector2(callout_bg.size.x, 26 * _sy)
 	eyebrow.position = Vector2(callout_bg.position.x, callout_bg.position.y + 10 * _sy)
 	eyebrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	callout_layer.add_child(eyebrow)
+	callout_root.add_child(eyebrow)
 
 	var next_name := Label.new()
 	next_name.text = next_label
@@ -317,19 +323,19 @@ func _phase_next_building() -> void:
 	next_name.size = Vector2(callout_bg.size.x, 40 * _sy)
 	next_name.position = Vector2(callout_bg.position.x, callout_bg.position.y + 38 * _sy)
 	next_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	callout_layer.add_child(next_name)
+	callout_root.add_child(next_name)
 
 	var accent := ColorRect.new()
 	accent.color = next_color
 	accent.size = Vector2(callout_bg.size.x, 3 * _sy)
 	accent.position = Vector2(callout_bg.position.x, callout_bg.position.y + callout_bg.size.y - 3 * _sy)
 	accent.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	callout_layer.add_child(accent)
+	callout_root.add_child(accent)
 
-	# Animate callout in
-	callout_layer.modulate.a = 0.0
+	# Animate callout in via the Control wrapper
+	callout_root.modulate.a = 0.0
 	var fin_tw := create_tween()
-	fin_tw.tween_property(callout_layer, "modulate:a", 1.0, 0.35)
+	fin_tw.tween_property(callout_root, "modulate:a", 1.0, 0.35)
 	await fin_tw.finished
 
 	# Brief glow pulse on the next building to draw attention
@@ -348,7 +354,7 @@ func _phase_next_building() -> void:
 
 	# Fade callout out
 	var fout_tw := create_tween()
-	fout_tw.tween_property(callout_layer, "modulate:a", 0.0, 0.3)
+	fout_tw.tween_property(callout_root, "modulate:a", 0.0, 0.3)
 	await fout_tw.finished
 	callout_layer.queue_free()
 

@@ -80,17 +80,27 @@ func _process(_delta: float) -> void:
 		Step.TAP_BUILDING:
 			if is_instance_valid(_player_ref) and is_instance_valid(_tap_hint_panel):
 				if _player_ref.position.distance_to(_town_hall_pos) < 150.0 * _sx:
+					# Capture refs before nulling so the tween callback can free them
+					var hint_ref := _tap_hint_panel
+					var dim_ref := _tap_dim
+					# Stop the panel from blocking input immediately — the tween
+					# is cosmetic only; we must not gate Area2D taps on it.
+					hint_ref.mouse_filter = Control.MOUSE_FILTER_IGNORE
+					# Walk up to the VBoxContainer wrapper (parent of the panel)
+					var hint_wrap := hint_ref.get_parent()
+					if is_instance_valid(hint_wrap):
+						hint_wrap.mouse_filter = Control.MOUSE_FILTER_IGNORE
 					var tw := create_tween().set_parallel(true)
 					(
 						tw
-						. tween_property(_tap_hint_panel, "modulate:a", 0.0, 0.4)
+						. tween_property(hint_ref, "modulate:a", 0.0, 0.4)
 						. set_trans(Tween.TRANS_QUAD)
 						. set_ease(Tween.EASE_IN)
 					)
-					if is_instance_valid(_tap_dim):
+					if is_instance_valid(dim_ref):
 						(
 							tw
-							. tween_property(_tap_dim, "modulate:a", 0.0, 0.4)
+							. tween_property(dim_ref, "modulate:a", 0.0, 0.4)
 							. set_trans(Tween.TRANS_QUAD)
 							. set_ease(Tween.EASE_IN)
 						)

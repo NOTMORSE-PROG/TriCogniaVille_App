@@ -206,6 +206,7 @@ func _build_sprite() -> void:
 # ═════════════════════════════════════════════════════════════════════════════
 func _build_collision() -> void:
 	var body := StaticBody2D.new()
+	body.input_pickable = false  # Only for player movement blocking, not input
 	var col := CollisionShape2D.new()
 	var shape := RectangleShape2D.new()
 	# Cover the lower 45% of the building — the physical "base" footprint.

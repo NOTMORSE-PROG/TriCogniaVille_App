@@ -19,6 +19,7 @@ var _current_stage: String = ""  # "tutorial", "practice", "mission"
 var _current_quest_data: Dictionary = {}
 var _mission_score: int = 0
 var _mission_total: int = 0
+var _last_mission_total: int = 0  # Persists across _reset_state for results screen display
 var _current_question_index: int = 0
 var _question_results: Array[Dictionary] = []  # Per-question tracking for results screen
 
@@ -78,6 +79,10 @@ func get_mission_score() -> int:
 
 func get_mission_total() -> int:
 	return _mission_total
+
+
+func get_last_mission_total() -> int:
+	return _last_mission_total
 
 
 func get_question_results() -> Array:
@@ -429,6 +434,7 @@ func _finish_quest() -> void:
 
 	var score := _mission_score
 	_last_completed_building_id = building_id
+	_last_mission_total = _mission_total
 	if passed:
 		_last_xp_reward = xp_reward
 		_reset_state()

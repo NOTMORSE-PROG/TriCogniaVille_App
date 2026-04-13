@@ -61,19 +61,21 @@ const QUIZ_QUESTIONS: Array[Dictionary] = [
 ]
 
 const LEVEL_NAMES: Dictionary = {
-	1: "Non-Reader", 2: "Emerging Reader", 3: "Fluent Reader"
+	1: "Non Reader", 2: "Emerging", 3: "Developing", 4: "Fluent"
 }
 
 const LEVEL_DESCRIPTIONS: Dictionary = {
 	1: "We will start with simple words and short stories to build your confidence.",
 	2: "You are making great progress! We will practice reading sentences together.",
-	3: "Excellent! You have strong reading skills. You will take on fluent-level quests in the village!"
+	3: "You are developing strong reading skills. We will work on longer passages.",
+	4: "Excellent! You have fluent reading skills. You will take on advanced quests!"
 }
 
 const LEVEL_COLORS: Dictionary = {
 	1: Color(0.914, 0.388, 0.431),  # coral
 	2: Color(0.392, 0.769, 0.910),  # sky blue
-	3: Color(0.886, 0.725, 0.290),  # gold
+	3: Color(0.529, 0.808, 0.922),  # teal
+	4: Color(0.886, 0.725, 0.290),  # gold
 }
 
 # Accent colors per slide for illustration panels
@@ -855,9 +857,11 @@ func _show_results() -> void:
 func _score_to_level(s: int) -> int:
 	if s <= 1:
 		return 1
-	if s <= 3:
+	if s == 2:
 		return 2
-	return 3
+	if s == 3:
+		return 3
+	return 4
 
 
 func _on_start_adventure_pressed() -> void:
@@ -890,6 +894,9 @@ func _on_start_adventure_pressed() -> void:
 
 
 func _finish_onboarding_transition() -> void:
+	if _transitioning:
+		return
+	_transitioning = true
 	var tw := create_tween()
 	tw.tween_property(self, "modulate:a", 0.0, 0.4).set_trans(Tween.TRANS_QUAD).set_ease(
 		Tween.EASE_IN

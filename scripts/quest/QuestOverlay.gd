@@ -789,7 +789,7 @@ func _show_result(_building_id: String, passed: bool, score: int) -> void:
 	_counter_label.text = ""
 	_header_tts_btn.visible = false
 
-	var total := QuestManager.get_mission_total()
+	var total := QuestManager.get_last_mission_total()
 	var question_results := QuestManager.get_question_results()
 
 	# Build result UI in question container
