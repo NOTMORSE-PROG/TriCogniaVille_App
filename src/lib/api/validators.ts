@@ -77,7 +77,7 @@ export const storyProgressSingleSchema = z.object({
 export const onboardingCompleteSchema = z.object({
   username: z.string().min(1).max(40).trim(),
   characterGender: z.enum(["male", "female"]),
-  readingLevel: z.number().int().min(1).max(3),
+  readingLevel: z.number().int().min(1).max(4),
 });
 
 // ── Speech Validators ──

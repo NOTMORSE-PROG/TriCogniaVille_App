@@ -20,10 +20,78 @@ interface AnalyticsData {
   }[];
 }
 
+const PAGE_SIZE = 10;
+
+function Pagination({
+  page,
+  totalPages,
+  onPageChange,
+}: {
+  page: number;
+  totalPages: number;
+  onPageChange: (p: number) => void;
+}) {
+  if (totalPages <= 1) return null;
+
+  function getPageNumbers(): (number | "...")[] {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const pages: (number | "...")[] = [1];
+    if (page > 3) pages.push("...");
+    for (let p = Math.max(2, page - 1); p <= Math.min(totalPages - 1, page + 1); p++) {
+      pages.push(p);
+    }
+    if (page < totalPages - 2) pages.push("...");
+    pages.push(totalPages);
+    return pages;
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-1 pt-3">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onPageChange(Math.max(1, page - 1))}
+        disabled={page === 1}
+      >
+        Prev
+      </Button>
+      {getPageNumbers().map((p, i) =>
+        p === "..." ? (
+          <span key={`ellipsis-${i}`} className="px-2 text-muted-foreground select-none">
+            …
+          </span>
+        ) : (
+          <Button
+            key={p}
+            variant={page === p ? "default" : "outline"}
+            size="sm"
+            className="w-9"
+            onClick={() => onPageChange(p)}
+          >
+            {p}
+          </Button>
+        )
+      )}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+        disabled={page === totalPages}
+      >
+        Next
+      </Button>
+    </div>
+  );
+}
+
 export default function DashboardOverview() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [streakPage, setStreakPage] = useState(1);
+  const [activityPage, setActivityPage] = useState(1);
 
   const fetchData = useCallback(() => {
     fetch("/api/dashboard/analytics", { cache: "no-store" })
@@ -78,6 +146,20 @@ export default function DashboardOverview() {
           ) / data.totalStudents
         ).toFixed(1)
       : "N/A";
+
+  const streakTotalPages = Math.max(1, Math.ceil(data.streakLeaderboard.length / PAGE_SIZE));
+  const safeStreakPage = Math.min(streakPage, streakTotalPages);
+  const pagedStreak = data.streakLeaderboard.slice(
+    (safeStreakPage - 1) * PAGE_SIZE,
+    safeStreakPage * PAGE_SIZE
+  );
+
+  const activityTotalPages = Math.max(1, Math.ceil(data.recentActivity.length / PAGE_SIZE));
+  const safeActivityPage = Math.min(activityPage, activityTotalPages);
+  const pagedActivity = data.recentActivity.slice(
+    (safeActivityPage - 1) * PAGE_SIZE,
+    safeActivityPage * PAGE_SIZE
+  );
 
   return (
     <div className="space-y-6">
@@ -134,10 +216,10 @@ export default function DashboardOverview() {
         <CardContent>
           <div className="space-y-3">
             {[
-              { level: 1, label: "Non-Reader" },
+              { level: 1, label: "Non Reader" },
               { level: 2, label: "Emerging" },
-              { level: 3, label: "Fluent" },
-              { level: 4, label: "Advanced" },
+              { level: 3, label: "Developing" },
+              { level: 4, label: "Fluent" },
             ].map(({ level, label }) => {
               const item = data.readingLevelDistribution.find(
                 (d) => d.level === level
@@ -170,32 +252,46 @@ export default function DashboardOverview() {
         {/* Streak Leaderboard */}
         <Card>
           <CardHeader>
-            <CardTitle>Streak Leaderboard</CardTitle>
+            <CardTitle>
+              Streak Leaderboard
+              {streakTotalPages > 1 && (
+                <span className="text-sm font-normal text-muted-foreground ml-2">
+                  — page {safeStreakPage} of {streakTotalPages}
+                </span>
+              )}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {data.streakLeaderboard.length === 0 ? (
               <p className="text-muted-foreground">No data yet.</p>
             ) : (
-              <div className="space-y-2">
-                {data.streakLeaderboard.map((s, i) => (
-                  <Link
-                    key={s.id}
-                    href={`/dashboard/students/${s.id}`}
-                    className="flex items-center justify-between py-2 px-3 rounded hover:bg-muted transition-colors gap-2"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-muted-foreground text-sm w-6 shrink-0">
-                        #{i + 1}
-                      </span>
-                      <span className="font-medium truncate">{s.name}</span>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Badge variant="secondary">{s.streakDays}d streak</Badge>
-                      <Badge variant="outline">{s.xp} XP</Badge>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              <>
+                <div className="space-y-2">
+                  {pagedStreak.map((s, i) => (
+                    <Link
+                      key={s.id}
+                      href={`/dashboard/students/${s.id}`}
+                      className="flex items-center justify-between py-2 px-3 rounded hover:bg-muted transition-colors gap-2"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="text-muted-foreground text-sm w-6 shrink-0">
+                          #{(safeStreakPage - 1) * PAGE_SIZE + i + 1}
+                        </span>
+                        <span className="font-medium truncate">{s.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge variant="secondary">{s.streakDays}d streak</Badge>
+                        <Badge variant="outline">{s.xp} XP</Badge>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                <Pagination
+                  page={safeStreakPage}
+                  totalPages={streakTotalPages}
+                  onPageChange={setStreakPage}
+                />
+              </>
             )}
           </CardContent>
         </Card>
@@ -203,30 +299,44 @@ export default function DashboardOverview() {
         {/* Recent Activity */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle>
+              Recent Activity
+              {activityTotalPages > 1 && (
+                <span className="text-sm font-normal text-muted-foreground ml-2">
+                  — page {safeActivityPage} of {activityTotalPages}
+                </span>
+              )}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {data.recentActivity.length === 0 ? (
               <p className="text-muted-foreground">No activity yet.</p>
             ) : (
-              <div className="space-y-2">
-                {data.recentActivity.map((a, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between py-2 px-3 rounded border gap-2"
-                  >
-                    <div className="min-w-0">
-                      <span className="font-medium truncate block">{a.studentName}</span>
-                      <span className="text-muted-foreground text-xs truncate block">
-                        {a.buildingId} / {a.questId}
-                      </span>
+              <>
+                <div className="space-y-2">
+                  {pagedActivity.map((a, i) => (
+                    <div
+                      key={`${safeActivityPage}-${i}`}
+                      className="flex items-center justify-between py-2 px-3 rounded border gap-2"
+                    >
+                      <div className="min-w-0">
+                        <span className="font-medium truncate block">{a.studentName}</span>
+                        <span className="text-muted-foreground text-xs truncate block">
+                          {a.buildingId} / {a.questId}
+                        </span>
+                      </div>
+                      <Badge variant={a.passed ? "default" : "destructive"} className="shrink-0">
+                        {a.passed ? "Passed" : "Failed"}
+                      </Badge>
                     </div>
-                    <Badge variant={a.passed ? "default" : "destructive"} className="shrink-0">
-                      {a.passed ? "Passed" : "Failed"}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+                <Pagination
+                  page={safeActivityPage}
+                  totalPages={activityTotalPages}
+                  onPageChange={setActivityPage}
+                />
+              </>
             )}
           </CardContent>
         </Card>

@@ -10,6 +10,7 @@ import { conflict, internalError, notFound } from "@/lib/api/errors";
 import { eq } from "drizzle-orm";
 import { TokenPayload } from "@/lib/auth/jwt";
 import { nextStreak } from "@/lib/gamification/streak";
+import { checkAndAwardBadges } from "@/lib/gamification/badges";
 
 /**
  * POST /api/v1/onboarding/complete
@@ -66,7 +67,13 @@ export async function POST(request: NextRequest) {
         .where(eq(students.id, user.sub))
         .returning();
 
-      return NextResponse.json({ student: updated }, { status: 200 });
+      // Award any badges earned from the placement quiz (e.g. reading level badges)
+      const newBadges = await checkAndAwardBadges(user.sub).catch((err) => {
+        console.error("Badge check after onboarding failed:", err);
+        return [] as string[];
+      });
+
+      return NextResponse.json({ student: updated, newBadges }, { status: 200 });
     } catch (error) {
       console.error("Onboarding complete error:", error);
       return internalError();

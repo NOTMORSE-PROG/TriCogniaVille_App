@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
           .from(students)
           .where(inArray(students.id, visibleStudentIds(teacher.sub)))
           .orderBy(desc(students.streakDays))
-          .limit(10),
+          .limit(50),
 
         db
           .select({
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
           .innerJoin(students, sql`${questAttempts.studentId} = ${students.id}`)
           .where(inArray(questAttempts.studentId, visibleStudentIds(teacher.sub)))
           .orderBy(desc(questAttempts.createdAt))
-          .limit(20),
+          .limit(50),
       ]);
 
       return NextResponse.json({

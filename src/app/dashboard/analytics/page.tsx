@@ -117,10 +117,10 @@ export default function AnalyticsPage() {
                     ? Math.round((count / data.totalStudents) * 100)
                     : 0;
                 const labels = [
-                  "Non-Reader",
+                  "Non Reader",
                   "Emerging",
+                  "Developing",
                   "Fluent",
-                  "Advanced",
                 ];
                 return (
                   <div key={level} className="flex items-center gap-3">

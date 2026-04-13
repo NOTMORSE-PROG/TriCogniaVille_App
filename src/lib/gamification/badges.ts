@@ -37,7 +37,13 @@ export async function checkAndAwardBadges(studentId: string): Promise<string[]> 
       ),
 
     db
-      .select({ passed: questAttempts.passed, attempts: questAttempts.attempts })
+      .select({
+        passed: questAttempts.passed,
+        attempts: questAttempts.attempts,
+        questId: questAttempts.questId,
+        score: questAttempts.score,
+        totalItems: questAttempts.totalItems,
+      })
       .from(questAttempts)
       .where(eq(questAttempts.studentId, studentId)),
 
@@ -52,7 +58,15 @@ export async function checkAndAwardBadges(studentId: string): Promise<string[]> 
   const student = studentRows[0];
   const unlockedBuildings = new Set(buildingRows.map((b) => b.buildingId));
   const passedQuests = questRows.filter((q) => q.passed);
-  const hasPerfectFirst = questRows.some((q) => q.passed && q.attempts === 1);
+  const uniquePassedQuestIds = new Set(passedQuests.map((q) => q.questId));
+  const hasPerfectFirst = questRows.some(
+    (q) =>
+      q.passed &&
+      q.attempts === 1 &&
+      q.score != null &&
+      q.totalItems != null &&
+      q.score >= q.totalItems
+  );
   const alreadyEarned = new Set(existingRows.map((b) => b.badgeId));
 
   const toAward: string[] = [];
@@ -87,7 +101,7 @@ export async function checkAndAwardBadges(studentId: string): Promise<string[]> 
         } else {
           earned =
             badge.requirementValue != null &&
-            passedQuests.length >= badge.requirementValue;
+            uniquePassedQuestIds.size >= badge.requirementValue;
         }
         break;
 
