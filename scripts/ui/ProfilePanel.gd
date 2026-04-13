@@ -42,10 +42,10 @@ const LEVEL_COLORS: Dictionary = {
 
 const CREDITS: Array[Dictionary] = [
 	{"role": "Project Lead",       "name": "Anne Caryll D. Paloma",    "pic": "res://assets/sprites/credits/anne_caryll.png"},
-	{"role": "Associate Lead",     "name": "Jamille Erica Briones",    "pic": "res://assets/sprites/credits/jamille_erica.png"},
-	{"role": "Research & Content", "name": "Leeana Ricka Salaysay",    "pic": "res://assets/sprites/credits/leeana_ricka.png"},
-	{"role": "Research & Content", "name": "Enzo Santos",              "pic": "res://assets/sprites/credits/enzo_santos.png"},
-	{"role": "Research & Content", "name": "Rica Jamon",               "pic": "res://assets/sprites/credits/rica_jamon.png"},
+	{"role": "Associate Lead",     "name": "Jamille Erica G. Briones",    "pic": "res://assets/sprites/credits/jamille_erica.png"},
+	{"role": "Research & Content", "name": "Leeana Ricka DG. Salaysay",   "pic": "res://assets/sprites/credits/leeana_ricka.png"},
+	{"role": "Research & Content", "name": "Lorenzo M. Santos",            "pic": "res://assets/sprites/credits/enzo_santos.png"},
+	{"role": "Research & Content", "name": "Rica Mae A. Jamon",            "pic": "res://assets/sprites/credits/rica_jamon.png"},
 ]
 
 # ── State ─────────────────────────────────────────────────────────────────────

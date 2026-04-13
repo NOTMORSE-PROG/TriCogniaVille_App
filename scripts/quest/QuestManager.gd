@@ -285,29 +285,12 @@ func submit_answer(correct: bool) -> void:
 
 
 ## Submit fluency score from FluencyInteraction (Part B).
+## Only stores the raw fluency score for bakery weighted assessment.
+## Scoring / total tracking is handled by submit_answer() via answer_submitted.
 func submit_fluency_score(fluency_score: int) -> void:
 	if not _is_quest_active:
 		return
 	_part_b_fluency = fluency_score
-	if _current_stage == "mission":
-		var fluency_pass: int = _current_quest_data.get("assessment", {}).get("fluency_pass", 60)
-		_mission_total += 1
-		if fluency_score >= fluency_pass:
-			_mission_score += 1
-		var questions := get_current_questions()
-		var q: Dictionary = {}
-		if _current_question_index < questions.size():
-			q = questions[_current_question_index]
-		(
-			_question_results
-			. append(
-				{
-					"correct": fluency_score >= 60,
-					"question": q,
-					"index": _mission_total - 1,
-				}
-			)
-		)
 
 
 ## Register an audio URL uploaded during this quest session.
@@ -446,6 +429,8 @@ func _shuffle_mission_questions() -> void:
 	if _current_quest_data.has("mission"):
 		var mission_qs: Array = _current_quest_data["mission"].duplicate()
 		mission_qs.shuffle()
+		if not _current_quest_data.has("assessment") and mission_qs.size() > QuestData.MISSION_ITEM_COUNT:
+			mission_qs.resize(QuestData.MISSION_ITEM_COUNT)
 		_current_quest_data["mission"] = mission_qs
 
 

@@ -8,6 +8,8 @@ const UNLOCK_ORDER: Array[String] = [
 	"town_hall", "school", "inn", "chapel", "library", "well", "market", "bakery"
 ]
 
+const MISSION_ITEM_COUNT := 10
+
 # ── Building → Quest Mapping ────────────────────────────────────────────────
 const BUILDING_QUEST_MAP := {
 	"town_hall":
