@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 interface AnalyticsData {
   totalStudents: number;
   activeToday: number;
+  activeStudents: { id: string; name: string; lastActive: string | null; readingLevel: number }[];
   readingLevelDistribution: { level: number; count: number }[];
   streakLeaderboard: { id: string; name: string; streakDays: number; xp: number }[];
   recentActivity: {
@@ -102,6 +103,7 @@ export default function DashboardOverview() {
       .then((json) => {
         setData({
           ...json,
+          activeStudents: json.activeStudents ?? [],
           readingLevelDistribution: json.readingLevelDistribution ?? [],
           streakLeaderboard: json.streakLeaderboard ?? [],
           recentActivity: json.recentActivity ?? [],
@@ -185,7 +187,7 @@ export default function DashboardOverview() {
             <CardTitle className="text-sm text-muted-foreground">Active Today</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{data.activeToday}</div>
+            <div className="text-3xl font-bold text-green-600">{data.activeToday}</div>
           </CardContent>
         </Card>
         <Card>
@@ -245,6 +247,47 @@ export default function DashboardOverview() {
               );
             })}
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Active Students Today */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            Active Students Today
+            <span className="text-sm font-normal text-muted-foreground ml-1">
+              ({data.activeStudents.length})
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {data.activeStudents.length === 0 ? (
+            <p className="text-muted-foreground">No students active today yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {data.activeStudents.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`/dashboard/students/${s.id}`}
+                  className="flex items-center justify-between py-2 px-3 rounded border border-green-200 bg-green-50 hover:bg-green-100 transition-colors gap-2"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="inline-block w-2 h-2 rounded-full bg-green-500 shrink-0" />
+                    <span className="font-medium truncate text-sm">{s.name}</span>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Badge variant="outline" className="text-xs">L{s.readingLevel}</Badge>
+                    {s.lastActive && (
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(s.lastActive).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 

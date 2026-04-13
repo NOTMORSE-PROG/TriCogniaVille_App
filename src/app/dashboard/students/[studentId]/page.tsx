@@ -18,6 +18,8 @@ import { BadgeGrid } from "@/components/gamification/badge-grid";
 const BUILDINGS = [
   "town_hall",
   "school",
+  "inn",
+  "chapel",
   "library",
   "well",
   "market",
@@ -60,6 +62,8 @@ interface StudentData {
     questId: string;
     buildingId: string;
     passed: boolean;
+    score: number | null;
+    totalItems: number | null;
     attempts: number;
     completedAt: string | null;
   }[];
@@ -190,7 +194,7 @@ export default function StudentDetailPage() {
                 >
                   <div className="text-2xl mb-1">{unlocked ? "🏠" : "🔒"}</div>
                   <div className="text-xs font-medium capitalize">
-                    {buildingId.replace("_", " ")}
+                    {buildingId.replace(/_/g, " ")}
                   </div>
                   {state?.unlockedAt && (
                     <div className="text-xs text-muted-foreground mt-1">
@@ -222,6 +226,7 @@ export default function StudentDetailPage() {
                   <TableHead>Quest</TableHead>
                   <TableHead>Building</TableHead>
                   <TableHead>Result</TableHead>
+                  <TableHead>Score</TableHead>
                   <TableHead>Attempts</TableHead>
                   <TableHead>Date</TableHead>
                 </TableRow>
@@ -231,12 +236,19 @@ export default function StudentDetailPage() {
                   <TableRow key={q.id}>
                     <TableCell className="font-medium">{q.questId}</TableCell>
                     <TableCell className="capitalize">
-                      {q.buildingId.replace("_", " ")}
+                      {q.buildingId.replace(/_/g, " ")}
                     </TableCell>
                     <TableCell>
                       <Badge variant={q.passed ? "default" : "destructive"}>
                         {q.passed ? "Passed" : "Failed"}
                       </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {q.score != null && q.totalItems != null
+                        ? `${q.score} / ${q.totalItems}`
+                        : q.score != null
+                        ? q.score
+                        : "—"}
                     </TableCell>
                     <TableCell>{q.attempts}</TableCell>
                     <TableCell className="text-muted-foreground text-sm">

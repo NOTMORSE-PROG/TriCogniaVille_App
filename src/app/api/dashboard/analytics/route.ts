@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           totalStudents: 0,
           activeToday: 0,
+          activeStudents: [],
           readingLevelDistribution: [],
           questPassRate: [],
           streakLeaderboard: [],
@@ -41,6 +42,7 @@ export async function GET(request: NextRequest) {
         questPassRate,
         streakLeaderboard,
         recentActivity,
+        activeStudents,
       ] = await Promise.all([
         db
           .select({
@@ -98,11 +100,28 @@ export async function GET(request: NextRequest) {
           .where(inArray(questAttempts.studentId, visibleStudentIds(teacher.sub)))
           .orderBy(desc(questAttempts.createdAt))
           .limit(50),
+
+        db
+          .select({
+            id: students.id,
+            name: students.name,
+            lastActive: students.lastActive,
+            readingLevel: students.readingLevel,
+          })
+          .from(students)
+          .where(
+            and(
+              inArray(students.id, visibleStudentIds(teacher.sub)),
+              gte(students.lastActive, today)
+            )
+          )
+          .orderBy(desc(students.lastActive)),
       ]);
 
       return NextResponse.json({
         totalStudents,
         activeToday: activeResult?.count ?? 0,
+        activeStudents,
         readingLevelDistribution: readingLevelDist,
         questPassRate: questPassRate.map((q) => ({
           ...q,
