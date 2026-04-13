@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { READING_LEVEL_LABELS } from "@/lib/reading-levels";
 
 interface Student {
   id: string;
@@ -20,12 +21,6 @@ interface Student {
   createdAt: string;
 }
 
-const LEVEL_LABELS: Record<number, string> = {
-  1: "Non Reader",
-  2: "Emerging",
-  3: "Developing",
-  4: "Fluent",
-};
 
 function levelVariant(level: number): "default" | "secondary" | "outline" | "destructive" {
   if (level === 4) return "default";
@@ -186,7 +181,7 @@ export default function StudentsPage() {
 
                     <div className="flex items-center gap-3 shrink-0">
                       <Badge variant={levelVariant(student.readingLevel)}>
-                        L{student.readingLevel} {LEVEL_LABELS[student.readingLevel]}
+                        L{student.readingLevel} {READING_LEVEL_LABELS[student.readingLevel]}
                       </Badge>
                       <div className="hidden sm:flex items-center gap-2">
                         <Badge variant="secondary">{student.xp} XP</Badge>

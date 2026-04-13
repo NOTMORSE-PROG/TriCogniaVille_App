@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
           readingLevelDistribution: [],
           questPassRate: [],
           streakLeaderboard: [],
+          xpLeaderboard: [],
           recentActivity: [],
         });
       }
@@ -41,6 +42,7 @@ export async function GET(request: NextRequest) {
         activeResult,
         questPassRate,
         streakLeaderboard,
+        xpLeaderboard,
         recentActivity,
         activeStudents,
       ] = await Promise.all([
@@ -89,6 +91,18 @@ export async function GET(request: NextRequest) {
 
         db
           .select({
+            id: students.id,
+            name: students.name,
+            xp: students.xp,
+            streakDays: students.streakDays,
+          })
+          .from(students)
+          .where(inArray(students.id, visibleStudentIds(teacher.sub)))
+          .orderBy(desc(students.xp))
+          .limit(50),
+
+        db
+          .select({
             questId: questAttempts.questId,
             buildingId: questAttempts.buildingId,
             passed: questAttempts.passed,
@@ -128,6 +142,7 @@ export async function GET(request: NextRequest) {
           rate: q.total > 0 ? Math.round((q.passed / q.total) * 100) : 0,
         })),
         streakLeaderboard,
+        xpLeaderboard,
         recentActivity,
       });
     } catch (error) {

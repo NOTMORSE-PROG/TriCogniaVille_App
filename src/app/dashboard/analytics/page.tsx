@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { READING_LEVEL_BARS } from "@/lib/reading-levels";
 
 interface AnalyticsData {
   totalStudents: number;
@@ -107,7 +108,7 @@ export default function AnalyticsPage() {
             <p className="text-muted-foreground">No data yet.</p>
           ) : (
             <div className="space-y-3">
-              {[1, 2, 3, 4].map((level) => {
+              {READING_LEVEL_BARS.map(({ level, label }) => {
                 const item = data.readingLevelDistribution.find(
                   (d) => d.level === level
                 );
@@ -116,16 +117,10 @@ export default function AnalyticsPage() {
                   data.totalStudents > 0
                     ? Math.round((count / data.totalStudents) * 100)
                     : 0;
-                const labels = [
-                  "Non Reader",
-                  "Emerging",
-                  "Developing",
-                  "Fluent",
-                ];
                 return (
                   <div key={level} className="flex items-center gap-3">
                     <span className="w-32 text-sm">
-                      L{level}: {labels[level - 1]}
+                      L{level}: {label}
                     </span>
                     <div className="flex-1 bg-muted rounded-full h-8 overflow-hidden">
                       <div
