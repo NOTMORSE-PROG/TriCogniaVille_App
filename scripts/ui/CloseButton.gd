@@ -8,7 +8,7 @@ signal pressed
 
 ## Extra hit area on every side (px). Does NOT affect layout or draw — only
 ## _has_point(), so the padding never bleeds into neighbouring nodes.
-const HIT_PADDING := 20.0
+const HIT_PADDING := 44.0
 
 var _hovered: bool = false
 
@@ -16,6 +16,7 @@ var _hovered: bool = false
 func setup(size_px: float) -> void:
 	custom_minimum_size = Vector2(size_px, size_px)
 	size = Vector2(size_px, size_px)
+	size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	queue_redraw()
 

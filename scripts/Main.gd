@@ -1196,6 +1196,8 @@ func _on_building_tapped(controller: BuildingController) -> void:
 			_show_replay_prompt(controller.building_id)
 		return
 	if controller.is_unlocked:
+		if not QuestManager.is_quest_active():
+			_show_replay_prompt(controller.building_id)
 		return
 	if QuestManager.is_quest_active():
 		return
@@ -2156,5 +2158,3 @@ void fragment() {
 }"""
 	mat.shader = shader
 	vign.material = mat
-
-
