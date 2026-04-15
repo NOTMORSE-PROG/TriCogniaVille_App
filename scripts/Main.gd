@@ -89,18 +89,19 @@ func _build_grass() -> void:
 	# ── Layer 0: Procedural grass shader base ──
 	var base := ColorRect.new()
 	base.color = Color("#3d9815")
-	base.size = _vp
+	base.position = -_vp
+	base.size = _vp * 3.0
 	base.z_index = -10
 	var grass_mat := ShaderMaterial.new()
 	grass_mat.shader = load("res://shaders/grass_procedural.gdshader")
 	base.material = grass_mat
 	add_child(base)
 
-	# ── Layer 1: Irregular ink-blob patches (~35) — elongated, not circular ──
+	# ── Layer 1: Irregular ink-blob patches (~55) — elongated, not circular ──
 	seed(42)
-	for _i in range(35):
-		var cx := randf() * _vp.x
-		var cy := randf() * _vp.y
+	for _i in range(55):
+		var cx := randf_range(-_vp.x, _vp.x * 2.0)
+		var cy := randf_range(-_vp.y, _vp.y * 2.0)
 		var r := randf_range(45.0, 140.0) * _sx
 		var pts := PackedVector2Array()
 		for v in range(9):
@@ -120,7 +121,7 @@ func _build_grass() -> void:
 		blob.z_index = -10
 		add_child(blob)
 
-	# ── Layer 2: Noise-driven grass blade clusters (~50, 3 blades each) ──
+	# ── Layer 2: Noise-driven grass blade clusters (~80, 3 blades each) ──
 	var noise := FastNoiseLite.new()
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	noise.frequency = 0.03
@@ -131,10 +132,10 @@ func _build_grass() -> void:
 	]
 	var placed := 0
 	var tries := 0
-	while placed < 50 and tries < 500:
+	while placed < 80 and tries < 800:
 		tries += 1
-		var tx := randf() * _vp.x
-		var ty := randf() * _vp.y
+		var tx := randf_range(-_vp.x, _vp.x * 2.0)
+		var ty := randf_range(-_vp.y, _vp.y * 2.0)
 		if noise.get_noise_2d(tx, ty) > 0.10:
 			var rot := randf_range(-20.0, 20.0)
 			var sf := randf_range(0.9, 1.5) * _sx
@@ -2155,3 +2156,5 @@ void fragment() {
 }"""
 	mat.shader = shader
 	vign.material = mat
+
+

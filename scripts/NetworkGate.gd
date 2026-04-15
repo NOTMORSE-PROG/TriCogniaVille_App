@@ -31,9 +31,11 @@ var _retry_button: Button
 var _cancel_button: Button
 var _spinner: Label
 
-var _pending_request: Callable
-var _pending_done: Callable
+var _queue: Array[Dictionary] = []  # FIFO queue of { "request": Callable, "on_done": Callable }
+var _active_request: Callable
+var _active_done: Callable
 var _is_busy: bool = false
+var _is_auth_failure: bool = false
 
 
 func _ready() -> void:
@@ -56,13 +58,15 @@ func _ready() -> void:
 ## `on_done` is called with the parsed response Dictionary when the request
 ## eventually succeeds (possibly after retries). If the user cancels, on_done
 ## is called with `{"error": "cancelled"}`.
+##
+## Requests are queued FIFO when another is already in-flight. Every queued
+## request eventually executes (unless an auth failure drains the queue).
 func run(request: Callable, on_done: Callable) -> void:
 	if _is_busy:
-		push_warning("[NetworkGate] A request is already in flight; queuing rejected.")
-		on_done.call({"error": "busy"})
+		_queue.push_back({"request": request, "on_done": on_done})
 		return
-	_pending_request = request
-	_pending_done = on_done
+	_active_request = request
+	_active_done = on_done
 	_dispatch()
 
 
@@ -71,8 +75,9 @@ func run(request: Callable, on_done: Callable) -> void:
 
 func _dispatch() -> void:
 	_is_busy = true
+	_is_auth_failure = false
 	request_started.emit()
-	_pending_request.call(
+	_active_request.call(
 		func(success: bool, data: Dictionary) -> void: _on_response(success, data)
 	)
 
@@ -82,11 +87,12 @@ func _on_response(success: bool, data: Dictionary) -> void:
 		_is_busy = false
 		_root.visible = false
 		request_finished.emit()
-		var done := _pending_done
-		_pending_done = Callable()
-		_pending_request = Callable()
+		var done := _active_done
+		_active_request = Callable()
+		_active_done = Callable()
 		if done.is_valid():
 			done.call(data)
+		_process_next()
 		return
 
 	# Failure — show the modal and wait for the user.
@@ -95,6 +101,7 @@ func _on_response(success: bool, data: Dictionary) -> void:
 	# the user back to AuthScreen via cancel.
 	if data.get("code", "") == "UNAUTHORIZED":
 		msg = "Your session expired. Please log in again."
+		_is_auth_failure = true
 	_message_label.text = msg
 	_retry_button.disabled = false
 	_root.visible = true
@@ -110,11 +117,33 @@ func _on_cancel_pressed() -> void:
 	_is_busy = false
 	_root.visible = false
 	request_finished.emit()
-	var done := _pending_done
-	_pending_done = Callable()
-	_pending_request = Callable()
+	var done := _active_done
+	_active_request = Callable()
+	_active_done = Callable()
 	if done.is_valid():
 		done.call({"error": "cancelled"})
+	# Auth failure = no subsequent request can succeed; drain the queue.
+	if _is_auth_failure:
+		_drain_queue_with_error("cancelled")
+	else:
+		_process_next()
+
+
+func _process_next() -> void:
+	if _queue.is_empty():
+		return
+	var next: Dictionary = _queue.pop_front()
+	_active_request = next["request"]
+	_active_done = next["on_done"]
+	_dispatch()
+
+
+func _drain_queue_with_error(error: String) -> void:
+	while not _queue.is_empty():
+		var item: Dictionary = _queue.pop_front()
+		var cb: Callable = item.get("on_done", Callable())
+		if cb.is_valid():
+			cb.call({"error": error})
 
 
 # ── UI Construction ───────────────────────────────────────────────────────────

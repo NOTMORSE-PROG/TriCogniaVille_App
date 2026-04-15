@@ -32,6 +32,7 @@ var _music_tween: Tween  # Tracks the active volume tween so it can be killed
 
 # ── SFX Pool ────────────────────────────────────────────────────────────────
 var _sfx_players: Array[AudioStreamPlayer] = []
+var _sfx_muted: bool = false  # Transient system mute (e.g. mic recording)
 
 # ── Preloaded Streams ───────────────────────────────────────────────────────
 var _sfx_streams: Dictionary = {}
@@ -66,6 +67,8 @@ func _ready() -> void:
 
 
 func play_sfx(sfx_name: String) -> void:
+	if _sfx_muted:
+		return
 	if not sfx_enabled:
 		return
 	if not _sfx_streams.has(sfx_name):
@@ -120,6 +123,10 @@ func _on_music_finished() -> void:
 	# Fallback loop: restart if the stream finished (handles formats that ignore loop property)
 	if _music_playing and is_instance_valid(_music_player):
 		_music_player.play()
+
+
+func set_sfx_muted(muted: bool) -> void:
+	_sfx_muted = muted
 
 
 func fade_music(target_db: float, duration: float = 0.5) -> void:

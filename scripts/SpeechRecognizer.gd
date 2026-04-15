@@ -71,6 +71,8 @@ func start_recognition(language: String = "en-US") -> void:
 	_language = language
 	_is_recording = true
 	_plugin.startRecording(language)
+	TTSManager.stop()
+	AudioManager.set_sfx_muted(true)
 
 	# Safety: auto-stop after max_listen_seconds
 	_cleanup_timer()
@@ -111,6 +113,11 @@ func get_alternatives() -> Array:
 	return _alternatives
 
 
+func _exit_tree() -> void:
+	if _is_recording:
+		AudioManager.set_sfx_muted(false)
+
+
 ## ── Private ────────────────────────────────────────────────────────────────
 
 
@@ -123,6 +130,7 @@ func _cleanup_timer() -> void:
 
 ## Called by plugin when audio recording is done — send to backend for transcription.
 func _on_recording_completed(audio_b64: String) -> void:
+	AudioManager.set_sfx_muted(false)
 	_cleanup_timer()
 	_is_recording = false
 	_audio_base64 = audio_b64
@@ -136,6 +144,7 @@ func _on_recording_completed(audio_b64: String) -> void:
 
 
 func _on_recording_error(reason: String) -> void:
+	AudioManager.set_sfx_muted(false)
 	_cleanup_timer()
 	_is_recording = false
 	recognition_error.emit(reason)

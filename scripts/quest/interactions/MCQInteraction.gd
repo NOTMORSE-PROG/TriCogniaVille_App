@@ -22,16 +22,13 @@ var _feedback_panel: PanelContainer
 var _feedback_icon: Label
 var _feedback_text: Label
 
-var _compact: bool = false
 
-
-func setup(question: Dictionary, show_hints: bool, sx: float = 1.0, sy: float = 1.0, compact: bool = false) -> void:
+func setup(question: Dictionary, show_hints: bool, sx: float = 1.0, sy: float = 1.0) -> void:
 	_sx = sx
 	_sy = sy
 	_question = question
 	_show_hints = show_hints
 	_answered = false
-	_compact = compact
 	_build_ui()
 
 
@@ -42,7 +39,7 @@ func _build_ui() -> void:
 
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	add_theme_constant_override("separation", int((5 if _compact else 12) * _sy))
+	add_theme_constant_override("separation", int(12 * _sy))
 
 	# Passage (optional)
 	var passage: String = _question.get("passage", "")
@@ -61,18 +58,15 @@ func _build_ui() -> void:
 		_passage_label.scroll_active = false
 		_passage_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var p_base: int
-		if _compact:
+		var p_len := passage.length()
+		if p_len > 350:
+			p_base = 18
+		elif p_len > 200:
+			p_base = 22
+		elif p_len > 100:
 			p_base = 26
 		else:
-			var p_len := passage.length()
-			if p_len > 350:
-				p_base = 18
-			elif p_len > 200:
-				p_base = 22
-			elif p_len > 100:
-				p_base = 26
-			else:
-				p_base = 32
+			p_base = 32
 		_passage_label.add_theme_font_size_override("normal_font_size", int(p_base * _sy))
 		_passage_label.add_theme_color_override("default_color", StyleFactory.TEXT_SECONDARY)
 		_passage_label.custom_minimum_size = Vector2(0, 0)
@@ -80,36 +74,17 @@ func _build_ui() -> void:
 		passage_card.add_child(_passage_label)
 		add_child(passage_card)
 
-	# Font tier based on passage length
-	# Tier 1: no passage      → largest (48% of all MCQs)
-	# Tier 2: short  <150     → large
-	# Tier 3: medium 150-400  → medium
-	# Tier 4: long   400+     → compact (content scrolls)
-	var p_len := passage.length()
-	var tier: int
-	if _compact:
-		tier = 0  # handled separately below
-	elif p_len == 0:
-		tier = 1
-	elif p_len < 150:
-		tier = 2
-	elif p_len < 400:
-		tier = 3
-	else:
-		tier = 4
+	# Font tier based on passage length — 2-tier system
+	# Tier 1: no passage or short (<150 chars) → larger fonts
+	# Tier 2: long passage (150+ chars)        → smaller fonts
+	var tier: int = 1 if passage.length() < 150 else 2
 
 	# Instruction
 	var instruction: String = _question.get("instruction", "")
 	if not instruction.is_empty():
 		var inst_label := Label.new()
 		inst_label.text = instruction
-		var i_font: int
-		match tier:
-			0: i_font = 30
-			1: i_font = 52
-			2: i_font = 44
-			3: i_font = 34
-			_: i_font = 28
+		var i_font: int = 48 if tier == 1 else 30
 		inst_label.add_theme_font_size_override("font_size", int(i_font * _sy))
 		inst_label.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
 		inst_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -118,13 +93,7 @@ func _build_ui() -> void:
 
 	# Question
 	var q_text: String = _question.get("question", "")
-	var q_base_font: int
-	match tier:
-		0: q_base_font = 30
-		1: q_base_font = 58
-		2: q_base_font = 50
-		3: q_base_font = 42
-		_: q_base_font = 36
+	var q_base_font: int = 54 if tier == 1 else 38
 	# Shrink slightly for very long question text
 	if q_text.length() > 80:
 		q_base_font = int(q_base_font * 0.82)
@@ -173,34 +142,14 @@ func _build_ui() -> void:
 			_shuffled_correct_index = new_pos
 	options = shuffled
 
-	# Auto-scale font + height when any option text is long
-	var max_opt_len := 0
-	for opt_text in options:
-		max_opt_len = max(max_opt_len, (opt_text as String).length())
 	var base_font: int
 	var base_h: float
-	match tier:
-		0:
-			base_font = 26
-			base_h = 68.0
-		1:
-			base_font = 46
-			base_h = 112.0
-		2:
-			base_font = 40
-			base_h = 100.0
-		3:
-			base_font = 32
-			base_h = 88.0
-		_:
-			base_font = 26
-			base_h = 80.0
-	if max_opt_len > 70:
-		base_font = int(base_font * 0.70)
-		base_h *= 0.70
-	elif max_opt_len > 50:
-		base_font = int(base_font * 0.82)
-		base_h *= 0.82
+	if tier == 1:
+		base_font = 42
+		base_h = 106.0
+	else:
+		base_font = 28
+		base_h = 84.0
 
 	for i in options.size():
 		var btn := Button.new()
