@@ -1,18 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 interface SpeechAssessment {
   id: number;
@@ -219,109 +211,107 @@ export default function StudentSpeechPage() {
               No speech readings recorded yet.
             </p>
           ) : (
-            <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Quest / Stage</TableHead>
-                  <TableHead>Expected Text</TableHead>
-                  <TableHead>What They Said</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Errors</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {assessments.map((a) => (
-                  <>
-                    <TableRow
-                      key={a.id}
-                      className={
-                        a.flagReview && !a.reviewedBy
-                          ? "bg-yellow-500/10 border-yellow-500/30"
-                          : ""
-                      }
-                    >
-                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                        {new Date(a.createdAt).toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-xs">
-                        <span className="capitalize font-medium">
-                          {a.buildingId.replace("_", " ")}
-                        </span>
-                        <br />
-                        <span className="text-muted-foreground capitalize">{a.stage}</span>
-                        {a.attemptNumber > 1 && (
-                          <span className="text-muted-foreground"> · Attempt {a.attemptNumber}</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="max-w-[160px]">
-                        <span className="text-sm font-medium text-amber-400">
-                          {a.expectedText}
-                        </span>
-                      </TableCell>
-                      <TableCell className="max-w-[160px]">
-                        <span className="text-sm text-muted-foreground italic">
-                          {a.transcript ?? "(not captured)"}
-                        </span>
-                        {a.confidence !== null && (
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            Confidence: {Math.round((a.confidence ?? 0) * 100)}%
-                          </div>
-                        )}
-                        {a.audioUrl && (
-                          <div className="mt-1.5">
-                            <audio controls src={a.audioUrl} className="w-full h-8" preload="none" />
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <ScoreBadge score={a.score} />
-                      </TableCell>
-                      <TableCell>
-                        <ErrorTypePills errorTypesJson={a.errorTypes} />
-                      </TableCell>
-                      <TableCell>
-                        {a.reviewedBy ? (
-                          <Badge variant="outline" className="text-green-600 border-green-600">
-                            Reviewed
-                          </Badge>
-                        ) : a.flagReview ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-yellow-600 border-yellow-600 text-xs"
-                            onClick={() =>
-                              setExpandedId(expandedId === a.id ? null : a.id)
-                            }
-                          >
-                            {expandedId === a.id ? "Close" : "Review"}
-                          </Button>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                    {expandedId === a.id && (
-                      <TableRow key={`${a.id}-review`}>
-                        <TableCell colSpan={7} className="bg-muted/20 pb-4">
-                          <div className="px-2">
-                            {a.feedback && (
-                              <p className="text-sm text-muted-foreground mb-2">
-                                <span className="font-medium">Auto feedback: </span>
-                                {a.feedback}
-                              </p>
-                            )}
-                            <ReviewForm assessment={a} onSaved={handleReviewSaved} />
-                          </div>
-                        </TableCell>
-                      </TableRow>
+            <div className="divide-y">
+              {assessments.map((a) => (
+                <div
+                  key={a.id}
+                  className={`py-4 space-y-2 ${
+                    a.flagReview && !a.reviewedBy ? "bg-yellow-500/5" : ""
+                  }`}
+                >
+                  {/* Row 1: meta + score + status */}
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                      {new Date(a.createdAt).toLocaleString()}
+                    </span>
+                    <span className="text-xs font-medium capitalize">
+                      {a.buildingId.replace(/_/g, " ")}
+                    </span>
+                    <Badge variant="outline" className="text-xs capitalize">
+                      {a.stage}
+                      {a.attemptNumber > 1 && ` · Attempt ${a.attemptNumber}`}
+                    </Badge>
+                    <ScoreBadge score={a.score} />
+                    {a.confidence !== null && (
+                      <span
+                        className="text-xs text-muted-foreground"
+                        title="How confident the speech recognition API was in its transcription — not the student's reading score"
+                      >
+                        Recognition: {Math.round((a.confidence ?? 0) * 100)}%
+                      </span>
                     )}
-                  </>
-                ))}
-              </TableBody>
-            </Table>
+                    <div className="ml-auto">
+                      {a.reviewedBy ? (
+                        <Badge variant="outline" className="text-green-600 border-green-600">
+                          Reviewed
+                        </Badge>
+                      ) : a.flagReview ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-yellow-600 border-yellow-600 text-xs"
+                          onClick={() =>
+                            setExpandedId(expandedId === a.id ? null : a.id)
+                          }
+                        >
+                          {expandedId === a.id ? "Close" : "Review"}
+                        </Button>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  {/* Row 2: expected vs transcript */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div className="rounded-md bg-muted/40 border px-3 py-2">
+                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                        Expected
+                      </p>
+                      <p className="text-sm leading-snug">{a.expectedText}</p>
+                    </div>
+                    <div className="rounded-md bg-muted/40 border px-3 py-2">
+                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                        What They Said
+                      </p>
+                      <p className="text-sm italic text-muted-foreground leading-snug">
+                        {a.transcript ?? "(not captured)"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Row 3: errors + audio */}
+                  {(a.errorTypes || a.audioUrl || a.feedback) && (
+                    <div className="flex flex-wrap items-center gap-3">
+                      <ErrorTypePills errorTypesJson={a.errorTypes} />
+                      {a.feedback && (
+                        <span className="text-xs text-muted-foreground italic">
+                          {a.feedback}
+                        </span>
+                      )}
+                      {a.audioUrl && (
+                        <audio
+                          controls
+                          src={a.audioUrl}
+                          className="h-8 max-w-xs"
+                          preload="none"
+                        />
+                      )}
+                    </div>
+                  )}
+
+                  {/* Review form */}
+                  {expandedId === a.id && (
+                    <div className="bg-muted/20 border rounded-lg p-3">
+                      {a.feedback && (
+                        <p className="text-sm text-muted-foreground mb-2">
+                          <span className="font-medium">Auto feedback: </span>
+                          {a.feedback}
+                        </p>
+                      )}
+                      <ReviewForm assessment={a} onSaved={handleReviewSaved} />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </CardContent>

@@ -94,6 +94,8 @@ export default function StudentDetailPage() {
 
   const { student, questAttempts, buildingStates } = data;
   const buildingMap = new Map(buildingStates.map((b) => [b.buildingId, b]));
+  const unlockedCount = buildingStates.filter((b) => b.unlocked).length;
+  const questComplete = unlockedCount >= BUILDINGS.length;
 
   return (
     <div className="space-y-6">
@@ -110,12 +112,28 @@ export default function StudentDetailPage() {
         </a>
       </div>
 
+      {/* Quest Complete Banner */}
+      {questComplete && (
+        <div className="rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 flex items-center gap-3">
+          <span className="text-2xl">&#127942;</span>
+          <div>
+            <p className="font-semibold text-green-600">Quest Complete</p>
+            <p className="text-sm text-muted-foreground">
+              This student has unlocked all {BUILDINGS.length} buildings and finished the village quest.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Profile Card */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
             <span className="text-2xl">{student.name}</span>
             <Badge variant="outline">Level {student.readingLevel}</Badge>
+            {questComplete && (
+              <Badge className="bg-green-600 text-white">Quest Complete</Badge>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -173,9 +191,13 @@ export default function StudentDetailPage() {
       {/* Building Progress Grid */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            Building Progress ({buildingStates.filter((b) => b.unlocked).length}/
-            {BUILDINGS.length})
+          <CardTitle className="flex items-center gap-2">
+            Building Progress ({unlockedCount}/{BUILDINGS.length})
+            {questComplete && (
+              <span className="text-sm font-normal text-green-600">
+                — Village Restored
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>

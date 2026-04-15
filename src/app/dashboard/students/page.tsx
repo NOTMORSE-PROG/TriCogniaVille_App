@@ -19,6 +19,8 @@ interface Student {
   lastActive: string | null;
   onboardingDone: boolean;
   createdAt: string;
+  buildingsUnlocked: number;
+  questComplete: boolean;
 }
 
 
@@ -167,11 +169,15 @@ export default function StudentsPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-medium truncate">{student.name}</span>
-                        {!student.onboardingDone && (
+                        {student.questComplete ? (
+                          <Badge className="bg-green-600 text-white text-xs shrink-0">
+                            Quest Complete
+                          </Badge>
+                        ) : !student.onboardingDone ? (
                           <Badge variant="outline" className="text-xs shrink-0">
                             Setup pending
                           </Badge>
-                        )}
+                        ) : null}
                       </div>
                       <div className="text-sm text-muted-foreground truncate">
                         {student.email}
@@ -184,6 +190,7 @@ export default function StudentsPage() {
                         L{student.readingLevel} {READING_LEVEL_LABELS[student.readingLevel]}
                       </Badge>
                       <div className="hidden sm:flex items-center gap-2">
+                        <Badge variant="secondary">{student.buildingsUnlocked}/8</Badge>
                         <Badge variant="secondary">{student.xp} XP</Badge>
                         {student.streakDays > 0 && (
                           <Badge variant="outline">{student.streakDays}d streak</Badge>
