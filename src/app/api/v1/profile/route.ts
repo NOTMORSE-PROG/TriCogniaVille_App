@@ -13,10 +13,17 @@ import { eq, and, count, desc } from "drizzle-orm";
 import { TokenPayload } from "@/lib/auth/jwt";
 import { getLevelInfo } from "@/lib/gamification/levels";
 import { BADGE_DEFINITIONS } from "@/lib/db/badge-definitions";
+import { checkAndAwardBadges } from "@/lib/gamification/badges";
 
 export async function GET(request: NextRequest) {
   return withStudentAuth(request, async (_req: NextRequest, user: TokenPayload) => {
     try {
+      // Retroactively award any badges the student has earned but not yet received.
+      // Safe to call on every fetch — idempotent via composite PK + onConflictDoNothing.
+      await checkAndAwardBadges(user.sub).catch((err) =>
+        console.error("Badge retroactive check failed:", err)
+      );
+
       const [
         studentRows,
         earnedRows,
