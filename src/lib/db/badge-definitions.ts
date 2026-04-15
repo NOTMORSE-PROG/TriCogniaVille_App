@@ -220,8 +220,18 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
 
   // ── Reading level badges (4) ──
   {
+    id: "level_1",
+    name: "Non Reader",
+    description: "Placed at Reading Level 1",
+    category: "level",
+    icon: "🌱",
+    requirement: "Be placed at reading level 1 or above",
+    requirementValue: 1,
+    requirementKey: null,
+  },
+  {
     id: "level_2",
-    name: "Rising Reader",
+    name: "Emerging Reader",
     description: "Placed at Reading Level 2 or above",
     category: "level",
     icon: "📖",
