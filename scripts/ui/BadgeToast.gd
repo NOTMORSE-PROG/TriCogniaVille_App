@@ -25,7 +25,8 @@ const BADGE_INFO: Dictionary = {
 	"quest_10_passed":     { "name": "Quest Tracker",    "icon": "📜" },
 	"quest_25_passed":     { "name": "Quest Master",     "icon": "⚔️" },
 	"quest_perfect_first": { "name": "Perfectionist",    "icon": "💯" },
-	"level_2":             { "name": "Rising Reader",    "icon": "📖" },
+	"level_1":             { "name": "Non Reader",       "icon": "🌱" },
+	"level_2":             { "name": "Emerging Reader",  "icon": "📖" },
 	"level_3":             { "name": "Developing Reader","icon": "📗" },
 	"level_4":             { "name": "Fluent Reader",    "icon": "🎓" },
 }

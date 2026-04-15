@@ -1585,6 +1585,9 @@ func _play_ending_sequence() -> void:
 	_dialogue_panel.show_sequence(farewell, farewell_branches)
 	await _dialogue_panel.dialogue_sequence_finished
 
+	# ── 6b. Certificate presentation ──
+	await _show_certificate()
+
 	# ── 7. Cinematic title card ──
 	var ending_canvas := CanvasLayer.new()
 	ending_canvas.name = "EndingOverlay"
@@ -1712,6 +1715,224 @@ func _play_ending_sequence() -> void:
 		_profile_btn.visible = true
 	_is_free_exploration = true
 	_enter_free_exploration()
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# DEBUG: TRIGGER ENDING  (editor/debug builds only)
+# ═════════════════════════════════════════════════════════════════════════════
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# CERTIFICATE PRESENTATION  (after farewell dialogue, before title card)
+# ═════════════════════════════════════════════════════════════════════════════
+
+func _show_certificate() -> void:
+	var cert_canvas := CanvasLayer.new()
+	cert_canvas.name = "CertificateOverlay"
+	cert_canvas.layer = 20
+	add_child(cert_canvas)
+
+	# ── Dark overlay with animated shader ──
+	var bg := ColorRect.new()
+	bg.color = Color(StyleFactory.BG_DEEP.r, StyleFactory.BG_DEEP.g, StyleFactory.BG_DEEP.b, 0.94)
+	bg.anchor_right = 1.0
+	bg.anchor_bottom = 1.0
+	bg.mouse_filter = Control.MOUSE_FILTER_STOP
+	cert_canvas.add_child(bg)
+	bg.modulate.a = 0.0
+
+	var anim_bg_path := "res://assets/shaders/animated_background.gdshader"
+	if ResourceLoader.exists(anim_bg_path):
+		var bg_shader := ShaderMaterial.new()
+		bg_shader.shader = load(anim_bg_path)
+		bg_shader.set_shader_parameter("color_top", Color(0.02, 0.04, 0.10, 1.0))
+		bg_shader.set_shader_parameter("color_mid", Color(0.04, 0.06, 0.14, 1.0))
+		bg_shader.set_shader_parameter("color_bottom", Color(0.02, 0.05, 0.08, 1.0))
+		bg_shader.set_shader_parameter("wave_speed", 0.02)
+		bg_shader.set_shader_parameter("wave_amplitude", 0.04)
+		bg.material = bg_shader
+
+	# ── Bokeh particles ──
+	var bokeh_path := "res://assets/shaders/bokeh_particles.gdshader"
+	if ResourceLoader.exists(bokeh_path):
+		var bokeh_rect := ColorRect.new()
+		bokeh_rect.anchor_right = 1.0
+		bokeh_rect.anchor_bottom = 1.0
+		bokeh_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var bokeh_mat := ShaderMaterial.new()
+		bokeh_mat.shader = load(bokeh_path)
+		bokeh_mat.set_shader_parameter("particle_count", 12.0)
+		bokeh_mat.set_shader_parameter("particle_size", 0.010)
+		bokeh_mat.set_shader_parameter("speed", 0.012)
+		bokeh_mat.set_shader_parameter("particle_color", Color(0.886, 0.725, 0.290, 0.06))
+		bokeh_rect.material = bokeh_mat
+		cert_canvas.add_child(bokeh_rect)
+
+	# ── Fade in background ──
+	var bg_tw := create_tween()
+	bg_tw.tween_property(bg, "modulate:a", 1.0, 0.6)
+	await bg_tw.finished
+
+	UIAnimations.flash_screen_on_layer(cert_canvas, _vp, Color(0.886, 0.725, 0.290, 0.08), 0.4)
+	AudioManager.play_sfx("building_unlock")
+
+	# ── Certificate image ──
+	var cert_tex_path := "res://assets/sprites/cert_template.jpg"
+	var cert_tex: Texture2D = null
+	if ResourceLoader.exists(cert_tex_path):
+		cert_tex = load(cert_tex_path) as Texture2D
+
+	# Calculate certificate dimensions to fit viewport
+	var cert_width := _vp.x * 0.75
+	var cert_height := cert_width * (1414.0 / 2000.0)
+	if cert_height > _vp.y * 0.62:
+		cert_height = _vp.y * 0.62
+		cert_width = cert_height * (2000.0 / 1414.0)
+	var cert_x := (_vp.x - cert_width) * 0.5
+	var cert_y := _vp.y * 0.06
+
+	var cert_rect := TextureRect.new()
+	if cert_tex:
+		cert_rect.texture = cert_tex
+	cert_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	cert_rect.stretch_mode = TextureRect.STRETCH_SCALE
+	cert_rect.position = Vector2(cert_x, cert_y)
+	cert_rect.size = Vector2(cert_width, cert_height)
+	cert_rect.pivot_offset = Vector2(cert_width * 0.5, cert_height * 0.5)
+	cert_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cert_canvas.add_child(cert_rect)
+
+	# Start cert scaled down and transparent
+	cert_rect.scale = Vector2(0.85, 0.85)
+	cert_rect.modulate.a = 0.0
+	var cert_tw := create_tween().set_parallel(true)
+	cert_tw.tween_property(cert_rect, "scale", Vector2.ONE, 0.7).set_trans(
+		Tween.TRANS_BACK
+	).set_ease(Tween.EASE_OUT)
+	cert_tw.tween_property(cert_rect, "modulate:a", 1.0, 0.7)
+	await cert_tw.finished
+
+	# ── Student name overlay — sibling of cert_rect, positioned in canvas space ──
+	# (Must NOT be a child of cert_rect: TextureRect's coordinate space is
+	# unreliable with STRETCH modes; absolute canvas coords are bulletproof.)
+	var student_name: String = GameManager.current_student.get("name", "Student")
+	# Scale font to cert image height (backend uses 88/1414 ≈ 6.2% for short names)
+	var name_font_size := int(cert_height * 0.062)
+	if student_name.length() > 25:
+		name_font_size = int(cert_height * 0.049)
+	elif student_name.length() > 35:
+		name_font_size = int(cert_height * 0.039)
+
+	var name_lbl := Label.new()
+	name_lbl.text = student_name
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	name_lbl.add_theme_font_size_override("font_size", name_font_size)
+	name_lbl.add_theme_color_override("font_color", Color.BLACK)
+	var nunito_path := "res://assets/fonts/Nunito-Variable.ttf"
+	if ResourceLoader.exists(nunito_path):
+		var fv := FontVariation.new()
+		fv.base_font = load(nunito_path)
+		fv.variation_opentype = {"wght": 800}
+		fv.variation_transform = Transform2D(Vector2(1.0, 0.0), Vector2(-0.22, 1.0), Vector2.ZERO)
+		name_lbl.add_theme_font_override("font", fv)
+	# y: place label so text baseline lands on the cert underline (~60% of cert height).
+	# Centre the 12%-tall label at 0.57 → baseline ≈ centre + cap/2 ≈ 60%.
+	var name_lbl_h := cert_height * 0.12
+	name_lbl.position = Vector2(cert_x, cert_y + cert_height * 0.57 - name_lbl_h * 0.5)
+	name_lbl.size = Vector2(cert_width, name_lbl_h)
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	name_lbl.modulate.a = 0.0
+	cert_canvas.add_child(name_lbl)
+
+	var name_tw := create_tween()
+	name_tw.tween_property(name_lbl, "modulate:a", 1.0, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	await get_tree().create_timer(0.6).timeout
+	AudioManager.play_sfx("stage_advance")
+
+	# ── Buttons row ──
+	var btn_row := HBoxContainer.new()
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_row.add_theme_constant_override("separation", int(16 * _sx))
+	btn_row.mouse_filter = Control.MOUSE_FILTER_PASS
+	var btn_y := cert_y + cert_height + 16 * _sy
+	btn_row.position = Vector2(0, btn_y)
+	btn_row.size = Vector2(_vp.x, 50 * _sy)
+	cert_canvas.add_child(btn_row)
+
+	# Download JPG button
+	var jpg_btn := Button.new()
+	jpg_btn.text = "  Download JPG  "
+	jpg_btn.add_theme_font_size_override("font_size", int(18 * _sy))
+	jpg_btn.add_theme_color_override("font_color", StyleFactory.GOLD)
+	var jpg_style := StyleBoxFlat.new()
+	jpg_style.bg_color = Color(0.886, 0.725, 0.290, 0.10)
+	jpg_style.border_color = StyleFactory.GOLD
+	jpg_style.set_border_width_all(int(2 * _sy))
+	jpg_style.set_corner_radius_all(int(8 * _sy))
+	jpg_style.set_content_margin_all(int(12 * _sy))
+	jpg_btn.add_theme_stylebox_override("normal", jpg_style)
+	var jpg_hover := jpg_style.duplicate()
+	jpg_hover.bg_color = Color(0.886, 0.725, 0.290, 0.20)
+	jpg_btn.add_theme_stylebox_override("hover", jpg_hover)
+	jpg_btn.add_theme_stylebox_override("pressed", jpg_hover)
+	jpg_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	jpg_btn.pressed.connect(func() -> void: _open_certificate_download("jpg"))
+	btn_row.add_child(jpg_btn)
+
+	# Download PDF button
+	var pdf_btn := Button.new()
+	pdf_btn.text = "  Download PDF  "
+	pdf_btn.add_theme_font_size_override("font_size", int(18 * _sy))
+	pdf_btn.add_theme_color_override("font_color", StyleFactory.GOLD)
+	pdf_btn.add_theme_stylebox_override("normal", jpg_style.duplicate())
+	pdf_btn.add_theme_stylebox_override("hover", jpg_hover.duplicate())
+	pdf_btn.add_theme_stylebox_override("pressed", jpg_hover.duplicate())
+	pdf_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	pdf_btn.pressed.connect(func() -> void: _open_certificate_download("pdf"))
+	btn_row.add_child(pdf_btn)
+
+	# Continue button
+	var continue_btn := Button.new()
+	continue_btn.text = "  Continue  "
+	continue_btn.add_theme_font_size_override("font_size", int(18 * _sy))
+	continue_btn.add_theme_color_override("font_color", Color.WHITE)
+	var cont_style := StyleBoxFlat.new()
+	cont_style.bg_color = Color(0.914, 0.388, 0.431)
+	cont_style.set_corner_radius_all(int(8 * _sy))
+	cont_style.set_content_margin_all(int(12 * _sy))
+	continue_btn.add_theme_stylebox_override("normal", cont_style)
+	var cont_hover := cont_style.duplicate()
+	cont_hover.bg_color = Color(0.85, 0.32, 0.38)
+	continue_btn.add_theme_stylebox_override("hover", cont_hover)
+	continue_btn.add_theme_stylebox_override("pressed", cont_hover)
+	continue_btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	btn_row.add_child(continue_btn)
+
+	# Stagger button entrance
+	for child in btn_row.get_children():
+		child.modulate.a = 0.0
+	UIAnimations.stagger_children(self, btn_row, 0.1)
+
+	# ── Await continue ──
+	await continue_btn.pressed
+
+	# ── Fade out ──
+	var fade_tw := create_tween().set_parallel(true)
+	for child in cert_canvas.get_children():
+		if child is Control:
+			fade_tw.tween_property(child, "modulate:a", 0.0, 0.8).set_trans(
+				Tween.TRANS_QUAD
+			).set_ease(Tween.EASE_IN)
+	await fade_tw.finished
+	cert_canvas.queue_free()
+
+
+func _open_certificate_download(format: String) -> void:
+	var url := ApiClient.base_url + ApiClient.API_PREFIX \
+		+ "/certificate/download?format=" + format \
+		+ "&token=" + ApiClient.auth_token
+	OS.shell_open(url)
 
 
 # ═════════════════════════════════════════════════════════════════════════════

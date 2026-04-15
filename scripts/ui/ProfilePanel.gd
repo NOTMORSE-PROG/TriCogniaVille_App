@@ -92,6 +92,9 @@ var _buildings_grid: GridContainer
 var _badges_count_lbl: Label
 var _badges_box:       VBoxContainer
 
+# Certificate section
+var _cert_content: VBoxContainer
+
 # =============================================================================
 # LIFECYCLE
 # =============================================================================
@@ -203,6 +206,7 @@ func _build_layout() -> void:
 	_settings_content.add_child(_build_top_row())
 	_settings_content.add_child(_build_buildings_section())
 	_settings_content.add_child(_build_badges_section())
+	_settings_content.add_child(_build_certificate_section())
 	_settings_content.add_child(_build_credits_section())
 	_settings_content.add_child(_build_logout_row())
 
@@ -835,6 +839,177 @@ func _make_badge_tile(badge: Dictionary, category: String) -> PanelContainer:
 
 
 # =============================================================================
+# CERTIFICATE SECTION
+# =============================================================================
+
+
+func _build_certificate_section() -> Control:
+	var card := _make_section_card()
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", int(14 * _sy))
+	vbox.mouse_filter = Control.MOUSE_FILTER_PASS
+	card.add_child(vbox)
+
+	vbox.add_child(_make_section_header("CERTIFICATE", "📜"))
+	vbox.add_child(_make_separator())
+
+	_cert_content = VBoxContainer.new()
+	_cert_content.add_theme_constant_override("separation", int(12 * _sy))
+	_cert_content.mouse_filter = Control.MOUSE_FILTER_PASS
+	vbox.add_child(_cert_content)
+
+	return card
+
+
+func _populate_certificate(data: Dictionary) -> void:
+	if not is_instance_valid(_cert_content):
+		return
+
+	# Clear previous content
+	for child in _cert_content.get_children():
+		child.queue_free()
+
+	var stats: Dictionary = data.get("stats", {})
+	var unlocked_count: int = stats.get("buildingsUnlocked", 0)
+	var player_name: String = data.get("name", GameManager.current_student.get("name", "Student"))
+
+	if unlocked_count < 8:
+		# ── Locked state ──
+		var lock_center := CenterContainer.new()
+		lock_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var lock_icon := Label.new()
+		lock_icon.text = "🔒"
+		lock_icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lock_icon.add_theme_font_size_override("font_size", int(56 * _sy))
+		lock_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lock_center.add_child(lock_icon)
+		_cert_content.add_child(lock_center)
+
+		var hint_lbl := Label.new()
+		hint_lbl.text = "Complete all quests to earn your certificate"
+		hint_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		hint_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		hint_lbl.add_theme_font_size_override("font_size", int(18 * _sy))
+		hint_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_SECONDARY)
+		hint_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_cert_content.add_child(hint_lbl)
+
+		var progress_lbl := Label.new()
+		progress_lbl.text = "Buildings unlocked: %d / 8" % unlocked_count
+		progress_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		progress_lbl.add_theme_font_size_override("font_size", int(15 * _sy))
+		progress_lbl.add_theme_color_override("font_color", StyleFactory.TEXT_MUTED)
+		progress_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_cert_content.add_child(progress_lbl)
+		return
+
+	# ── Unlocked state ──
+	# Certificate preview
+	var cert_tex_path := "res://assets/sprites/cert_template.jpg"
+	var cert_tex: Texture2D = null
+	if ResourceLoader.exists(cert_tex_path):
+		cert_tex = load(cert_tex_path) as Texture2D
+
+	var preview_center := CenterContainer.new()
+	preview_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cert_content.add_child(preview_center)
+
+	var preview_container := Control.new()
+	var vp := get_viewport().get_visible_rect().size
+	var preview_w := vp.x * 0.50
+	var preview_h := preview_w * (1414.0 / 2000.0)
+	preview_container.custom_minimum_size = Vector2(preview_w, preview_h)
+	preview_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	preview_center.add_child(preview_container)
+
+	var cert_rect := TextureRect.new()
+	if cert_tex:
+		cert_rect.texture = cert_tex
+	cert_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	cert_rect.stretch_mode = TextureRect.STRETCH_SCALE
+	cert_rect.position = Vector2.ZERO
+	cert_rect.size = Vector2(preview_w, preview_h)
+	cert_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	preview_container.add_child(cert_rect)
+
+	# Name overlay — sibling of cert_rect inside preview_container.
+	# NOT a child of cert_rect: TextureRect coordinate space is unreliable.
+	var name_font_size := int(preview_h * 0.062)
+	if player_name.length() > 25:
+		name_font_size = int(preview_h * 0.049)
+	elif player_name.length() > 35:
+		name_font_size = int(preview_h * 0.039)
+
+	var name_lbl := Label.new()
+	name_lbl.text = player_name
+	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	name_lbl.add_theme_font_size_override("font_size", name_font_size)
+	name_lbl.add_theme_color_override("font_color", Color.BLACK)
+	var nunito_path := "res://assets/fonts/Nunito-Variable.ttf"
+	if ResourceLoader.exists(nunito_path):
+		var fv := FontVariation.new()
+		fv.base_font = load(nunito_path)
+		fv.variation_opentype = {"wght": 800}
+		fv.variation_transform = Transform2D(Vector2(1.0, 0.0), Vector2(-0.22, 1.0), Vector2.ZERO)
+		name_lbl.add_theme_font_override("font", fv)
+	# Centre label at 0.57 so text baseline lands near the cert underline (~60%)
+	var name_lbl_h := preview_h * 0.12
+	name_lbl.position = Vector2(0, preview_h * 0.57 - name_lbl_h * 0.5)
+	name_lbl.size = Vector2(preview_w, name_lbl_h)
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	preview_container.add_child(name_lbl)
+
+	# Congratulations label
+	var congrats_lbl := Label.new()
+	congrats_lbl.text = "Congratulations, %s!" % player_name
+	congrats_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	congrats_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	congrats_lbl.add_theme_font_size_override("font_size", int(22 * _sy))
+	congrats_lbl.add_theme_color_override("font_color", StyleFactory.GOLD)
+	congrats_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cert_content.add_child(congrats_lbl)
+
+	# Download buttons
+	var btn_row := HBoxContainer.new()
+	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	btn_row.add_theme_constant_override("separation", int(12 * _sx))
+	btn_row.mouse_filter = Control.MOUSE_FILTER_PASS
+	_cert_content.add_child(btn_row)
+
+	var btn_style := StyleBoxFlat.new()
+	btn_style.bg_color = Color(0.886, 0.725, 0.290, 0.10)
+	btn_style.border_color = StyleFactory.GOLD
+	btn_style.set_border_width_all(int(2 * _sy))
+	btn_style.set_corner_radius_all(int(8 * _sy))
+	btn_style.set_content_margin_all(int(10 * _sy))
+
+	var btn_hover := btn_style.duplicate()
+	btn_hover.bg_color = Color(0.886, 0.725, 0.290, 0.20)
+
+	for fmt in ["JPG", "PDF"]:
+		var btn := Button.new()
+		btn.text = "  Download %s  " % fmt
+		btn.add_theme_font_size_override("font_size", int(16 * _sy))
+		btn.add_theme_color_override("font_color", StyleFactory.GOLD)
+		btn.add_theme_stylebox_override("normal", btn_style.duplicate())
+		btn.add_theme_stylebox_override("hover", btn_hover.duplicate())
+		btn.add_theme_stylebox_override("pressed", btn_hover.duplicate())
+		btn.mouse_filter = Control.MOUSE_FILTER_STOP
+		var format_lower: String = (fmt as String).to_lower()
+		btn.pressed.connect(func() -> void: _open_certificate_download(format_lower))
+		btn_row.add_child(btn)
+
+
+func _open_certificate_download(format: String) -> void:
+	var url := ApiClient.base_url + ApiClient.API_PREFIX \
+		+ "/certificate/download?format=" + format \
+		+ "&token=" + ApiClient.auth_token
+	OS.shell_open(url)
+
+
+# =============================================================================
 # CREDITS SECTION
 # =============================================================================
 
@@ -1114,6 +1289,9 @@ func _reset_content() -> void:
 			child.queue_free()
 	if is_instance_valid(_badges_count_lbl):
 		_badges_count_lbl.text = "—"
+	if is_instance_valid(_cert_content):
+		for child in _cert_content.get_children():
+			child.queue_free()
 
 
 # =============================================================================
@@ -1158,6 +1336,7 @@ func _on_profile_loaded(success: bool, data: Dictionary) -> void:
 
 	_populate_header(data)
 	_populate_badges(data.get("badges", []))
+	_populate_certificate(data)
 
 	_loading_section.visible = false
 	_settings_content.visible = true
