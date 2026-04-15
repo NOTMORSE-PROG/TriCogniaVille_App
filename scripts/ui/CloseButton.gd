@@ -26,7 +26,7 @@ func _has_point(point: Vector2) -> bool:
 	return Rect2(
 		-HIT_PADDING, -HIT_PADDING,
 		size.x + HIT_PADDING * 2.0,
-		size.y + HIT_PADDING * 2.0
+		size.y + HIT_PADDING
 	).has_point(point)
 
 
