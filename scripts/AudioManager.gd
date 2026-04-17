@@ -5,6 +5,7 @@ extends Node
 
 signal music_toggled(enabled: bool)   ## Emitted when music_enabled changes
 signal sfx_toggled(enabled: bool)     ## Emitted when sfx_enabled changes
+signal music_ducked_changed(ducked: bool)  ## Emitted on transient duck (e.g. mic recording)
 
 const SFX_POOL_SIZE := 4
 const SFX_PATHS := {
@@ -136,6 +137,7 @@ func set_music_ducked(ducked: bool) -> void:
 	if _music_ducked == ducked:
 		return
 	_music_ducked = ducked
+	music_ducked_changed.emit(ducked)
 	if not _music_playing:
 		return
 	var target_db := -80.0 if ducked else -10.0

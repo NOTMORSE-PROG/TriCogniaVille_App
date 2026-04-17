@@ -63,6 +63,9 @@ func setup(vp: Vector2, sx: float, sy: float, building_controllers: Dictionary) 
 	# Respect music toggle — mute/unmute ambient layers when music setting changes
 	if not AudioManager.music_toggled.is_connected(_on_music_toggled):
 		AudioManager.music_toggled.connect(_on_music_toggled)
+	# Duck ambient layers during transient mutes (e.g. mic recording)
+	if not AudioManager.music_ducked_changed.is_connected(_on_music_ducked_changed):
+		AudioManager.music_ducked_changed.connect(_on_music_ducked_changed)
 
 	# Idempotent catch-up: apply all tiers already unlocked (no animation)
 	var already_unlocked := GameManager.unlocked_buildings.size()
@@ -615,6 +618,22 @@ func _on_music_toggled(enabled: bool) -> void:
 		else:
 			# Silence immediately
 			player.volume_db = -80.0
+
+
+## Called when AudioManager.music_ducked_changed fires (transient duck, e.g. mic recording).
+## Skip while music_enabled is false so we don't fight the toggle.
+func _on_music_ducked_changed(ducked: bool) -> void:
+	if not AudioManager.music_enabled:
+		return
+	for tier in _ambient_players:
+		var player: AudioStreamPlayer = _ambient_players[tier]
+		if not is_instance_valid(player):
+			continue
+		var target_db: float = -80.0 if ducked else AMBIENT_LAYERS[tier]["db"]
+		var tw := create_tween()
+		tw.tween_property(player, "volume_db", target_db, 0.25).set_trans(
+			Tween.TRANS_QUAD
+		).set_ease(Tween.EASE_OUT)
 
 
 # ═════════════════════════════════════════════════════════════════════════════
