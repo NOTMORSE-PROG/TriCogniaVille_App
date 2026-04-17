@@ -33,6 +33,7 @@ var _music_tween: Tween  # Tracks the active volume tween so it can be killed
 # ── SFX Pool ────────────────────────────────────────────────────────────────
 var _sfx_players: Array[AudioStreamPlayer] = []
 var _sfx_muted: bool = false  # Transient system mute (e.g. mic recording)
+var _music_ducked: bool = false  # Transient music duck (e.g. mic recording)
 
 # ── Preloaded Streams ───────────────────────────────────────────────────────
 var _sfx_streams: Dictionary = {}
@@ -127,6 +128,18 @@ func _on_music_finished() -> void:
 
 func set_sfx_muted(muted: bool) -> void:
 	_sfx_muted = muted
+
+
+## Transient music duck (e.g. while the mic is recording).
+## Fades the BGM to silence without stopping it, so it resumes mid-track on unduck.
+func set_music_ducked(ducked: bool) -> void:
+	if _music_ducked == ducked:
+		return
+	_music_ducked = ducked
+	if not _music_playing:
+		return
+	var target_db := -80.0 if ducked else -10.0
+	fade_music(target_db, 0.25)
 
 
 func fade_music(target_db: float, duration: float = 0.5) -> void:
