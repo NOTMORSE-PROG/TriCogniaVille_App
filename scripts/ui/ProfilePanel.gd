@@ -149,12 +149,25 @@ func _build_layout() -> void:
 	_apply_scale()
 	add_child(_panel)
 
+	# ── Wrapper (hosts the layout + the floating close-button overlay) ────────
+	# PanelContainer expects a single child; the wrapper is a plain Control that
+	# lets the VBox fill the card while the CloseButton floats on top. Input
+	# traversal visits the CloseButton first (last-drawn sibling), so its
+	# extended hit area wins against the ScrollContainer underneath.
+	var wrapper := Control.new()
+	wrapper.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	wrapper.size_flags_vertical   = Control.SIZE_EXPAND_FILL
+	wrapper.mouse_filter          = Control.MOUSE_FILTER_PASS
+	_panel.add_child(wrapper)
+
 	# ── Outer vbox (no gap — title bar clips to card corners) ─────────────────
 	var outer := VBoxContainer.new()
+	outer.anchor_right  = 1.0
+	outer.anchor_bottom = 1.0
 	outer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	outer.size_flags_vertical   = Control.SIZE_EXPAND_FILL
 	outer.add_theme_constant_override("separation", 0)
-	_panel.add_child(outer)
+	wrapper.add_child(outer)
 
 	# Title bar
 	outer.add_child(_build_title_bar())
@@ -216,6 +229,32 @@ func _build_layout() -> void:
 	pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_settings_content.add_child(pad)
 
+	# ── Floating close button (overlay, top-right of the card) ────────────────
+	# Added LAST so Godot's reverse-tree input traversal checks it before the
+	# ScrollContainer underneath. Visible circle == Control rect == hit area:
+	# whatever the user sees is what registers a tap.
+	var btn_px := int(140 * _sy)
+	var close_btn := CloseButton.new()
+	close_btn.setup(btn_px)
+	close_btn.pressed.connect(func() -> void: hide_profile())
+	close_btn.anchor_left   = 1.0
+	close_btn.anchor_right  = 1.0
+	close_btn.anchor_top    = 0.0
+	close_btn.anchor_bottom = 0.0
+	close_btn.offset_right  = -int(10 * _sx)
+	close_btn.offset_left   = close_btn.offset_right - btn_px
+	close_btn.offset_top    = int(4 * _sy)
+	close_btn.offset_bottom = close_btn.offset_top + btn_px
+	wrapper.add_child(close_btn)
+
+	# Keep the wrapper's minimum size in lockstep with the VBox so PanelContainer
+	# still sizes the card to fit the content. A plain Control does not
+	# propagate child minimums on its own.
+	var _sync_wrapper_min := func() -> void:
+		wrapper.custom_minimum_size = outer.get_combined_minimum_size()
+	outer.minimum_size_changed.connect(_sync_wrapper_min)
+	_sync_wrapper_min.call()
+
 
 # ── Card panel style ──────────────────────────────────────────────────────────
 
@@ -250,6 +289,7 @@ func _make_card_style() -> StyleBoxFlat:
 
 func _build_title_bar() -> Control:
 	var bar := PanelContainer.new()
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var bs := StyleBoxFlat.new()
 	bs.bg_color = Color(
 		StyleFactory.BG_DEEP.r * 0.85,
@@ -269,6 +309,8 @@ func _build_title_bar() -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", int(10 * _sx))
 	row.alignment = BoxContainer.ALIGNMENT_BEGIN
+	row.custom_minimum_size = Vector2(0, int(140 * _sy))
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bar.add_child(row)
 
 	# Gear icon
@@ -288,11 +330,9 @@ func _build_title_bar() -> Control:
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(title)
 
-	# Close button
-	var close_btn := CloseButton.new()
-	close_btn.setup(int(96 * _sy))
-	close_btn.pressed.connect(func() -> void: hide_profile())
-	row.add_child(close_btn)
+	# Close button is built in _build_layout as a floating overlay child of the
+	# panel wrapper — not inside this row — so its extended hit area isn't
+	# shadowed by the ScrollContainer sibling underneath.
 
 	return bar
 

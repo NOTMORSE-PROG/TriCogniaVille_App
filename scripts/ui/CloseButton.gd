@@ -1,50 +1,28 @@
 class_name CloseButton
 extends Control
-## CloseButton — Drawn circle + X close button.
-## Layout size matches the visual circle exactly; _has_point() silently expands
-## the input detection zone so taps near-but-not-on the circle still register.
 
 signal pressed
-
-## Symmetric extra hit area on every side (px). Large enough to absorb typical
-## finger-touch offset (see FFitts Law), small enough that the invisible zone
-## never bleeds into the ScrollContainer below the title bar.
-const HIT_PADDING := 32.0
 
 var _hovered: bool = false
 
 
-func setup(size_px: float) -> void:
-	custom_minimum_size = Vector2(size_px, size_px)
-	size = Vector2(size_px, size_px)
-	size_flags_vertical = Control.SIZE_SHRINK_CENTER
+func setup(rect_px: float) -> void:
+	custom_minimum_size = Vector2(rect_px, rect_px)
+	size = Vector2(rect_px, rect_px)
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	queue_redraw()
-
-
-## Expand the input-detection rect without touching layout or visuals.
-func _has_point(point: Vector2) -> bool:
-	return Rect2(
-		-HIT_PADDING,
-		-HIT_PADDING,
-		size.x + HIT_PADDING * 2.0,
-		size.y + HIT_PADDING * 2.0
-	).has_point(point)
 
 
 func _draw() -> void:
 	var c := size * 0.5
 	var r := minf(size.x, size.y) * 0.5
 
-	# Circle background
-	var bg := Color(1.0, 1.0, 1.0, 0.10 if not _hovered else 0.22)
-	draw_circle(c, r, bg)
+	draw_circle(c, r, Color(1.0, 1.0, 1.0, 0.10 if not _hovered else 0.22))
 
-	# Circle border
 	var border_col := Color(StyleFactory.GOLD.r, StyleFactory.GOLD.g, StyleFactory.GOLD.b, 0.55)
 	draw_arc(c, r - 1.0, 0.0, TAU, 48, border_col, 1.5, true)
 
-	# X lines
 	var arm := r * 0.38
 	var lw := maxf(2.0, r * 0.09)
 	draw_line(c + Vector2(-arm, -arm), c + Vector2(arm, arm), StyleFactory.GOLD, lw, true)
