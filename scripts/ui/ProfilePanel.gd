@@ -290,7 +290,7 @@ func _build_title_bar() -> Control:
 
 	# Close button
 	var close_btn := CloseButton.new()
-	close_btn.setup(int(72 * _sy))
+	close_btn.setup(int(96 * _sy))
 	close_btn.pressed.connect(func() -> void: hide_profile())
 	row.add_child(close_btn)
 
