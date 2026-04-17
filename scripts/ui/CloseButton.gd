@@ -6,9 +6,12 @@ extends Control
 
 signal pressed
 
-## Extra hit area on every side (px). Does NOT affect layout or draw — only
-## _has_point(), so the padding never bleeds into neighbouring nodes.
-const HIT_PADDING := 44.0
+## Hit-area padding, px. Asymmetric by design — top/sides can bleed over the
+## card border (nothing interactive above or beside the button), but bottom
+## must stay within the title bar so it doesn't steal scroll gestures.
+const HIT_PADDING_SIDE   := 44.0
+const HIT_PADDING_TOP    := 44.0
+const HIT_PADDING_BOTTOM := 16.0
 
 var _hovered: bool = false
 
@@ -24,9 +27,10 @@ func setup(size_px: float) -> void:
 ## Expand the input-detection rect without touching layout or visuals.
 func _has_point(point: Vector2) -> bool:
 	return Rect2(
-		-HIT_PADDING, -HIT_PADDING,
-		size.x + HIT_PADDING * 2.0,
-		size.y + HIT_PADDING
+		-HIT_PADDING_SIDE,
+		-HIT_PADDING_TOP,
+		size.x + HIT_PADDING_SIDE * 2.0,
+		size.y + HIT_PADDING_TOP + HIT_PADDING_BOTTOM
 	).has_point(point)
 
 

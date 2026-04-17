@@ -263,7 +263,7 @@ func _build_title_bar() -> Control:
 	bs.content_margin_left   = int(20 * _sx)
 	bs.content_margin_right  = int(20 * _sx)
 	bs.content_margin_top    = int(15 * _sy)
-	bs.content_margin_bottom = int(15 * _sy)
+	bs.content_margin_bottom = int(18 * _sy)
 	bar.add_theme_stylebox_override("panel", bs)
 
 	var row := HBoxContainer.new()
