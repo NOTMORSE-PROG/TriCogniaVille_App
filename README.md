@@ -28,6 +28,8 @@ Android export configuration is kept in the project, but signing credentials and
 
 Prerequisites are Node.js 20+ and a PostgreSQL database.
 
+See the dedicated [`backend/README.md`](backend/README.md) for API areas, environment variables, database cautions, and teacher-dashboard details.
+
 ```bash
 cd backend
 npm install

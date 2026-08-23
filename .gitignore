@@ -21,15 +21,13 @@ _plugin_build/local.properties
 # Claude Code Game Studios (AI framework — not game source)
 .claude/
 
-# Backend (separate repo)
-backend/
-
 # Secrets
 app_config.cfg
 client_secret_*.json
 *.pem
 *.keystore
 .env*
+!backend/.env.example
 
 # Dependencies
 node_modules/
@@ -77,6 +75,3 @@ ehthumbs.db
 # Windows temp files
 ~*
 *.TMP
-
-# Backend (separate repo)
-TriCogniaVille_Backend/
